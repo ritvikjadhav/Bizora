@@ -1,0 +1,726 @@
+:root {
+    --business-navy: #102D46;
+    --business-navy-hover: #174563;
+    --business-teal: #168C89;
+    --business-teal-hover: #117674;
+    --business-teal-light: #65D0C4;
+    --business-text: #243447;
+    --business-muted: #718096;
+    --business-border: #E1E8EE;
+    --business-background: #F5F7FB;
+    --business-surface: #FFFFFF;
+    --business-soft: #EDF7F7;
+    --business-shadow: 0 8px 28px rgba(16, 45, 70, 0.045);
+    --business-radius: 18px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    color: var(--business-text);
+    background: var(--business-background);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(101, 208, 196, 0.8);
+    outline-offset: 3px;
+}
+
+.business-page {
+    position: relative;
+    min-height: 100vh;
+    overflow: clip;
+    padding: 42px 24px 76px;
+    background:
+        radial-gradient(ellipse at 8% 0%, rgba(101, 208, 196, 0.09), transparent 31%),
+        radial-gradient(ellipse at 100% 28%, rgba(22, 140, 137, 0.045), transparent 27%),
+        var(--business-background);
+}
+
+.business-container {
+    position: relative;
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.business-heading {
+    margin-bottom: 30px;
+}
+
+.business-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 30px;
+    color: var(--business-muted);
+    font-size: 13px;
+    font-weight: 650;
+    transition: color 180ms ease;
+}
+
+.business-back-link:hover {
+    color: var(--business-teal);
+}
+
+.business-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 12px;
+    color: var(--business-teal);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.7px;
+}
+
+.business-eyebrow::before {
+    width: 22px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--business-teal);
+    content: "";
+}
+
+.business-heading h1 {
+    max-width: 700px;
+    margin: 0 0 12px;
+    color: var(--business-navy);
+    font-size: clamp(30px, 4.5vw, 43px);
+    font-weight: 800;
+    letter-spacing: -1.65px;
+    line-height: 1.18;
+}
+
+.business-heading > p:last-child {
+    max-width: 600px;
+    margin: 0;
+    color: var(--business-muted);
+    font-size: 14px;
+    line-height: 1.85;
+}
+
+.business-form {
+    display: grid;
+    gap: 20px;
+}
+
+.business-card {
+    min-width: 0;
+    padding: 30px;
+    border: 1px solid rgba(225, 232, 238, 0.95);
+    border-radius: var(--business-radius);
+    background: var(--business-surface);
+    box-shadow: var(--business-shadow);
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.business-card:focus-within {
+    border-color: rgba(22, 140, 137, 0.3);
+    box-shadow: 0 10px 32px rgba(16, 45, 70, 0.055);
+}
+
+.business-section-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.business-step {
+    display: grid;
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+    place-items: center;
+    border: 1px solid rgba(22, 140, 137, 0.13);
+    border-radius: 13px;
+    color: var(--business-teal);
+    background: var(--business-soft);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.business-section-heading > div {
+    min-width: 0;
+    padding-top: 1px;
+}
+
+.business-section-heading h2 {
+    margin: 0 0 4px;
+    color: var(--business-navy);
+    font-size: 19px;
+    font-weight: 780;
+    letter-spacing: -0.45px;
+    line-height: 1.45;
+}
+
+.business-section-heading p {
+    margin: 0;
+    color: var(--business-muted);
+    font-size: 12px;
+    line-height: 1.75;
+}
+
+.business-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 21px 19px;
+}
+
+.business-field {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.business-field.full-width {
+    grid-column: 1 / -1;
+}
+
+.business-field > label,
+.business-field legend {
+    padding: 0;
+    color: var(--business-text);
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.6;
+}
+
+.business-field input:not([type="checkbox"]):not([type="file"]),
+.business-field select,
+.business-field textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 47px;
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid #DCE4EC;
+    border-radius: 10px;
+    outline: none;
+    color: var(--business-text);
+    background: #FFFFFF;
+    font-size: 13px;
+    line-height: 1.55;
+    transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.business-field select {
+    padding-right: 34px;
+    cursor: pointer;
+}
+
+.business-field textarea {
+    min-height: 118px;
+    resize: vertical;
+}
+
+.business-field input:not([type="checkbox"]):not([type="file"]):hover,
+.business-field select:hover,
+.business-field textarea:hover {
+    border-color: #C4D2DE;
+}
+
+.business-field input:not([type="checkbox"]):not([type="file"]):focus,
+.business-field select:focus,
+.business-field textarea:focus {
+    border-color: var(--business-teal);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(22, 140, 137, 0.09);
+}
+
+.business-field input::placeholder,
+.business-field textarea::placeholder {
+    color: #9AA7B5;
+    opacity: 1;
+}
+
+.business-field input:disabled,
+.business-field select:disabled,
+.business-field textarea:disabled {
+    cursor: not-allowed;
+    background: #F3F6F9;
+    opacity: 0.7;
+}
+
+.business-field small {
+    color: var(--business-muted);
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.business-field input[type="file"] {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+    border: 1px dashed #C9D7E1;
+    border-radius: 11px;
+    color: var(--business-muted);
+    background: #FAFCFD;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.business-field input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 7px;
+    color: var(--business-navy);
+    background: #EAF1F6;
+    font-size: 11px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: background 180ms ease;
+}
+
+.business-field input[type="file"]::file-selector-button:hover {
+    background: #DCE9F0;
+}
+
+.business-logo-preview {
+    display: block;
+    width: 88px;
+    height: 88px;
+    margin-top: 7px;
+    padding: 4px;
+    border: 1px solid var(--business-border);
+    border-radius: 14px;
+    background: #FFFFFF;
+    object-fit: contain;
+}
+
+.business-logo-preview[hidden] {
+    display: none;
+}
+
+.business-goals {
+    gap: 13px;
+}
+
+.business-goals legend {
+    margin-bottom: 13px;
+}
+
+.goal-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+}
+
+.goal-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    min-height: 57px;
+    padding: 13px 14px;
+    border: 1px solid var(--business-border);
+    border-radius: 11px;
+    background: #FFFFFF;
+    cursor: pointer;
+    transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.goal-option:hover {
+    border-color: rgba(22, 140, 137, 0.5);
+    background: #FAFDFD;
+}
+
+.goal-option:has(input:checked) {
+    border-color: var(--business-teal);
+    background: var(--business-soft);
+    box-shadow: inset 0 0 0 1px rgba(22, 140, 137, 0.08);
+}
+
+.goal-option input {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    margin: 0;
+    accent-color: var(--business-teal);
+    cursor: pointer;
+}
+
+.goal-option span {
+    min-width: 0;
+    color: #435568;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.goal-option:has(input:checked) span {
+    color: var(--business-navy);
+}
+
+.business-status {
+    padding: 13px 16px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 550;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+}
+
+.business-status[hidden] {
+    display: none;
+}
+
+.business-status.error {
+    border-color: #F4D1D4;
+    color: #A12C35;
+    background: #FFF2F3;
+}
+
+.business-status.success {
+    border-color: #C7EAD5;
+    color: #176B48;
+    background: #EDF9F1;
+}
+
+.business-status.info {
+    border-color: #D0E5F5;
+    color: #285D86;
+    background: #EFF7FD;
+}
+
+.business-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 11px;
+    padding-top: 2px;
+}
+
+.business-button {
+    display: inline-flex;
+    min-height: 47px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 19px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 750;
+    line-height: 1.4;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 180ms ease, color 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.business-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.business-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.business-button.primary {
+    border-color: var(--business-teal);
+    color: #FFFFFF;
+    background: var(--business-teal);
+    box-shadow: 0 4px 12px rgba(22, 140, 137, 0.13);
+}
+
+.business-button.primary:hover:not(:disabled) {
+    border-color: var(--business-teal-hover);
+    background: var(--business-teal-hover);
+    box-shadow: 0 6px 17px rgba(22, 140, 137, 0.18);
+}
+
+.business-button.secondary {
+    border-color: #DCE4EC;
+    color: var(--business-navy);
+    background: #FFFFFF;
+}
+
+.business-button.secondary:hover:not(:disabled) {
+    border-color: rgba(22, 140, 137, 0.55);
+    color: var(--business-teal);
+    background: var(--business-soft);
+}
+
+@media (min-width: 1200px) {
+    .business-page {
+        padding-top: 54px;
+    }
+
+    .business-card {
+        padding: 34px;
+    }
+}
+
+@media (max-width: 760px) {
+    .business-page {
+        padding: 30px 18px 52px;
+    }
+
+    .business-container {
+        max-width: 620px;
+    }
+
+    .business-heading {
+        margin-bottom: 25px;
+    }
+
+    .business-back-link {
+        margin-bottom: 25px;
+    }
+
+    .business-heading h1 {
+        font-size: clamp(29px, 5.8vw, 37px);
+        letter-spacing: -1.2px;
+    }
+
+    .business-card {
+        padding: 25px;
+        border-radius: 16px;
+    }
+
+    .business-section-heading {
+        gap: 13px;
+        margin-bottom: 22px;
+    }
+
+    .business-step {
+        width: 39px;
+        height: 39px;
+        flex-basis: 39px;
+        border-radius: 11px;
+    }
+
+    .business-grid {
+        gap: 18px 15px;
+    }
+
+    .goal-option {
+        min-height: 55px;
+        padding: 12px;
+    }
+
+    .business-actions {
+        gap: 9px;
+    }
+
+    .business-button {
+        min-height: 45px;
+        padding: 11px 15px;
+    }
+}
+
+@media (max-width: 540px) {
+    html {
+        scroll-padding-top: 75px;
+    }
+
+    .business-page {
+        padding: 24px 14px 36px;
+    }
+
+    .business-heading {
+        margin-bottom: 22px;
+    }
+
+    .business-back-link {
+        margin-bottom: 23px;
+        font-size: 12px;
+    }
+
+    .business-eyebrow {
+        font-size: 9px;
+        letter-spacing: 1.4px;
+    }
+
+    .business-heading h1 {
+        margin-bottom: 10px;
+        font-size: clamp(28px, 8vw, 35px);
+        letter-spacing: -1.15px;
+        line-height: 1.2;
+    }
+
+    .business-heading > p:last-child {
+        font-size: 13px;
+    }
+
+    .business-form {
+        gap: 15px;
+    }
+
+    .business-card {
+        padding: 22px 18px;
+        border-radius: 15px;
+    }
+
+    .business-section-heading {
+        gap: 11px;
+        margin-bottom: 21px;
+    }
+
+    .business-step {
+        width: 35px;
+        height: 35px;
+        flex-basis: 35px;
+        border-radius: 10px;
+        font-size: 11px;
+    }
+
+    .business-section-heading h2 {
+        font-size: 17px;
+        letter-spacing: -0.3px;
+    }
+
+    .business-section-heading p {
+        font-size: 11px;
+    }
+
+    .business-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 17px;
+    }
+
+    .business-field.full-width {
+        grid-column: auto;
+    }
+
+    .business-field > label,
+    .business-field legend {
+        font-size: 12px;
+    }
+
+    .business-field input:not([type="checkbox"]):not([type="file"]),
+    .business-field select,
+    .business-field textarea {
+        min-height: 47px;
+        padding: 12px;
+        font-size: 13px;
+    }
+
+    .business-field textarea {
+        min-height: 110px;
+    }
+
+    .business-field input[type="file"] {
+        padding: 10px;
+        font-size: 11px;
+    }
+
+    .goal-options {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 9px;
+    }
+
+    .goal-option {
+        min-height: 52px;
+        padding: 12px 13px;
+    }
+
+    .goal-option span {
+        font-size: 12px;
+    }
+
+    .business-actions {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+        padding-top: 3px;
+    }
+
+    .business-button {
+        width: 100%;
+        min-height: 47px;
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+
+    .business-status {
+        padding: 12px 13px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    .business-page {
+        padding-right: 11px;
+        padding-left: 11px;
+    }
+
+    .business-card {
+        padding: 19px 14px;
+    }
+
+    .business-heading h1 {
+        font-size: 27px;
+    }
+
+    .business-section-heading h2 {
+        font-size: 16px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
