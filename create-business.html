@@ -1,49 +1,508 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#123047">
-<title>Create Your Business | Bizora</title><meta name="description" content="Create your Bizora business profile and start building your online presence.">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--navy:#123047;--navy-dark:#0c2234;--teal:#43d6c5;--teal-dark:#168c89;--text:#1c3042;--muted:#728092;--border:#dfe7ee;--bg:#f4f8fc;--danger:#b42318}*{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}button,input,select,textarea{font:inherit}a{color:inherit}.topbar{position:sticky;top:0;z-index:10;background:rgba(18,48,71,.97);border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(14px)}.topbar-inner{width:min(1100px,calc(100% - 40px));min-height:72px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:inline-flex;align-items:center;gap:10px;color:white;text-decoration:none;font-family:Manrope,sans-serif;font-size:23px;font-weight:800;letter-spacing:-.8px}.brand-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--teal);color:var(--navy-dark);font-size:17px}.topbar-link{color:#d8e4ed;font-size:13px;font-weight:600;text-decoration:none}.topbar-link:hover{color:var(--teal)}.page{width:min(760px,calc(100% - 32px));margin:auto;padding:48px 0 70px}.page-heading{margin-bottom:28px}.eyebrow{display:inline-block;margin-bottom:12px;color:var(--teal-dark);font-size:11px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase}h1,h2{font-family:Manrope,sans-serif}h1{color:var(--navy);font-size:clamp(30px,5vw,40px);font-weight:800;line-height:1.2;letter-spacing:-1.4px}.page-heading p{max-width:560px;margin-top:12px;color:var(--muted);font-size:14px;line-height:1.8}.form-card{padding:clamp(22px,5vw,38px);background:white;border:1px solid #e7edf3;border-radius:22px;box-shadow:0 14px 45px rgba(18,48,71,.055)}.section-heading{margin-bottom:22px;padding-bottom:17px;border-bottom:1px solid #edf1f5}.section-heading h2{color:var(--navy);font-size:17px}.section-heading p{margin-top:5px;color:var(--muted);font-size:13px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 18px}.field{min-width:0;display:flex;flex-direction:column;gap:8px}.field.full{grid-column:1/-1}.field label{color:var(--text);font-size:13px;font-weight:700}.optional{margin-left:4px;color:#8995a3;font-size:11px;font-weight:500}.field input,.field select,.field textarea{width:100%;min-height:49px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;outline:none;background:#fbfcfe;color:var(--text);font-size:14px;transition:border-color .18s,box-shadow .18s}.field textarea{min-height:112px;resize:vertical}.field input::placeholder,.field textarea::placeholder{color:#9aa6b4}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--teal-dark);background:white;box-shadow:0 0 0 4px rgba(67,214,197,.15)}.field input[aria-invalid=true],.field select[aria-invalid=true],.field textarea[aria-invalid=true]{border-color:var(--danger)}.hint{color:var(--muted);font-size:11px;line-height:1.6}.logo-upload{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:center;gap:16px;padding:16px;border:1px dashed #c9d7e2;border-radius:13px;background:#fbfdff}.logo-preview{width:72px;height:72px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--border);border-radius:12px;background:#eef4f8;color:#8293a3;font-size:11px;text-align:center}.logo-preview img{width:100%;height:100%;object-fit:cover}.logo-controls{min-width:0}.logo-controls input{min-height:auto;padding:0;border:0;background:transparent;font-size:12px}.logo-controls p{margin-top:7px;color:var(--muted);font-size:11px}.form-message{padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.6;overflow-wrap:anywhere}.form-message[hidden]{display:none}.form-message.error{color:#922018;background:#fff1f0;border:1px solid #ffd5d1}.form-message.success{color:#12653f;background:#edfbf3;border:1px solid #c9f0d8}.form-message.info{color:#24577a;background:#eef7ff;border:1px solid #d1e8fa}.form-actions{display:flex;flex-direction:column;gap:15px;margin-top:28px}.submit-button{width:100%;min-height:54px;display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 20px;border:0;border-radius:11px;background:var(--navy);color:white;font-size:14px;font-weight:700;cursor:pointer;transition:transform .18s,background .18s,box-shadow .18s}.submit-button:hover:not(:disabled){transform:translateY(-1px);background:var(--navy-dark);box-shadow:0 8px 20px rgba(18,48,71,.14)}.submit-button:disabled{cursor:wait;opacity:.68}.form-note{color:var(--muted);font-size:11px;line-height:1.7;text-align:center}.form-note a{color:var(--teal-dark);text-decoration:none}.form-note a:hover{text-decoration:underline}.footer{padding:24px 18px;background:var(--navy);color:#c2d0dc;text-align:center;font-size:12px}.footer a{margin:0 7px;color:white;text-decoration:none}.footer a:hover{color:var(--teal)}@media(max-width:560px){.topbar-inner{width:calc(100% - 30px);min-height:65px}.brand{font-size:21px}.page{width:calc(100% - 24px);padding-top:34px;padding-bottom:42px}.form-grid{grid-template-columns:1fr;gap:19px}.field.full{grid-column:auto}.form-card{border-radius:17px}.logo-upload{grid-template-columns:60px minmax(0,1fr);padding:12px;gap:12px}.logo-preview{width:60px;height:60px}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}}
-</style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="./supabase.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#102D46">
+    <meta name="description" content="Create your Bizora business profile and reach more customers online.">
+    <title>My Business | Bizora</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./create-business.css">
 </head>
 <body>
-<header class="topbar"><div class="topbar-inner"><a class="brand" href="./index.html" aria-label="Bizora home"><span class="brand-mark">B</span><span>Bizora</span></a><a class="topbar-link" href="./login.html">Back to sign in</a></div></header>
-<main class="page"><div class="page-heading"><span class="eyebrow">Business setup</span><h1>Let's set up your business.</h1><p>Add your business details to create your Bizora profile. You can keep it unpublished while you finish setting things up.</p></div>
-<section class="form-card" aria-labelledby="form-title"><div class="section-heading"><h2 id="form-title">Business information</h2><p>Fields marked with * are required.</p></div>
-<form id="business-form" novalidate><div class="form-grid">
-<div class="field full"><label for="business-name">Business name *</label><input type="text" id="business-name" name="business_name" placeholder="e.g. Sharma General Store" maxlength="120" autocomplete="organization" required></div>
-<div class="field"><label for="category">Business category *</label><select id="category" name="category" required><option value="">Choose a category</option><option>Grocery &amp; General Store</option><option>Food &amp; Beverages</option><option>Clothing &amp; Fashion</option><option>Electronics</option><option>Beauty &amp; Personal Care</option><option>Health &amp; Wellness</option><option>Home &amp; Furniture</option><option>Education</option><option>Professional Services</option><option>Repair &amp; Maintenance</option><option>Other</option></select></div>
-<div class="field"><label for="owner-name">Contact person's name *</label><input type="text" id="owner-name" name="owner_name" placeholder="Your full name" maxlength="100" autocomplete="name" required></div>
-<div class="field"><label for="phone">Business phone number *</label><input type="tel" id="phone" name="phone" placeholder="10-digit mobile number" inputmode="numeric" autocomplete="tel-national" pattern="[6-9][0-9]{9}" maxlength="10" required><span class="hint">Enter an Indian mobile number.</span></div>
-<div class="field"><label for="whatsapp">WhatsApp number <span class="optional">Optional</span></label><input type="tel" id="whatsapp" name="whatsapp" placeholder="10-digit mobile number" inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10"></div>
-<div class="field full"><label for="address">Business address *</label><textarea id="address" name="address" placeholder="Shop number, street, area, city, state and PIN code" maxlength="500" autocomplete="street-address" required></textarea></div>
-<div class="field full"><label for="description">About your business <span class="optional">Optional</span></label><textarea id="description" name="description" placeholder="What does your business offer?" maxlength="1000"></textarea><span class="hint">Keep it clear and helpful for potential customers.</span></div>
-<div class="field full"><label for="logo">Business logo <span class="optional">Optional</span></label><div class="logo-upload"><div class="logo-preview" id="logo-preview">Logo preview</div><div class="logo-controls"><input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp" aria-describedby="logo-hint"><p id="logo-hint">PNG, JPG or WebP · Maximum 2 MB</p></div></div></div>
-<div class="field"><label for="instagram">Instagram link <span class="optional">Optional</span></label><input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/yourshop" maxlength="500"></div>
-<div class="field"><label for="website">Website link <span class="optional">Optional</span></label><input type="url" id="website" name="website" placeholder="https://yourwebsite.com" maxlength="500"></div>
-</div><div class="form-actions"><p class="form-message" id="form-message" role="status" aria-live="polite" hidden></p><button type="submit" class="submit-button" id="business-submit"><span id="submit-label">Save business details</span><span aria-hidden="true">→</span></button><p class="form-note">By continuing, you agree to our <a href="./terms.html">Terms of Service</a> and <a href="./privacy.html">Privacy Policy</a>.</p></div></form></section></main>
-<footer class="footer"><p>© <span id="current-year"></span> Bizora. All rights reserved.</p><p style="margin-top:8px"><a href="./index.html">Home</a><a href="./privacy.html">Privacy</a><a href="./terms.html">Terms</a></p></footer>
-<script>
-"use strict";
-(() => {
-const client=window.bizoraSupabase,form=document.getElementById("business-form"),message=document.getElementById("form-message"),button=document.getElementById("business-submit"),label=document.getElementById("submit-label"),logoInput=document.getElementById("logo"),preview=document.getElementById("logo-preview");
-document.getElementById("current-year").textContent=new Date().getFullYear();let previewUrl=null;
-function msg(text,type="info"){message.textContent=text;message.className="form-message "+type;message.hidden=false}function clearMsg(){message.textContent="";message.className="form-message";message.hidden=true}function phone(v){return v?"+91"+v.replace(/\D/g,""):null}function optionalUrl(v){v=v.trim();if(!v)return null;let u;try{u=new URL(v)}catch{throw new Error("Enter a complete link starting with https://")};if(!["https:","http:"].includes(u.protocol))throw new Error("Links must use HTTP or HTTPS.");return u.href}function slug(v){let b=v.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,45);return (b||"business")+"-"+crypto.randomUUID().slice(0,8)}function busy(v){button.disabled=v;label.textContent=v?"Saving business details...":"Save business details"}
-function resetPreview(){if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=null;preview.replaceChildren();preview.textContent="Logo preview"}
-logoInput.addEventListener("change",()=>{clearMsg();resetPreview();const f=logoInput.files?.[0];if(!f)return;if(!["image/png","image/jpeg","image/webp"].includes(f.type)){logoInput.value="";msg("Choose a PNG, JPG or WebP image.","error");return}if(f.size>2*1024*1024){logoInput.value="";msg("Your logo must be 2 MB or smaller.","error");return}previewUrl=URL.createObjectURL(f);const img=document.createElement("img");img.src=previewUrl;img.alt="Selected business logo preview";img.onerror=()=>{resetPreview();logoInput.value="";msg("This image could not be previewed. Try another file.","error")};preview.replaceChildren(img)});
-form.addEventListener("input",e=>e.target.removeAttribute?.("aria-invalid"));
-form.addEventListener("submit",async e=>{e.preventDefault();clearMsg();if(!form.checkValidity()){form.querySelectorAll("input,select,textarea").forEach(f=>{if(f.willValidate&&!f.checkValidity())f.setAttribute("aria-invalid","true")});form.reportValidity();msg("Please check the required fields and try again.","error");return}if(!client){msg("Bizora could not connect to Supabase. Refresh the page and try again.","error");return}
-const p=document.getElementById("phone").value.trim(),w=document.getElementById("whatsapp").value.trim();if(!/^[6-9]\d{9}$/.test(p)){msg("Enter a valid 10-digit Indian mobile number.","error");return}if(w&&!/^[6-9]\d{9}$/.test(w)){msg("Enter a valid 10-digit WhatsApp number or leave it empty.","error");return}busy(true);let uploadedPath=null;
-try{const {data:sd,error:se}=await client.auth.getSession();if(se)throw se;const user=sd?.session?.user;if(!user){location.href="./login.html";return}
-const name=document.getElementById("business-name").value.trim(),category=document.getElementById("category").value,contact=document.getElementById("owner-name").value.trim(),address=document.getElementById("address").value.trim(),description=document.getElementById("description").value.trim(),instagram=optionalUrl(document.getElementById("instagram").value),website=optionalUrl(document.getElementById("website").value);
-const {data:existing,error:lookupError}=await client.from("businesses").select("id,slug,logo_url").eq("owner_id",user.id).maybeSingle();if(lookupError)throw lookupError;let logoUrl=existing?.logo_url||null;const file=logoInput.files?.[0];
-if(file){const ext={"image/png":"png","image/jpeg":"jpg","image/webp":"webp"}[file.type];if(!ext)throw new Error("Choose a PNG, JPG or WebP logo.");uploadedPath=user.id+"/"+crypto.randomUUID()+"."+ext;const {error:upError}=await client.storage.from("business-logos").upload(uploadedPath,file,{contentType:file.type,upsert:false});if(upError)throw new Error("Logo upload failed. Check your Supabase Storage bucket and policies.");logoUrl=client.storage.from("business-logos").getPublicUrl(uploadedPath).data?.publicUrl||null}
-const payload={owner_id:user.id,name,category,contact_name:contact,phone:phone(p),whatsapp:w?phone(w):null,address,description:description||null,logo_url:logoUrl,instagram_url:instagram,website_url:website,slug:existing?.slug||slug(name),is_published:false};const {error:saveError}=await client.from("businesses").upsert(payload,{onConflict:"owner_id"});if(saveError)throw saveError;msg("Your business details have been saved successfully. Your profile is still unpublished.","success");label.textContent="Saved successfully";button.disabled=true;
-}catch(err){console.error("Bizora business save error:",err);if(uploadedPath){try{await client.storage.from("business-logos").remove([uploadedPath])}catch(cleanupError){console.warn(cleanupError)}}const d=err?.message||"";if(/row-level security|permission denied/i.test(d))msg("Permission denied. Check your Supabase table and Storage policies.","error");else if(/duplicate key|businesses_slug_key/.test(d))msg("That business link is already in use. Please try saving again.","error");else if(/Failed to fetch|NetworkError/.test(d))msg("Connection problem. Check your internet and try again.","error");else msg(d||"We couldn't save your business details. Please try again.","error");busy(false)}});
-async function checkSession(){if(!client){msg("Supabase has not initialized. Check supabase.js and its configuration.","error");return}try{const {data,error}=await client.auth.getSession();if(error)throw error;if(!data?.session)location.replace("./login.html")}catch(err){console.error(err);msg("We couldn't verify your session. Please sign in again.","error")}}checkSession();
-})();
-</script>
-</body></html>
+    <main class="business-page">
+        <div class="business-container">
+            <header class="business-heading">
+                <a class="business-back-link" href="./dashboard.html">← Back to dashboard</a>
+                <p class="business-eyebrow">YOUR BUSINESS, ONLINE</p>
+                <h1 id="page-title">Create your business profile</h1>
+                <p>Help customers discover your business, explore your offerings, and get in touch.</p>
+            </header>
+
+            <form id="business-form" class="business-form">
+                <section class="business-card" aria-labelledby="details-heading">
+                    <div class="business-section-heading">
+                        <span class="business-step">01</span>
+                        <div>
+                            <h2 id="details-heading">Business details</h2>
+                            <p>Introduce your business to potential customers.</p>
+                        </div>
+                    </div>
+
+                    <div class="business-grid">
+                        <div class="business-field">
+                            <label for="business-name">Business name *</label>
+                            <input id="business-name" name="name" type="text" maxlength="120" autocomplete="organization" placeholder="e.g. Sharma General Store" required>
+                        </div>
+
+                        <div class="business-field">
+                            <label for="business-category">Business category *</label>
+                            <select id="business-category" name="category" required>
+                                <option value="">Select a category</option>
+                                <option value="Retail">Retail shop</option>
+                                <option value="Grocery">Grocery and general store</option>
+                                <option value="Food">Food and beverages</option>
+                                <option value="Clothing">Clothing and fashion</option>
+                                <option value="Beauty">Beauty and personal care</option>
+                                <option value="Electronics">Electronics and mobile</option>
+                                <option value="Home Services">Home services</option>
+                                <option value="Professional Services">Professional services</option>
+                                <option value="Handmade">Handmade products</option>
+                                <option value="Education">Education and tutoring</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="business-field full-width">
+                            <label for="business-description">About your business *</label>
+                            <textarea id="business-description" name="description" maxlength="1000" rows="4" placeholder="Describe what you offer and what customers should know." required></textarea>
+                        </div>
+
+                        <div class="business-field full-width">
+                            <label for="business-address">Business address or service area *</label>
+                            <input id="business-address" name="address" type="text" maxlength="300" autocomplete="street-address" placeholder="Area, town or full business address" required>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="business-card" aria-labelledby="contact-heading">
+                    <div class="business-section-heading">
+                        <span class="business-step">02</span>
+                        <div>
+                            <h2 id="contact-heading">Contact information</h2>
+                            <p>Let customers know how to reach you.</p>
+                        </div>
+                    </div>
+
+                    <div class="business-grid">
+                        <div class="business-field">
+                            <label for="contact-name">Contact person's name *</label>
+                            <input id="contact-name" name="contact_name" type="text" maxlength="120" autocomplete="name" placeholder="Your name" required>
+                        </div>
+
+                        <div class="business-field">
+                            <label for="business-phone">Phone number *</label>
+                            <input id="business-phone" name="phone" type="tel" maxlength="20" autocomplete="tel" placeholder="Your contact number" required>
+                        </div>
+
+                        <div class="business-field full-width">
+                            <label for="business-whatsapp">WhatsApp number</label>
+                            <input id="business-whatsapp" name="whatsapp" type="tel" maxlength="20" placeholder="Optional">
+                            <small>Leave blank if you use the same number as your phone.</small>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="business-card" aria-labelledby="online-heading">
+                    <div class="business-section-heading">
+                        <span class="business-step">03</span>
+                        <div>
+                            <h2 id="online-heading">Online presence</h2>
+                            <p>Add a logo or links customers can visit.</p>
+                        </div>
+                    </div>
+
+                    <div class="business-grid">
+                        <div class="business-field full-width">
+                            <label for="business-logo">Business logo</label>
+                            <input id="business-logo" name="logo" type="file" accept="image/png,image/jpeg,image/webp">
+                            <small>Optional · PNG, JPG or WebP · Maximum 2 MB</small>
+                            <img id="logo-preview" class="business-logo-preview" alt="Business logo preview" hidden>
+                        </div>
+
+                        <div class="business-field">
+                            <label for="business-website">Website</label>
+                            <input id="business-website" name="website_url" type="url" maxlength="500" placeholder="https://example.com">
+                        </div>
+
+                        <div class="business-field">
+                            <label for="business-instagram">Instagram profile</label>
+                            <input id="business-instagram" name="instagram_url" type="url" maxlength="500" placeholder="https://instagram.com/yourshop">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="business-card" aria-labelledby="goals-heading">
+                    <div class="business-section-heading">
+                        <span class="business-step">04</span>
+                        <div>
+                            <h2 id="goals-heading">What would help you grow?</h2>
+                            <p>Choose the digital tools or skills you'd like help with.</p>
+                        </div>
+                    </div>
+
+                    <fieldset class="business-field business-goals">
+                        <legend>Select all that interest you</legend>
+
+                        <div class="goal-options">
+                            <label class="goal-option">
+                                <input type="checkbox" name="digital-goals" value="Online business profile">
+                                <span>Show my business online</span>
+                            </label>
+
+                            <label class="goal-option">
+                                <input type="checkbox" name="digital-goals" value="Product and service showcase">
+                                <span>Show my products and services</span>
+                            </label>
+
+                            <label class="goal-option">
+                                <input type="checkbox" name="digital-goals" value="Reach more customers">
+                                <span>Reach more customers</span>
+                            </label>
+
+                            <label class="goal-option">
+                                <input type="checkbox" name="digital-goals" value="WhatsApp and social media">
+                                <span>Use WhatsApp and social media</span>
+                            </label>
+
+                            <label class="goal-option">
+                                <input type="checkbox" name="digital-goals" value="Digital payment awareness">
+                                <span>Learn about digital payments</span>
+                            </label>
+
+                            <label class="goal-option">
+                                <input type="checkbox" name="digital-goals" value="Digital skills">
+                                <span>Learn basic digital skills</span>
+                            </label>
+                        </div>
+                    </fieldset>
+                </section>
+
+                <div id="business-status" class="business-status" role="status" aria-live="polite" hidden></div>
+
+                <div class="business-actions">
+                    <button class="business-button secondary" id="preview-button" type="button">Preview profile</button>
+                    <button class="business-button secondary" id="save-button" type="submit" value="draft">Save draft</button>
+                    <button class="business-button primary" id="publish-button" type="submit" value="publish">Publish profile</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="./supabase.js" defer></script>
+
+    <script defer>
+        "use strict";
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("business-form");
+            const status = document.getElementById("business-status");
+            const logoInput = document.getElementById("business-logo");
+            const logoPreview = document.getElementById("logo-preview");
+            const previewButton = document.getElementById("preview-button");
+            const saveButton = document.getElementById("save-button");
+            const publishButton = document.getElementById("publish-button");
+
+            let currentUser = null;
+            let existingBusiness = null;
+            let existingLogoUrl = null;
+            let selectedLogoFile = null;
+            let previewObjectUrl = null;
+
+            function getClient() {
+                return window.bizoraSupabase || null;
+            }
+
+            function showStatus(message, type) {
+                status.textContent = message;
+                status.className = "business-status " + type;
+                status.hidden = false;
+            }
+
+            function clearStatus() {
+                status.textContent = "";
+                status.className = "business-status";
+                status.hidden = true;
+            }
+
+            function setSubmitting(isSubmitting) {
+                saveButton.disabled = isSubmitting;
+                publishButton.disabled = isSubmitting;
+                previewButton.disabled = isSubmitting;
+
+                saveButton.textContent = isSubmitting ? "Saving..." : "Save draft";
+                publishButton.textContent = isSubmitting ? "Please wait..." : existingBusiness?.is_published ? "Update published profile" : "Publish profile";
+            }
+
+            function normalizeUrl(value) {
+                const input = value.trim();
+
+                if (!input) {
+                    return null;
+                }
+
+                let url;
+
+                try {
+                    url = new URL(input);
+                } catch {
+                    throw new Error("Enter a complete URL beginning with https://.");
+                }
+
+                if (!["https:", "http:"].includes(url.protocol)) {
+                    throw new Error("Only HTTP and HTTPS links are supported.");
+                }
+
+                return url.href;
+            }
+
+            function getBusinessData(isPublished) {
+                return {
+                    owner_id: currentUser.id,
+                    name: form.elements.name.value.trim(),
+                    category: form.elements.category.value,
+                    description: form.elements.description.value.trim(),
+                    address: form.elements.address.value.trim(),
+                    contact_name: form.elements.contact_name.value.trim(),
+                    phone: form.elements.phone.value.trim(),
+                    whatsapp: form.elements.whatsapp.value.trim() || null,
+                    website_url: normalizeUrl(form.elements.website_url.value),
+                    instagram_url: normalizeUrl(form.elements.instagram_url.value),
+                    logo_url: existingLogoUrl,
+                    is_published: isPublished
+                };
+            }
+
+            function displayBusiness(data) {
+                const fields = [
+                    "name",
+                    "category",
+                    "description",
+                    "address",
+                    "contact_name",
+                    "phone",
+                    "whatsapp",
+                    "website_url",
+                    "instagram_url"
+                ];
+
+                fields.forEach(function (name) {
+                    const field = form.elements.namedItem(name);
+
+                    if (field) {
+                        field.value = data[name] || "";
+                    }
+                });
+
+                existingLogoUrl = data.logo_url || null;
+
+                if (existingLogoUrl) {
+                    logoPreview.src = existingLogoUrl;
+                    logoPreview.hidden = false;
+                }
+
+                document.getElementById("page-title").textContent = "Edit your business profile";
+                publishButton.textContent = data.is_published ? "Update published profile" : "Publish profile";
+            }
+
+            async function loadBusiness() {
+                const client = getClient();
+
+                if (!client) {
+                    showStatus("Supabase has not initialized. Check supabase.js and the script loading order.", "error");
+                    return;
+                }
+
+                const { data: sessionData, error: sessionError } = await client.auth.getSession();
+
+                if (sessionError) {
+                    throw new Error("Unable to verify your session. Please sign in again.");
+                }
+
+                currentUser = sessionData.session?.user || null;
+
+                if (!currentUser) {
+                    window.location.replace("./auth.html");
+                    return;
+                }
+
+                const { data, error } = await client
+                    .from("businesses")
+                    .select("*")
+                    .eq("owner_id", currentUser.id)
+                    .maybeSingle();
+
+                if (error) {
+                    throw new Error("Unable to load your business profile.");
+                }
+
+                if (data) {
+                    existingBusiness = data;
+                    displayBusiness(data);
+                }
+            }
+
+            logoInput.addEventListener("change", function () {
+                clearStatus();
+
+                const file = logoInput.files[0];
+                selectedLogoFile = null;
+
+                if (previewObjectUrl) {
+                    URL.revokeObjectURL(previewObjectUrl);
+                    previewObjectUrl = null;
+                }
+
+                if (!file) {
+                    logoPreview.hidden = !existingLogoUrl;
+
+                    if (existingLogoUrl) {
+                        logoPreview.src = existingLogoUrl;
+                    }
+
+                    return;
+                }
+
+                const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
+
+                if (!allowedTypes.includes(file.type) || file.size > 2 * 1024 * 1024) {
+                    logoInput.value = "";
+                    showStatus("Choose a PNG, JPG or WebP image smaller than 2 MB.", "error");
+                    return;
+                }
+
+                selectedLogoFile = file;
+                previewObjectUrl = URL.createObjectURL(file);
+                logoPreview.src = previewObjectUrl;
+                logoPreview.hidden = false;
+            });
+
+            async function uploadLogo(client) {
+                if (!selectedLogoFile) {
+                    return existingLogoUrl;
+                }
+
+                const extensionMap = {
+                    "image/png": "png",
+                    "image/jpeg": "jpg",
+                    "image/webp": "webp"
+                };
+
+                const extension = extensionMap[selectedLogoFile.type];
+                const filePath = currentUser.id + "/" + crypto.randomUUID() + "." + extension;
+
+                const { data, error } = await client.storage
+                    .from("business-logos")
+                    .upload(filePath, selectedLogoFile, {
+                        upsert: false,
+                        contentType: selectedLogoFile.type
+                    });
+
+                if (error) {
+                    console.error("Bizora: Logo upload failed.", error);
+                    throw new Error("Logo upload failed. Check the business-logos bucket and its storage policies.");
+                }
+
+                const { data: publicData } = client.storage
+                    .from("business-logos")
+                    .getPublicUrl(data.path);
+
+                return publicData.publicUrl;
+            }
+
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault();
+                clearStatus();
+
+                const client = getClient();
+
+                if (!client) {
+                    showStatus("Supabase has not initialized. Check supabase.js and the script loading order.", "error");
+                    return;
+                }
+
+                if (!currentUser) {
+                    showStatus("Your session is unavailable. Please sign in again.", "error");
+                    return;
+                }
+
+                if (!form.reportValidity()) {
+                    return;
+                }
+
+                const isPublished = event.submitter?.value === "publish";
+
+                setSubmitting(true);
+
+                try {
+                    const businessData = getBusinessData(isPublished);
+                    businessData.logo_url = await uploadLogo(client);
+
+                    let result;
+
+                    if (existingBusiness) {
+                        result = await client
+                            .from("businesses")
+                            .update(businessData)
+                            .eq("owner_id", currentUser.id)
+                            .select()
+                            .single();
+                    } else {
+                        result = await client
+                            .from("businesses")
+                            .insert(businessData)
+                            .select()
+                            .single();
+                    }
+
+                                      if (result.error) {
+                        console.error("Bizora: Business save failed.", result.error);
+                        throw new Error("Unable to save your business. Check your database columns and RLS policies.");
+                    }
+
+                    existingBusiness = result.data;
+                    existingLogoUrl = result.data.logo_url || null;
+                    selectedLogoFile = null;
+                    logoInput.value = "";
+
+                    if (previewObjectUrl) {
+                        URL.revokeObjectURL(previewObjectUrl);
+                        previewObjectUrl = null;
+                    }
+
+                    showStatus(
+                        isPublished
+                            ? "Your business profile has been published."
+                            : "Your business profile has been saved as a draft.",
+                        "success"
+                    );
+
+                    if (isPublished) {
+                        window.setTimeout(function () {
+                            window.location.href = "./storefront.html?slug=" + encodeURIComponent(result.data.slug);
+                        }, 900);
+                    } else {
+                        publishButton.textContent = "Publish profile";
+                    }
+                } catch (error) {
+                    console.error("Bizora: Business form error.", error);
+                    showStatus(error.message || "Something went wrong. Please try again.", "error");
+                } finally {
+                    setSubmitting(false);
+                }
+            });
+
+            previewButton.addEventListener("click", function () {
+                clearStatus();
+
+                if (!existingBusiness?.slug) {
+                    showStatus("Save your business profile before previewing it.", "info");
+                    return;
+                }
+
+                window.open(
+                    "./storefront.html?slug=" + encodeURIComponent(existingBusiness.slug),
+                    "_blank",
+                    "noopener,noreferrer"
+                );
+            });
+
+            loadBusiness().catch(function (error) {
+                console.error("Bizora: Page initialization failed.", error);
+                showStatus(error.message || "Unable to load your business profile.", "error");
+            });
+        });
+    </script>
+</body>
+</html>
