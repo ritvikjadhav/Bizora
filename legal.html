@@ -4,1068 +4,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#102D46">
-    <meta name="description" content="Read the Bizora Privacy Policy and Terms & Conditions to understand how the platform works and how your information is handled.">
+    <meta name="description" content="Read Bizora's Privacy Policy and Terms & Conditions.">
     <title>Privacy & Terms | Bizora</title>
-    <link rel="stylesheet" href="./style.css">
-    <style>
-        .legal-page {
-            --legal-navy: #102D46;
-            --legal-teal: #168C89;
-            --legal-text: #243447;
-            --legal-muted: #718096;
-            --legal-border: #E4EAF0;
-            --legal-surface: #FFFFFF;
-            --legal-background: #F5F7FA;
-            min-height: 100vh;
-            color: var(--legal-text);
-            background: var(--legal-background);
-            font-family: inherit;
-        }
-
-        .legal-page *,
-        .legal-page *::before,
-        .legal-page *::after {
-            box-sizing: border-box;
-        }
-
-        .legal-page a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .legal-header {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            border-bottom: 1px solid rgba(228, 234, 240, 0.9);
-            background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(16px);
-        }
-
-        .legal-header-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: min(1180px, calc(100% - 48px));
-            min-height: 76px;
-            margin: 0 auto;
-            gap: 24px;
-        }
-
-        .legal-brand {
-            display: inline-flex;
-            align-items: center;
-            gap: 11px;
-            color: var(--legal-navy);
-            font-size: 1.25rem;
-            font-weight: 800;
-            letter-spacing: -0.6px;
-        }
-
-        .legal-brand-mark {
-            display: grid;
-            width: 38px;
-            height: 38px;
-            place-items: center;
-            border-radius: 12px;
-            color: #FFFFFF;
-            background: var(--legal-navy);
-            font-size: 1.15rem;
-            font-weight: 800;
-        }
-
-        .legal-header-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .legal-back-link {
-            color: var(--legal-muted);
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: color 0.2s ease;
-        }
-
-        .legal-back-link:hover {
-            color: var(--legal-teal);
-        }
-
-        .legal-login-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 42px;
-            padding: 0 18px;
-            border-radius: 10px;
-            color: #FFFFFF;
-            background: var(--legal-navy);
-            font-size: 0.88rem;
-            font-weight: 700;
-            transition: background 0.2s ease, transform 0.2s ease;
-        }
-
-        .legal-login-link:hover {
-            background: #174563;
-            transform: translateY(-1px);
-        }
-
-        .legal-hero {
-            padding: 76px 24px 60px;
-            color: #FFFFFF;
-            background:
-                radial-gradient(circle at 84% 18%, rgba(101, 208, 196, 0.18), transparent 28%),
-                linear-gradient(130deg, #102D46 0%, #153C56 58%, #176B70 100%);
-        }
-
-        .legal-hero-inner {
-            width: min(900px, 100%);
-            margin: 0 auto;
-        }
-
-        .legal-eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 9px;
-            margin-bottom: 20px;
-            color: #9DE2D9;
-            font-size: 0.76rem;
-            font-weight: 800;
-            letter-spacing: 1.8px;
-            text-transform: uppercase;
-        }
-
-        .legal-eyebrow::before {
-            width: 22px;
-            height: 2px;
-            border-radius: 2px;
-            background: #65D0C4;
-            content: "";
-        }
-
-        .legal-hero h1 {
-            max-width: 700px;
-            margin: 0;
-            color: #FFFFFF;
-            font-size: clamp(2.25rem, 5vw, 3.8rem);
-            font-weight: 800;
-            letter-spacing: -2px;
-            line-height: 1.1;
-        }
-
-        .legal-hero p {
-            max-width: 650px;
-            margin: 22px 0 0;
-            color: #D6E4ED;
-            font-size: 1.02rem;
-            line-height: 1.85;
-        }
-
-        .legal-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 28px;
-        }
-
-        .legal-meta span {
-            display: inline-flex;
-            align-items: center;
-            min-height: 32px;
-            padding: 0 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 999px;
-            color: #E5F0F5;
-            background: rgba(255, 255, 255, 0.06);
-            font-size: 0.78rem;
-            font-weight: 600;
-        }
-
-        .legal-main {
-            width: min(1180px, calc(100% - 48px));
-            margin: 0 auto;
-            padding: 48px 0 84px;
-        }
-
-        .legal-layout {
-            display: grid;
-            grid-template-columns: 255px minmax(0, 1fr);
-            align-items: start;
-            gap: 34px;
-        }
-
-        .legal-sidebar {
-            position: sticky;
-            top: 100px;
-            padding: 24px 18px;
-            border: 1px solid var(--legal-border);
-            border-radius: 18px;
-            background: var(--legal-surface);
-            box-shadow: 0 8px 28px rgba(16, 45, 70, 0.035);
-        }
-
-        .legal-sidebar-label {
-            margin: 0 0 16px 10px;
-            color: #9AA7B5;
-            font-size: 0.7rem;
-            font-weight: 800;
-            letter-spacing: 1.4px;
-            text-transform: uppercase;
-        }
-
-        .legal-sidebar nav {
-            display: grid;
-            gap: 5px;
-        }
-
-        .legal-sidebar a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 11px 10px;
-            border-radius: 9px;
-            color: #64748B;
-            font-size: 0.88rem;
-            font-weight: 600;
-            line-height: 1.45;
-            transition: color 0.2s ease, background 0.2s ease;
-        }
-
-        .legal-sidebar a:hover,
-        .legal-sidebar a.active {
-            color: var(--legal-teal);
-            background: #EAF7F5;
-        }
-
-        .legal-sidebar a.active {
-            font-weight: 750;
-        }
-
-        .legal-sidebar .legal-nav-number {
-            display: grid;
-            flex: 0 0 27px;
-            width: 27px;
-            height: 27px;
-            place-items: center;
-            border-radius: 8px;
-            color: #718096;
-            background: #F2F5F8;
-            font-size: 0.73rem;
-            font-weight: 800;
-        }
-
-        .legal-sidebar a.active .legal-nav-number,
-        .legal-sidebar a:hover .legal-nav-number {
-            color: #FFFFFF;
-            background: var(--legal-teal);
-        }
-
-        .legal-sidebar-note {
-            margin-top: 24px;
-            padding: 16px;
-            border-radius: 12px;
-            background: #F5F8FB;
-        }
-
-        .legal-sidebar-note strong {
-            display: block;
-            margin-bottom: 6px;
-            color: var(--legal-navy);
-            font-size: 0.84rem;
-        }
-
-        .legal-sidebar-note p {
-            margin: 0;
-            color: var(--legal-muted);
-            font-size: 0.78rem;
-            line-height: 1.7;
-        }
-
-        .legal-content {
-            min-width: 0;
-            padding: 38px clamp(22px, 5vw, 54px);
-            border: 1px solid var(--legal-border);
-            border-radius: 20px;
-            background: var(--legal-surface);
-            box-shadow: 0 8px 32px rgba(16, 45, 70, 0.035);
-        }
-
-        .legal-intro {
-            margin-bottom: 42px;
-            padding-bottom: 30px;
-            border-bottom: 1px solid var(--legal-border);
-        }
-
-        .legal-intro p {
-            margin: 0;
-            color: #526477;
-            font-size: 0.96rem;
-            line-height: 1.9;
-        }
-
-        .legal-section {
-            scroll-margin-top: 105px;
-            padding: 0 0 36px;
-            margin: 0 0 36px;
-            border-bottom: 1px solid var(--legal-border);
-        }
-
-        .legal-section:last-child {
-            padding-bottom: 0;
-            margin-bottom: 0;
-            border-bottom: 0;
-        }
-
-        .legal-section-heading {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 22px;
-        }
-
-        .legal-section-number {
-            display: grid;
-            flex: 0 0 42px;
-            width: 42px;
-            height: 42px;
-            place-items: center;
-            border-radius: 13px;
-            color: var(--legal-teal);
-            background: #EAF7F5;
-            font-size: 0.85rem;
-            font-weight: 800;
-        }
-
-        .legal-section-heading h2 {
-            margin: 0;
-            color: var(--legal-navy);
-            font-size: clamp(1.35rem, 2.5vw, 1.8rem);
-            font-weight: 800;
-            letter-spacing: -0.65px;
-            line-height: 1.35;
-        }
-
-        .legal-section-heading p {
-            margin: 6px 0 0;
-            color: var(--legal-muted);
-            font-size: 0.88rem;
-            line-height: 1.65;
-        }
-
-        .legal-section h3 {
-            margin: 26px 0 10px;
-            color: var(--legal-navy);
-            font-size: 1rem;
-            font-weight: 750;
-            line-height: 1.5;
-        }
-
-        .legal-section h3:first-child {
-            margin-top: 0;
-        }
-
-        .legal-section p,
-        .legal-section li {
-            color: #526477;
-            font-size: 0.92rem;
-            line-height: 1.9;
-        }
-
-        .legal-section p {
-            margin: 0 0 14px;
-        }
-
-        .legal-section ul {
-            display: grid;
-            gap: 9px;
-            margin: 12px 0 20px;
-            padding-left: 23px;
-        }
-
-        .legal-section li {
-            padding-left: 3px;
-        }
-
-        .legal-section li::marker {
-            color: var(--legal-teal);
-        }
-
-        .legal-section strong {
-            color: #263C50;
-            font-weight: 750;
-        }
-
-        .legal-section a {
-            color: var(--legal-teal);
-            font-weight: 650;
-            overflow-wrap: anywhere;
-        }
-
-        .legal-section a:hover {
-            text-decoration: underline;
-        }
-
-        .legal-callout {
-            margin: 22px 0;
-            padding: 18px 20px;
-            border-left: 3px solid var(--legal-teal);
-            border-radius: 0 12px 12px 0;
-            background: #F0F8F7;
-        }
-
-        .legal-callout p {
-            margin: 0;
-            color: #365D60;
-            font-size: 0.88rem;
-        }
-
-        .legal-footer {
-            border-top: 1px solid var(--legal-border);
-            background: #FFFFFF;
-        }
-
-        .legal-footer-inner {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            width: min(1180px, calc(100% - 48px));
-            min-height: 88px;
-            margin: 0 auto;
-            gap: 16px;
-        }
-
-        .legal-footer p {
-            margin: 0;
-            color: var(--legal-muted);
-            font-size: 0.82rem;
-            line-height: 1.7;
-        }
-
-        .legal-footer-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .legal-footer-links a {
-            color: #526477;
-            font-size: 0.82rem;
-            font-weight: 650;
-        }
-
-        .legal-footer-links a:hover {
-            color: var(--legal-teal);
-        }
-
-        @media (max-width: 900px) {
-            .legal-layout {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .legal-sidebar {
-                position: static;
-                padding: 16px;
-            }
-
-            .legal-sidebar-label,
-            .legal-sidebar-note {
-                display: none;
-            }
-
-            .legal-sidebar nav {
-                display: flex;
-                gap: 8px;
-                overflow-x: auto;
-                scrollbar-width: thin;
-            }
-
-            .legal-sidebar a {
-                flex: 0 0 auto;
-                padding: 8px 10px;
-                border: 1px solid var(--legal-border);
-            }
-
-            .legal-sidebar .legal-nav-number {
-                display: none;
-            }
-
-            .legal-content {
-                padding: 32px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .legal-header-inner {
-                width: calc(100% - 32px);
-                min-height: 66px;
-                gap: 12px;
-            }
-
-            .legal-brand {
-                gap: 8px;
-                font-size: 1.12rem;
-            }
-
-            .legal-brand-mark {
-                width: 34px;
-                height: 34px;
-                border-radius: 10px;
-            }
-
-            .legal-header-actions {
-                gap: 12px;
-            }
-
-            .legal-back-link {
-                display: none;
-            }
-
-            .legal-login-link {
-                min-height: 39px;
-                padding: 0 13px;
-                font-size: 0.82rem;
-            }
-
-            .legal-hero {
-                padding: 55px 20px 43px;
-            }
-
-            .legal-hero h1 {
-                font-size: clamp(2.1rem, 10vw, 3rem);
-                letter-spacing: -1.4px;
-            }
-
-            .legal-hero p {
-                margin-top: 17px;
-                font-size: 0.92rem;
-                line-height: 1.8;
-            }
-
-            .legal-main {
-                width: calc(100% - 28px);
-                padding: 26px 0 48px;
-            }
-
-            .legal-sidebar {
-                padding: 12px;
-                border-radius: 14px;
-            }
-
-            .legal-sidebar a {
-                font-size: 0.8rem;
-            }
-
-            .legal-content {
-                padding: 25px 20px;
-                border-radius: 16px;
-            }
-
-            .legal-intro {
-                margin-bottom: 30px;
-                padding-bottom: 24px;
-            }
-
-            .legal-section {
-                scroll-margin-top: 82px;
-                padding-bottom: 28px;
-                margin-bottom: 28px;
-            }
-
-            .legal-section-heading {
-                gap: 11px;
-                margin-bottom: 18px;
-            }
-
-            .legal-section-number {
-                flex-basis: 36px;
-                width: 36px;
-                height: 36px;
-                border-radius: 11px;
-            }
-
-            .legal-section p,
-            .legal-section li {
-                font-size: 0.88rem;
-            }
-
-            .legal-footer-inner {
-                width: calc(100% - 32px);
-                padding: 23px 0;
-            }
-
-            .legal-footer-links {
-                gap: 15px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .legal-page *,
-            .legal-page *::before,
-            .legal-page *::after {
-                scroll-behavior: auto !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-    </style>
+    <link rel="stylesheet" href="./legal.css">
 </head>
-<body class="legal-page">
+<body>
     <header class="legal-header">
-        <div class="legal-header-inner">
-            <a href="./index.html" class="legal-brand" aria-label="Bizora home">
-                <span class="legal-brand-mark" aria-hidden="true">B</span>
-                <span>Bizora</span>
-            </a>
-            <div class="legal-header-actions">
-                <a href="./index.html" class="legal-back-link">Back to home</a>
-                <a href="./auth.html" class="legal-login-link">Sign in</a>
-            </div>
-        </div>
+        <a href="./index.html" class="legal-brand" aria-label="Bizora home">
+            <span class="brand-mark" aria-hidden="true">B</span>
+            <span>Bizora</span>
+        </a>
+        <a href="./index.html" class="back-link">Back to home</a>
     </header>
 
-    <section class="legal-hero">
-        <div class="legal-hero-inner">
-            <span class="legal-eyebrow">Trust & Transparency</span>
+    <main class="legal-container">
+        <section class="legal-hero">
+            <span class="eyebrow">LEGAL INFORMATION</span>
             <h1>Privacy & Terms</h1>
             <p>
-                Clear information about how Bizora handles information, the responsibilities
-                of users, and the rules that apply when using the platform.
+                Simple, transparent information about your privacy
+                and your use of Bizora.
             </p>
-            <div class="legal-meta">
-                <span>Privacy Policy</span>
-                <span>Terms & Conditions</span>
-                <span>Last updated: 11 October 2026</span>
-            </div>
-        </div>
-    </section>
+            <span class="updated-date">Last updated: 11 October 2026</span>
+        </section>
 
-    <main class="legal-main">
-        <div class="legal-layout">
-            <aside class="legal-sidebar" aria-label="Legal document navigation">
-                <p class="legal-sidebar-label">On this page</p>
-                <nav>
-                    <a href="#privacy" class="active">
-                        <span class="legal-nav-number">01</span>
-                        Privacy Policy
-                    </a>
-                    <a href="#information">
-                        <span class="legal-nav-number">02</span>
-                        Information We Handle
-                    </a>
-                    <a href="#data-use">
-                        <span class="legal-nav-number">03</span>
-                        How Information Is Used
-                    </a>
-                    <a href="#security">
-                        <span class="legal-nav-number">04</span>
-                        Security & Your Choices
-                    </a>
-                    <a href="#terms">
-                        <span class="legal-nav-number">05</span>
-                        Terms & Conditions
-                    </a>
-                    <a href="#responsibilities">
-                        <span class="legal-nav-number">06</span>
-                        User Responsibilities
-                    </a>
-                    <a href="#disclaimers">
-                        <span class="legal-nav-number">07</span>
-                        Limitations & Contact
-                    </a>
-                </nav>
-                <div class="legal-sidebar-note">
-                    <strong>Need assistance?</strong>
-                    <p>For questions about these documents, contact the Bizora team through the contact details provided by the platform operator.</p>
-                </div>
-            </aside>
+        <nav class="legal-tabs" aria-label="Legal documents">
+            <a href="#privacy" class="legal-tab active">Privacy Policy</a>
+            <a href="#terms" class="legal-tab">Terms & Conditions</a>
+        </nav>
 
-            <article class="legal-content">
-                <div class="legal-intro">
-                    <p>
-                        Bizora helps local businesses build an online presence, display products
-                        and services, and learn about digital tools. This document explains the
-                        general rules for using Bizora and the way information may be handled.
-                        Please review it carefully before creating an account or publishing a
-                        business profile.
-                    </p>
-                </div>
+        <div class="legal-content">
+            <section id="privacy" class="legal-section">
+                <h2>Privacy Policy</h2>
+                <p class="section-intro">
+                    How we handle your information and protect your privacy.
+                </p>
 
-                <section class="legal-section" id="privacy">
-                    <div class="legal-section-heading">
-                        <span class="legal-section-number">01</span>
-                        <div>
-                            <h2>Privacy Policy</h2>
-                            <p>How information is collected, used, and managed.</p>
-                        </div>
-                    </div>
-                    <p>
-                        This Privacy Policy applies to information handled through Bizora's
-                        website and related features. The information processed depends on how
-                        you use the platform and which details you choose to provide.
-                    </p>
-<h3>Who this policy applies to</h3>
-                    <p>
-                        It applies to people who create accounts, business owners who manage
-                        profiles, and visitors who browse publicly available business
-                        information.
-                    </p>
+                <h3>Information we collect</h3>
+                <p>
+                    When you create an account or business profile, we may process
+                    your name, email address, business details, contact information,
+                    logo, and product or service listings. Limited technical
+                    information may also be processed to operate and secure Bizora.
+                </p>
 
-                    <h3>Public business information</h3>
-                    <p>
-                        If a business owner publishes a profile, information intended for public
-                        display may be visible to visitors. This can include the business name,
-                        description, category, contact details, address, logo, links, and
-                        published products or services, depending on the fields completed and
-                        platform settings.
-                    </p>
-                    <div class="legal-callout">
-                        <p>
-                            <strong>Before publishing:</strong> Only provide contact details and
-                            business information that you are comfortable making public. Do not
-                            add private customer information to a public profile.
-                        </p>
-                    </div>
-                </section>
+                <h3>How we use information</h3>
+                <p>
+                    We use information to manage accounts, display business profiles,
+                    provide platform features, maintain security, and resolve
+                    technical issues.
+                </p>
 
-                <section class="legal-section" id="information">
-                    <div class="legal-section-heading">
-                        <span class="legal-section-number">02</span>
-                        <div>
-                            <h2>Information We Handle</h2>
-                            <p>The types of information that may be processed.</p>
-                        </div>
-                    </div>
+                <h3>Public business profiles</h3>
+                <p>
+                    Information in a published profile, including business details,
+                    contact information, and listings, may be visible to the public.
+                    Only publish information you are comfortable sharing.
+                </p>
 
-                    <h3>Account information</h3>
-                    <p>
-                        When you register or sign in, Bizora and its authentication provider
-                        may process information such as your email address, account identifier,
-                        and name if you provide one. Authentication data is used to manage
-                        access to your account.
-                    </p>
+                <h3>Storage and sharing</h3>
+                <p>
+                    Bizora may use third-party providers for authentication, hosting,
+                    database storage, and file storage. Information may be disclosed
+                    when required by law. We do not intend to sell your personal
+                    information.
+                </p>
 
-                    <h3>Business and catalogue information</h3>
-                    <p>
-                        Business owners may submit details such as business name, category,
-                        contact name, phone number, WhatsApp number, address, description,
-                        logo, website or social links, and product or service details.
-                    </p>
+                <h3>Your choices and security</h3>
+                <p>
+                    Keep your password private and your account secure. You may
+                    request correction or deletion of your information, subject to
+                    applicable law and necessary retention. No online service can
+                    guarantee absolute security.
+                </p>
 
-                    <h3>Technical information</h3>
-                    <p>
-                        The website or its service providers may process limited technical
-                        information needed to deliver the service, maintain reliability,
-                        protect accounts, and diagnose errors. The exact information depends
-                        on the hosting, database, authentication, and browser services in use.
-                    </p>
+                <h3>Policy updates</h3>
+                <p>
+                    We may update this policy as Bizora develops. The latest version
+                    will be published on this page.
+                </p>
+            </section>
 
-                    <h3>Information you should not submit</h3>
-                    <p>
-                        Do not submit passwords belonging to other services, payment card
-                        details, bank credentials, UPI PINs, one-time passwords, or sensitive
-                        personal information that Bizora does not specifically need.
-                    </p>
-                </section>
+            <section id="terms" class="legal-section">
+                <h2>Terms & Conditions</h2>
+                <p class="section-intro">
+                    The rules for using Bizora responsibly.
+                </p>
 
-                <section class="legal-section" id="data-use">
-                    <div class="legal-section-heading">
-                        <span class="legal-section-number">03</span>
-                        <div>
-                            <h2>How Information Is Used</h2>
-                            <p>Why information is processed and when it may be shared.</p>
-                        </div>
-                    </div>
+                <h3>Using Bizora</h3>
+                <p>
+                    Bizora helps local businesses establish an online presence,
+                    showcase products and services, and learn about digital tools.
+                    Features may change as the platform develops.
+                </p>
 
-                    <h3>Service operation</h3>
-                    <p>
-                        Information may be used to create and manage accounts, save business
-                        profiles, manage products and services, display published pages,
-                        provide requested features, and maintain platform functionality.
-                    </p>
+                <h3>Your account and content</h3>
+                <p>
+                    Provide accurate information and protect your login credentials.
+                    You are responsible for the business details, images, listings,
+                    prices, and other content you publish. Only upload content you
+                    have permission to use.
+                </p>
 
-                    <h3>Safety and reliability</h3>
-                    <p>
-                        Information may also be used to identify technical problems, prevent
-                        misuse, protect the platform, respond to support requests, and meet
-                        applicable legal obligations.
-                    </p>
+                <h3>Business listings and transactions</h3>
+                <p>
+                    Business owners are responsible for their offerings, prices,
+                    availability, and customer dealings. Customers should confirm
+                    important details directly with a business. A listing does not
+                    guarantee availability or a particular outcome.
+                </p>
 
-                    <h3>Service providers</h3>
-                    <p>
-                        Bizora may rely on third-party services for functions such as
-                        authentication, database storage, hosting, or file storage. Those
-                        providers may process information as necessary to provide their
-                        services, subject to their applicable terms and privacy practices.
-                    </p>
+                <h3>Acceptable use</h3>
+                <p>
+                    Do not use Bizora for fraud, impersonation, unlawful activities,
+                    unauthorised access, harmful content, or interference with the
+                    platform or other users.
+                </p>
 
-                    <h3>Public visibility and legal requirements</h3>
-                    <p>
-                        Published business details may be visible to anyone who can access
-                        the public profile. Information may also be disclosed where required
-                        by applicable law or where reasonably necessary to address security
-                        incidents, protect rights, or respond to lawful requests.
-                    </p>
+                <h3>Third-party services</h3>
+                <p>
+                    External websites and services linked through Bizora have their
+                    own terms and privacy policies. Bizora does not control their
+                    independent practices.
+                </p>
 
-                    <h3>Retention</h3>
-                    <p>
-                        Information may be retained while an account or business profile is
-                        active and for a reasonable period afterward when needed for security,
-                        resolving disputes, complying with legal obligations, or maintaining
-                        legitimate service records. Actual retention depends on the applicable
-                        system and legal requirements.
-                    </p>
+                <h3>Availability and liability</h3>
+                <p>
+                    We aim to keep Bizora reliable, but uninterrupted access cannot
+                    be guaranteed. To the extent permitted by law, Bizora is not
+                    liable for indirect losses arising from platform use or
+                    transactions between users. Nothing in these terms excludes
+                    liability that cannot legally be excluded.
+                </p>
 
-                    <p>
-                        Bizora should not sell personal information as a product. If the
-                        platform introduces new data uses or third-party integrations, this
-                        policy should be updated before those changes are relied upon.
-                    </p>
-                </section>
-
-                <section class="legal-section" id="security">
-                    <div class="legal-section-heading">
-                        <span class="legal-section-number">04</span>
-                        <div>
-                            <h2>Security & Your Choices</h2>
-                            <p>Managing your information and protecting your account.</p>
-                        </div>
-                    </div>
-
-                    <h3>Reasonable safeguards</h3>
-                    <p>
-                        Bizora is intended to use appropriate technical and organisational
-                        safeguards to protect information. However, no website, internet
-                        connection, or storage system can be guaranteed to be completely
-                        secure.
-                    </p>
-
-                    <h3>Your account and published profile</h3>
-                    <ul>
-                        <li>Use a strong, unique password and keep it confidential.</li>
-                        <li>Sign out when using a shared or public device.</li>
-                        <li>Review your public profile before publishing it.</li>
-                        <li>Keep your contact details and business information accurate.</li>
-                        <li>Contact the platform operator if you suspect unauthorised access.</li>
-                    </ul>
-
-                    <h3>Access, correction, and deletion requests</h3>
-                    <p>
-                        You may request access to, correction of, or deletion of personal
-                        information associated with your account, subject to applicable law
-                        and legitimate retention requirements. Some information may need to
-                        be removed through account or business-management features, while
-                        other requests may require assistance from the platform operator.
-                    </p>
-
-                    <h3>Children's privacy</h3>
-                    <p>
-                        Bizora is intended for people who can legally use the service and
-                        manage a business account under applicable law. The platform is not
-                        designed to knowingly collect personal information from children
-                        who are not permitted to use it.
-                    </p>
-
-                    <h3>Policy updates</h3>
-                    <p>
-                        This policy may change as Bizora develops or legal requirements change.
-                        The latest version will be published on this page with an updated
-                        revision date. Continued use after a change takes effect may be
-                        subject to the revised policy, as permitted by law.
-                    </p>
-                </section>
-
-                <section class="legal-section" id="terms">
-                    <div class="legal-section-heading">
-                        <span class="legal-section-number">05</span>
-                        <div>
-                            <h2>Terms & Conditions</h2>
-                            <p>The rules that apply when using Bizora.</p>
-                        </div>
-                    </div>
-
-                    <h3>Acceptance of these terms</h3>
-                    <p>
-                        By accessing or using Bizora, you agree to these Terms & Conditions
-                        and the Privacy Policy. If you do not agree, do not use the platform.
-                        If you use Bizora on behalf of a business, you confirm that you are
-                        authorised to act for that business.
-                    </p>
-
-                    <h3>What Bizora provides</h3>
-                    <p>
-                        Bizora is designed to help local businesses establish an online
-                        presence through business profiles, product and service showcases,
-                        public storefront pages, and educational resources about digital
-                        adoption. Features may change, be added, or be discontinued as the
-                        platform develops.
-                    </p>
-
-                    <h3>Accounts and eligibility</h3>
-                    <p>
-                        You must provide information that is accurate to the best of your
-                        knowledge, keep your sign-in credentials secure, and use only
-                        accounts you are authorised to access. You are responsible for
-                        activity carried out through your account, except where applicable
-                        law provides otherwise.
-                    </p>
-
-                    <h3>Business profiles and published content</h3>
-                    <p>
-                        Business owners are responsible for the content they submit and
-                        publish, including product descriptions, prices, contact information,
-                        images, links, and any claims made about their business.
-                    </p>
-                    <p>
-                        You must have the necessary rights or permissions to upload logos,
-                        photographs, text, and other materials. You must not publish content
-                        that infringes another person's rights, is fraudulent or misleading,
-                        violates applicable law, or exposes private information without
-                        permission.
-                    </p>
-
-                    <h3>Products, services, and transactions</h3>
-                    <p>
-                        Bizora's showcase is intended to help businesses present their
-                        offerings to potential customers. Unless a specific feature expressly
-                        states otherwise, a listing is not a guarantee of availability,
-                        quality, price, delivery, or a completed transaction.
-                    </p>
-                    <p>
-                        Business owners remain responsible for their offerings and their
-                        dealings with customers. Customers should independently confirm
-                        important details directly with the business before making a purchase
-                        or payment.
-                    </p>
-
-                    <h3>Educational content</h3>
-                    <p>
-                        Guides and resources about digital tools are provided for general
-                        informational purposes. They are not a guarantee of business results,
-                        income, customer growth, security, or suitability for a particular
-                        situation. You are responsible for evaluating tools and following
-                        the relevant provider's instructions.
-                    </p>
-                </section>
-
-                <section class="legal-section" id="responsibilities">
-                    <div class="legal-section-heading">
-                        <span class="legal-section-number">06</span>
-                        <div>
-                            <h2>User Responsibilities</h2>
-                            <p>Acceptable use and account restrictions.</p>
-                        </div>
-                    </div>
-
-                    <h3>Acceptable use</h3>
-                    <p>You agree not to:</p>
-                    <ul>
-                        <li>Use Bizora for unlawful, deceptive, fraudulent, or harmful activities.</li>
-                        <li>Impersonate another person or misrepresent a business you do not represent.</li>
-                        <li>Upload malicious code or attempt to compromise platform security.</li>
-                        <li>Access accounts, data, or systems without authorisation.</li>
-                        <li>Scrape, copy, or reuse content in ways that violate applicable law or others' rights.</li>
-                        <li>Disrupt the platform or interfere with another user's access.</li>
-                        <li>Publish prohibited, misleading, abusive, or rights-infringing content.</li>
-                    </ul>
-
-                    <h3>Suspension and termination</h3>
-                    <p>
-                        Access may be restricted, suspended, or terminated where reasonably
-                        necessary to address misuse, protect users or the platform, enforce
-                        these terms, or comply with legal requirements. Where appropriate
-                        and permitted by law, the platform operator may provide notice or
-                        an opportunity to resolve the issue.
-                    </p>
-
-                    <h3>Third-party services and links</h3>
-                    <p>
-                        Bizora may display links to external websites, social networks,
-                        messaging services, or payment providers. These services operate
-                        under their own terms and privacy policies. Bizora does not control
-                        all third-party services and is not responsible for their independent
-                        content, availability, or practices.
-                    </p>
-                </section>
-
-                <section class="legal-section" id="disclaimers">
-                    <div class="legal-section-heading">
-                        <span class="legal-section-number">07</span>
-                        <div>
-                            <h2>Limitations & Contact</h2>
-                            <p>Service availability, legal terms, and questions.</p>
-                        </div>
-                    </div>
-
-                    <h3>Service availability</h3>
-                    <p>
-                        Bizora is provided on an "as available" basis to the extent permitted
-                        by applicable law. We aim to keep the platform useful and reliable,
-                        but uninterrupted access, error-free operation, and permanent data
-                        availability cannot be guaranteed. Features may be changed or
-                        temporarily unavailable for maintenance, security, or technical reasons.
-                    </p>
-
-                    <h3>Limitation of liability</h3>
-                    <p>
-                        To the extent permitted by applicable law, Bizora and its operator
-                        will not be responsible for indirect or consequential losses arising
-                        from use of the platform, third-party services, user-published
-                        information, or transactions between businesses and customers.
-                        Nothing in these terms excludes or limits liability that cannot
-                        lawfully be excluded or limited.
-                    </p>
-
-                    <h3>Changes to these terms</h3>
-                    <p>
-                        These terms may be updated when features, operations, or legal
-                        requirements change. The revised version will be published on this
-                        page with a new revision date. If a change requires additional
-                        consent under applicable law, that consent will be requested.
-                    </p>
-
-                    <h3>Applicable law</h3>
-                    <p>
-                        These terms are subject to the laws applicable to the platform
-                        operator and the user's use of Bizora. Any dispute will be handled
-                        by the courts or other forums that have jurisdiction under applicable
-                        law. This clause does not remove rights that consumers may have
-                        under mandatory law.
-                    </p>
-
-                    <h3>Contact and privacy requests</h3>
-                    <p>
-                        For questions about this policy, these terms, or a request relating
-                        to your information, contact the Bizora platform operator through
-                        the official contact details published on the platform.
-                    </p>
-                    <div class="legal-callout">
-                        <p>
-                            <strong>Before publishing this page:</strong> Add a monitored
-                            support email or official contact method, confirm the actual
-                            data-handling practices and storage settings, and have the
-                            documents reviewed for the laws applicable to your operation.
-                        </p>
-                    </div>
-                </section>
-            </article>
+                <h3>Changes and contact</h3>
+                <p>
+                    These terms may be updated when necessary. For questions about
+                    privacy or these terms, contact the Bizora operator using the
+                    official contact details published on the platform.
+                </p>
+            </section>
         </div>
     </main>
 
     <footer class="legal-footer">
-        <div class="legal-footer-inner">
-            <p>© 2026 Bizora. Helping local businesses build their online presence.</p>
-            <div class="legal-footer-links">
-                <a href="./index.html">Home</a>
-                <a href="./auth.html">Sign in</a>
-                <a href="#privacy">Privacy</a>
-                <a href="#terms">Terms</a>
-            </div>
-        </div>
+        <a href="./index.html">Bizora</a>
+        <span>Your business. Ready for more.</span>
+        <a href="./auth.html">Sign in</a>
     </footer>
 
     <script>
@@ -1073,44 +158,37 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             const sections = document.querySelectorAll(".legal-section[id]");
-            const navigationLinks = document.querySelectorAll(".legal-sidebar nav a");
+            const tabs = document.querySelectorAll(".legal-tab");
 
-            function setActiveLink(id) {
-                navigationLinks.forEach(function (link) {
-                    const isActive = link.getAttribute("href") === "#" + id;
-                    link.classList.toggle("active", isActive);
+            function activateTab(id) {
+                tabs.forEach(function (tab) {
+                    const active = tab.getAttribute("href") === "#" + id;
 
-                    if (isActive) {
-                        link.setAttribute("aria-current", "location");
+                    tab.classList.toggle("active", active);
+
+                    if (active) {
+                        tab.setAttribute("aria-current", "location");
                     } else {
-                        link.removeAttribute("aria-current");
+                        tab.removeAttribute("aria-current");
                     }
                 });
             }
 
-            navigationLinks.forEach(function (link) {
-                link.addEventListener("click", function () {
-                    const targetId = link.getAttribute("href").slice(1);
-                    setActiveLink(targetId);
+            tabs.forEach(function (tab) {
+                tab.addEventListener("click", function () {
+                    activateTab(tab.getAttribute("href").slice(1));
                 });
             });
 
             if ("IntersectionObserver" in window) {
                 const observer = new IntersectionObserver(function (entries) {
-                    const visibleSections = entries
-                        .filter(function (entry) {
-                            return entry.isIntersecting;
-                        })
-                        .sort(function (a, b) {
-                            return b.intersectionRatio - a.intersectionRatio;
-                        });
-
-                    if (visibleSections.length > 0) {
-                        setActiveLink(visibleSections[0].target.id);
-                    }
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            activateTab(entry.target.id);
+                        }
+                    });
                 }, {
-                    rootMargin: "-18% 0px -65% 0px",
-                    threshold: [0, 0.2, 0.5, 1]
+                    rootMargin: "-25% 0px -65% 0px"
                 });
 
                 sections.forEach(function (section) {
@@ -1118,15 +196,10 @@
                 });
             }
 
-            const initialId = window.location.hash.slice(1);
+            const initialSection = window.location.hash.slice(1);
 
-            if (initialId && document.getElementById(initialId)) {
-                setActiveLink(initialId);
-            } else {
-                setActiveLink("privacy");
-            }
+            activateTab(initialSection === "terms" ? "terms" : "privacy");
         });
     </script>
 </body>
 </html>
-                   
