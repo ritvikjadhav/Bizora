@@ -1,416 +1,416 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f7f8fc">
+    <meta name="theme-color" content="#102D46"><meta
+    name="description"
+    content="Sign in to Bizora or create your account to bring your business online."
+>
 
-    <meta
-        name="description"
-        content="Sign in to Bizora or create your account to bring your business online."
-    >
+<title>Sign in or Create Account | Bizora</title>
 
-    <title>Sign in | Bizora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="./auth.css">
 
-    <link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" href="./auth.css">
+<!-- Load Supabase before initializing the shared client. -->
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    defer
+></script>
 
+<script src="./supabase.js" defer></script>
+<script src="./auth.js" defer></script>
 
-    <!-- Supabase must load before its initialization file. -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-        defer
-    ></script>
+</head><body class="auth-page"><main class="auth-layout">
 
-    <script src="supabase.js" defer></script>
-    <script src="auth.js" defer></script>
-</head>
+    <!-- BRAND PANEL -->
+    <aside class="auth-brand-panel">
 
-<body class="auth-page">
+        <!-- Same brand classes as the homepage -->
+        <a
+            href="./index.html"
+            class="auth-brand"
+            aria-label="Bizora home"
+        >
+            <span class="brand-mark" aria-hidden="true">B</span>
+            <span class="brand-name">Bizora</span>
+        </a>
 
-    <main class="auth-layout">
+        <div class="brand-content">
 
-        <!-- BRAND PANEL -->
-        <aside class="auth-brand-panel">
+            <span class="eyebrow">
+                YOUR NEXT CHAPTER STARTS HERE
+            </span>
 
-            <a href="./index.html" class="auth-brand" aria-label="Bizora home">
-    <span class="brand-symbol" aria-hidden="true">B</span>
-    <span class="brand-wordmark">Bizora</span>
-</a>
-                    <svg viewBox="0 0 40 40" fill="none">
+            <h1>
+                Your business.<br>
+                <span>Ready for more.</span>
+            </h1>
+
+            <p class="brand-description">
+                Bring your business into the digital world.
+                Showcase what you offer, build your online presence,
+                and help more customers discover you.
+            </p>
+
+            <!-- Decorative orbital illustration -->
+            <div class="brand-visual" aria-hidden="true">
+
+                <div class="visual-orbit orbit-one"></div>
+                <div class="visual-orbit orbit-two"></div>
+
+                <div class="visual-core">
+                    <svg
+                        viewBox="0 0 100 100"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
                         <path
-                            d="M8 29V11H17.5C22 11 24.5 13.2 24.5 16.5C24.5 19 23 20.4 20.8 21C24 21.5 26 23.4 26 26.1C26 30 23 32 18 32H8"
+                            d="M20 72L40 52L54 62L80 31"
                             stroke="currentColor"
-                            stroke-width="3"
+                            stroke-width="5"
                             stroke-linecap="round"
                             stroke-linejoin="round"
                         />
+
                         <path
-                            d="M28 11H32V29H28"
+                            d="M61 31H80V50"
                             stroke="currentColor"
-                            stroke-width="3"
+                            stroke-width="5"
                             stroke-linecap="round"
+                            stroke-linejoin="round"
                         />
+
+                        <circle cx="20" cy="72" r="5" fill="currentColor"/>
+                        <circle cx="40" cy="52" r="5" fill="currentColor"/>
+                        <circle cx="54" cy="62" r="5" fill="currentColor"/>
                     </svg>
-                </span>
-
-                <span class="brand-wordmark">bizora<span>.</span></span>
-
-            </a>
-
-            <div class="brand-content">
-
-                <span class="eyebrow">
-                    YOUR NEXT CHAPTER STARTS HERE
-                </span>
-
-                <h1>
-                    Your business.<br>
-                    <span>Ready for more.</span>
-                </h1>
-
-                <p class="brand-description">
-                    Bring your business into the digital world.
-                    Showcase what you offer, build your online presence,
-                    and help more customers discover you.
-                </p>
-
-                <!-- Decorative brand illustration -->
-                <div class="brand-visual" aria-hidden="true">
-
-                    <div class="visual-orbit orbit-one"></div>
-                    <div class="visual-orbit orbit-two"></div>
-
-                    <div class="visual-core">
-                        <svg viewBox="0 0 100 100" fill="none">
-                            <path
-                                d="M20 72L40 52L54 62L80 31"
-                                stroke="currentColor"
-                                stroke-width="5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                            <path
-                                d="M61 31H80V50"
-                                stroke="currentColor"
-                                stroke-width="5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                            <circle cx="20" cy="72" r="5" fill="currentColor"/>
-                            <circle cx="40" cy="52" r="5" fill="currentColor"/>
-                            <circle cx="54" cy="62" r="5" fill="currentColor"/>
-                        </svg>
-                    </div>
-
-                    <span class="visual-dot dot-one"></span>
-                    <span class="visual-dot dot-two"></span>
-                    <span class="visual-dot dot-three"></span>
-
                 </div>
 
-                <div class="brand-note">
-                    <span class="note-line"></span>
-                    <p>Small beginnings. Bigger possibilities.</p>
-                </div>
+                <span class="visual-dot dot-one"></span>
+                <span class="visual-dot dot-two"></span>
+                <span class="visual-dot dot-three"></span>
 
             </div>
 
-            <footer class="brand-footer">
-                <span>© 2026 Bizora</span>
-                <span>Built for businesses moving forward.</span>
-            </footer>
+            <div class="brand-note">
+                <span class="note-line" aria-hidden="true"></span>
+                <p>Small beginnings. Bigger possibilities.</p>
+            </div>
 
-        </aside>
+        </div>
 
+        <footer class="brand-footer">
+            <span>© 2026 Bizora</span>
+            <span>Built for businesses moving forward.</span>
+        </footer>
 
-        <!-- AUTHENTICATION PANEL -->
-        <section class="auth-main" aria-label="Account access">
-
-            <a href="index.html" class="auth-mobile-brand">
-                bizora<span>.</span>
-            </a>
-
-            <div class="auth-container">
-
-                <!-- LOGIN: DEFAULT VIEW -->
-                <section
-                    id="login-panel"
-                    class="auth-panel"
-                    aria-labelledby="login-title"
-                >
-
-                    <div class="auth-heading">
-
-                        <span class="eyebrow">WELCOME BACK</span>
-
-                        <h2 id="login-title">Good to see you.</h2>
-
-                        <p>
-                            Sign in to continue building your business.
-                        </p>
-
-                    </div>
-
-                    <div
-                        id="login-message"
-                        class="auth-message"
-                        role="status"
-                        aria-live="polite"
-                        hidden
-                    ></div>
-
-                    <form id="login-form" class="auth-form">
-
-                        <div class="form-field">
-
-                            <label for="login-email">Email address</label>
-
-                            <input
-                                type="email"
-                                id="login-email"
-                                name="email"
-                                placeholder="you@example.com"
-                                autocomplete="email"
-                                autocapitalize="none"
-                                spellcheck="false"
-                                required
-                            >
-
-                        </div>
-
-                        <div class="form-field">
-
-                            <label for="login-password">Password</label>
-
-                            <div class="password-field">
-
-                                <input
-                                    type="password"
-                                    id="login-password"
-                                    name="password"
-                                    placeholder="Enter your password"
-                                    autocomplete="current-password"
-                                    required
-                                >
-
-                                <button
-                                    type="button"
-                                    class="password-toggle"
-                                    data-password-target="login-password"
-                                    aria-label="Show password"
-                                    aria-pressed="false"
-                                >
-                                    Show
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                        <button
-                            type="submit"
-                            id="login-submit"
-                            class="auth-submit"
-                        >
-                            <span>Log in</span>
-                            <span class="submit-arrow" aria-hidden="true">→</span>
-                        </button>
-
-                    </form>
-
-                    <div class="auth-switch">
-                        <span>New to Bizora?</span>
-
-                        <button
-                            type="button"
-                            id="show-register"
-                            class="text-button"
-                        >
-                            Create account
-                        </button>
-                    </div>
-
-                </section>
+    </aside>
 
 
-                <!-- REGISTRATION: HIDDEN BY DEFAULT -->
-                <section
-                    id="register-panel"
-                    class="auth-panel"
-                    aria-labelledby="register-title"
+    <!-- AUTHENTICATION PANEL -->
+    <section class="auth-main" aria-label="Account access">
+
+        <!-- Consistent mobile branding -->
+        <a
+            href="./index.html"
+            class="auth-mobile-brand"
+            aria-label="Bizora home"
+        >
+            <span class="brand-mark" aria-hidden="true">B</span>
+            <span class="brand-name">Bizora</span>
+        </a>
+
+        <div class="auth-container">
+
+            <!-- LOGIN PANEL -->
+            <section
+                id="login-panel"
+                class="auth-panel"
+                aria-labelledby="login-title"
+            >
+
+                <div class="auth-heading">
+
+                    <span class="eyebrow">WELCOME BACK</span>
+
+                    <h2 id="login-title">Good to see you.</h2>
+
+                    <p>
+                        Sign in to continue building your business.
+                    </p>
+
+                </div>
+
+                <div
+                    id="login-message"
+                    class="auth-message"
+                    role="status"
+                    aria-live="polite"
                     hidden
-                >
+                ></div>
 
-                    <div class="auth-heading">
+                <form id="login-form" class="auth-form">
 
-                        <span class="eyebrow">YOUR BUSINESS JOURNEY</span>
+                    <div class="form-field">
 
-                        <h2 id="register-title">Let's get started.</h2>
+                        <label for="login-email">Email address</label>
 
-                        <p>
-                            Create your account and take the first step online.
-                        </p>
+                        <input
+                            type="email"
+                            id="login-email"
+                            name="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            autocapitalize="none"
+                            spellcheck="false"
+                            required
+                        >
 
                     </div>
 
-                    <div
-                        id="register-message"
-                        class="auth-message"
-                        role="status"
-                        aria-live="polite"
-                        hidden
-                    ></div>
+                    <div class="form-field">
 
-                    <form id="register-form" class="auth-form">
+                        <label for="login-password">Password</label>
 
-                        <div class="form-field">
-
-                            <label for="full-name">Full name</label>
-
-                            <input
-                                type="text"
-                                id="full-name"
-                                name="full_name"
-                                placeholder="Enter your full name"
-                                autocomplete="name"
-                                maxlength="100"
-                                required
-                            >
-
-                        </div>
-
-                        <div class="form-field">
-
-                            <label for="email">Email address</label>
-
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                placeholder="you@example.com"
-                                autocomplete="email"
-                                autocapitalize="none"
-                                spellcheck="false"
-                                required
-                            >
-
-                        </div>
-
-                        <div class="form-field">
-
-                            <label for="password">Create password</label>
-
-                            <div class="password-field">
-
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    placeholder="At least 8 characters"
-                                    autocomplete="new-password"
-                                    minlength="8"
-                                    required
-                                >
-
-                                <button
-                                    type="button"
-                                    class="password-toggle"
-                                    data-password-target="password"
-                                    aria-label="Show password"
-                                    aria-pressed="false"
-                                >
-                                    Show
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                        <div class="form-field">
-
-                            <label for="confirm-password">
-                                Confirm password
-                            </label>
+                        <div class="password-field">
 
                             <input
                                 type="password"
-                                id="confirm-password"
-                                name="confirm_password"
-                                placeholder="Enter your password again"
+                                id="login-password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-password-target="login-password"
+                                aria-label="Show password"
+                                aria-pressed="false"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        id="login-submit"
+                        class="auth-submit"
+                    >
+                        <span>Log in</span>
+                        <span class="submit-arrow" aria-hidden="true">→</span>
+                    </button>
+
+                </form>
+
+                <div class="auth-switch">
+                    <span>New to Bizora?</span>
+
+                    <button
+                        type="button"
+                        id="show-register"
+                        class="text-button"
+                    >
+                        Create account
+                    </button>
+                </div>
+
+            </section>
+
+
+            <!-- REGISTRATION PANEL -->
+            <section
+                id="register-panel"
+                class="auth-panel"
+                aria-labelledby="register-title"
+                hidden
+            >
+
+                <div class="auth-heading">
+
+                    <span class="eyebrow">YOUR BUSINESS JOURNEY</span>
+
+                    <h2 id="register-title">Let's get started.</h2>
+
+                    <p>
+                        Create your account and take the first step online.
+                    </p>
+
+                </div>
+
+                <div
+                    id="register-message"
+                    class="auth-message"
+                    role="status"
+                    aria-live="polite"
+                    hidden
+                ></div>
+
+                <form id="register-form" class="auth-form">
+
+                    <div class="form-field">
+
+                        <label for="full-name">Full name</label>
+
+                        <input
+                            type="text"
+                            id="full-name"
+                            name="full_name"
+                            placeholder="Enter your full name"
+                            autocomplete="name"
+                            maxlength="100"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label for="email">Email address</label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            autocapitalize="none"
+                            spellcheck="false"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-field">
+
+                        <label for="password">Create password</label>
+
+                        <div class="password-field">
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="At least 8 characters"
                                 autocomplete="new-password"
                                 minlength="8"
                                 required
                             >
 
-                        </div>
-
-                        <div class="terms-field">
-
-                            <input
-                                type="checkbox"
-                                id="accept-terms"
-                                name="accept_terms"
-                                required
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-password-target="password"
+                                aria-label="Show password"
+                                aria-pressed="false"
                             >
-
-                            <label for="accept-terms">
-                                I agree to the
-                                <a href="legal.html#terms">Terms &amp; Conditions</a>
-                                and
-                                <a href="legal.html#privacy">Privacy Policy</a>.
-                            </label>
+                                Show
+                            </button>
 
                         </div>
 
-                        <button
-                            type="submit"
-                            id="register-submit"
-                            class="auth-submit"
-                        >
-                            <span>Create account</span>
-                            <span class="submit-arrow" aria-hidden="true">→</span>
-                        </button>
-
-                    </form>
-
-                    <div class="auth-switch">
-                        <span>Already have an account?</span>
-
-                        <button
-                            type="button"
-                            id="show-login"
-                            class="text-button"
-                        >
-                            Log in
-                        </button>
                     </div>
 
-                </section>
+                    <div class="form-field">
 
+                        <label for="confirm-password">
+                            Confirm password
+                        </label>
 
-                <!-- FOOTER LINKS -->
-                <div class="auth-legal">
-                    <a href="legal.html#privacy">Privacy</a>
-                    <span aria-hidden="true">·</span>
-                    <a href="legal.html#terms">Terms</a>
-                    <span aria-hidden="true">·</span>
-                    <a href="index.html">Back to home</a>
+                        <input
+                            type="password"
+                            id="confirm-password"
+                            name="confirm_password"
+                            placeholder="Enter your password again"
+                            autocomplete="new-password"
+                            minlength="8"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="terms-field">
+
+                        <input
+                            type="checkbox"
+                            id="accept-terms"
+                            name="accept_terms"
+                            required
+                        >
+
+                        <label for="accept-terms">
+                            I agree to the
+                            <a href="./legal.html#terms">
+                                Terms &amp; Conditions
+                            </a>
+                            and
+                            <a href="./legal.html#privacy">
+                                Privacy Policy
+                            </a>.
+                        </label>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        id="register-submit"
+                        class="auth-submit"
+                    >
+                        <span>Create account</span>
+                        <span class="submit-arrow" aria-hidden="true">→</span>
+                    </button>
+
+                </form>
+
+                <div class="auth-switch">
+                    <span>Already have an account?</span>
+
+                    <button
+                        type="button"
+                        id="show-login"
+                        class="text-button"
+                    >
+                        Log in
+                    </button>
                 </div>
+
+            </section>
+
+
+            <!-- LEGAL LINKS -->
+            <div class="auth-legal">
+
+                <a href="./legal.html#privacy">Privacy</a>
+
+                <span aria-hidden="true">·</span>
+
+                <a href="./legal.html#terms">Terms</a>
+
+                <span aria-hidden="true">·</span>
+
+                <a href="./index.html">Back to home</a>
 
             </div>
 
-        </section>
+        </div>
 
-    </main>
+    </section>
+
+</main>
 
 </body>
 </html>
