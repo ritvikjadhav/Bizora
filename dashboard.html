@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f7fb">
+    <meta name="description" content="Manage your Bizora business profile, showcase products and reach more customers.">
+
+    <title>Dashboard | Bizora</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="./javascript/supabase.js" defer></script>
+    <script src="./javascript/dashboard.js" defer></script>
+</head>
+
+<body class="dashboard-page">
+    <div class="dashboard-shell">
+
+        <aside class="dashboard-sidebar" id="dashboard-sidebar">
+            <a href="./index.html" class="dashboard-brand" aria-label="Bizora home">
+                <span class="dashboard-brand-mark">B</span>
+                <span>bizora<span class="brand-period">.</span></span>
+            </a>
+
+            <div class="sidebar-label">WORKSPACE</div>
+
+            <nav class="dashboard-navigation" aria-label="Main navigation">
+                <a href="./dashboard.html" class="nav-item active" aria-current="page">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"></rect>
+                        <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"></rect>
+                        <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"></rect>
+                        <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"></rect>
+                    </svg>
+                    <span>Overview</span>
+                </a>
+
+                <a href="./create-business.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 10.5 4.5 4h15l1.5 6.5"></path>
+                        <path d="M4 10.5V20h16v-9.5"></path>
+                        <path d="M3 10.5a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path>
+                        <path d="M9 20v-5h6v5"></path>
+                    </svg>
+                    <span>My Business</span>
+                </a>
+
+                <a href="./products.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"></rect>
+                        <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"></rect>
+                        <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"></rect>
+                        <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"></rect>
+                    </svg>
+                    <span>Products &amp; Services</span>
+                </a>
+
+                <a href="./grow-digitally.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 3a8 8 0 0 0-4 14.93V21h8v-3.07A8 8 0 0 0 12 3Z"></path>
+                        <path d="M9 21h6M9 8.5a3 3 0 0 1 3-2"></path>
+                    </svg>
+                    <span>Grow Digitally</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <a href="./dashboard.html#settings" class="nav-item" id="settings-link">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="m19.4 15 .1.1 1.1.9-1.5 2.6-1.4-.6a7.8 7.8 0 0 1-1.7 1l-.2 1.5h-3l-.3-1.5a7.8 7.8 0 0 1-1.7-1l-1.4.6-1.5-2.6 1.1-.9a7.5 7.5 0 0 1 0-2l-1.1-.9 1.5-2.6 1.4.6a7.8 7.8 0 0 1 1.7-1l.3-1.5h3l.2 1.5a7.8 7.8 0 0 1 1.7 1l1.4-.6 1.5 2.6-1.1.9a7.5 7.5 0 0 1-.1 1.9Z"></path>
+                    </svg>
+                    <span>Settings</span>
+                </a>
+
+                <div class="sidebar-help">
+                    <div class="help-icon" aria-hidden="true">?</div>
+                    <div>
+                        <strong>Need a hand?</strong>
+                        <p>Explore digital growth guides.</p>
+                        <a href="./grow-digitally.html">Explore guides <span aria-hidden="true">→</span></a>
+                    </div>
+                </div>
+
+                <button class="sidebar-profile" id="profile-menu-button" type="button" aria-expanded="false">
+                    <span class="profile-avatar" id="profile-avatar">B</span>
+                    <span class="profile-details">
+                        <strong id="profile-name">Your account</strong>
+                        <small id="profile-email">Loading account...</small>
+                    </span>
+                    <span class="profile-menu-arrow" aria-hidden="true">···</span>
+                </button>
+
+                <div class="profile-menu" id="profile-menu" hidden>
+                    <a href="./dashboard.html#settings">Account settings</a>
+                    <button type="button" id="logout-button">Log out</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="dashboard-main">
+
+            <header class="dashboard-topbar">
+                <button
+                    class="mobile-menu-button"
+                    id="mobile-menu-button"
+                    type="button"
+                    aria-label="Open navigation"
+                    aria-controls="dashboard-sidebar"
+                    aria-expanded="false"
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7h16M4 12h16M4 17h16"></path>
+                    </svg>
+                </button>
+
+                <div class="topbar-context">
+                    <span>YOUR WORKSPACE</span>
+                    <strong>Business overview</strong>
+                </div>
+
+                <a href="./create-business.html" class="topbar-action">
+                    <span aria-hidden="true">+</span>
+                    <span>My Business</span>
+                </a>
+            </header>
+
+            <main class="dashboard-content">
+                <section class="welcome-section">
+                    <div>
+                        <p class="section-eyebrow" id="welcome-date">YOUR BIZORA WORKSPACE</p>
+                        <h1>Good to see you, <span id="welcome-name">there</span><span class="heading-period">.</span></h1>
+                        <p class="welcome-description">
+                            Your business journey starts here. Let's get you ready for more customers.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="business-status-card" aria-labelledby="business-status-title">
+                    <div class="business-status-content">
+                        <div class="business-status-heading">
+                            <span class="status-indicator" id="status-indicator"></span>
+                            <span id="business-status-label">Checking your business</span>
+                        </div>
+
+                        <h2 id="business-status-title">Your business, your online presence.</h2>
+
+                        <p id="business-status-description">
+                            Set up your business profile to start building your presence on Bizora.
+                        </p>
+
+                        <div class="business-status-actions">
+                            <a href="./create-business.html" class="button-primary" id="business-primary-action">
+                                Set up my business <span aria-hidden="true">→</span>
+                            </a>
+
+                            <a href="./products.html" class="button-secondary" id="business-secondary-action">
+                                Explore products
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="business-status-visual" aria-hidden="true">
+                        <div class="visual-orbit orbit-one"></div>
+                        <div class="visual-orbit orbit-two"></div>
+                        <div class="visual-card visual-card-back"></div>
+
+                        <div class="visual-card visual-card-front">
+                            <div class="visual-card-top">
+                                <span class="visual-mini-logo">B</span>
+                                <span class="visual-card-dot"></span>
+                            </div>
+
+                            <div class="visual-card-line line-long"></div>
+                            <div class="visual-card-line line-short"></div>
+
+                            <div class="visual-card-bottom">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <div class="visual-floating-badge">
+                            <span class="floating-check">✓</span>
+                            <span>Your business, online</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="overview-section" aria-labelledby="overview-title">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-eyebrow">AT A GLANCE</p>
+                            <h2 id="overview-title">Your business at a glance</h2>
+                        </div>
+                    </div>
+
+                    <div class="overview-grid">
+                        <article class="overview-card">
+                            <div class="overview-card-heading">
+                                <span class="overview-icon business-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M3 10.5 4.5 4h15l1.5 6.5"></path>
+                                        <path d="M4 10.5V20h16v-9.5"></path>
+                                        <path d="M3 10.5a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path>
+                                    </svg>
+                                </span>
+                                <span class="overview-card-label">Business profile</span>
+                            </div>
+
+                            <strong class="overview-value" id="profile-completion">Not started</strong>
+                            <p id="profile-completion-description">Create your business profile to get started.</p>
+
+                            <a href="./create-business.html" class="text-link">
+                                Manage profile <span aria-hidden="true">→</span>
+                            </a>
+                        </article>
+
+                        <article class="overview-card">
+                            <div class="overview-card-heading">
+                                <span class="overview-icon products-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24">
+                                        <rect x="3.5" y="3.5" width="7" height="7" rx="1.5"></rect>
+                                        <rect x="13.5" y="3.5" width="7" height="7" rx="1.5"></rect>
+                                        <rect x="3.5" y="13.5" width="7" height="7" rx="1.5"></rect>
+                                        <rect x="13.5" y="13.5" width="7" height="7" rx="1.5"></rect>
+                                    </svg>
+                                </span>
+                                <span class="overview-card-label">Products &amp; services</span>
+                            </div>
+
+                            <strong class="overview-value" id="product-count">—</strong>
+                            <p id="product-count-description">Show customers what you offer.</p>
+
+                            <a href="./products.html" class="text-link">
+                                Manage showcase <span aria-hidden="true">→</span>
+                            </a>
+                        </article>
+
+                        <article class="overview-card">
+                            <div class="overview-card-heading">
+                                <span class="overview-icon visibility-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                                        <circle cx="12" cy="12" r="2.5"></circle>
+                                    </svg>
+                                </span>
+                                <span class="overview-card-label">Online presence</span>
+                            </div>
+
+                            <strong class="overview-value" id="publication-status">Not published</strong>
+                            <p id="publication-description">Publish your profile when it is ready.</p>
+
+                            <a href="./create-business.html" class="text-link">
+                                View publishing options <span aria-hidden="true">→</span>
+                            </a>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="next-steps-section" aria-labelledby="next-steps-title">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-eyebrow">YOUR NEXT MOVE</p>
+                            <h2 id="next-steps-title">Build your online presence</h2>
+                            <p class="section-description">
+                                A few simple steps can help customers discover your business.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="next-steps-list" id="next-steps-list">
+                        <a href="./create-business.html" class="next-step">
+                            <span class="step-number">01</span>
+                            <span class="step-content">
+                                <strong>Complete your business profile</strong>
+                                <span>Add your business details and contact information.</span>
+                            </span>
+                            <span class="step-arrow" aria-hidden="true">→</span>
+                        </a>
+
+                        <a href="./products.html" class="next-step">
+                            <span class="step-number">02</span>
+                            <span class="step-content">
+                                <strong>Showcase your products or services</strong>
+                                <span>Help customers understand what you offer.</span>
+                            </span>
+                            <span class="step-arrow" aria-hidden="true">→</span>
+                        </a>
+
+                        <a href="./grow-digitally.html" class="next-step">
+                            <span class="step-number">03</span>
+                            <span class="step-content">
+                                <strong>Learn how to reach more customers</strong>
+                                <span>Explore practical digital growth guides.</span>
+                            </span>
+                            <span class="step-arrow" aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="settings-section" id="settings" aria-labelledby="settings-title">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-eyebrow">YOUR ACCOUNT</p>
+                            <h2 id="settings-title">Account settings</h2>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="settings-avatar" id="settings-avatar">B</div>
+
+                        <div class="settings-account-details">
+                            <strong id="settings-name">Your account</strong>
+                            <span id="settings-email">Loading account...</span>
+                            <small>Your account information is managed securely through Bizora authentication.</small>
+                        </div>
+
+                        <button class="settings-logout-button" id="settings-logout-button" type="button">
+                            Log out
+                        </button>
+                    </div>
+                </section>
+
+                <div class="dashboard-message" id="dashboard-message" role="status" aria-live="polite" hidden></div>
+
+                <footer class="dashboard-footer">
+                    <a href="./index.html" class="footer-brand">bizora<span>.</span></a>
+                    <p>Your business. Ready for more.</p>
+                    <div class="footer-links">
+                        <a href="./legal.html#privacy">Privacy</a>
+                        <a href="./legal.html#terms">Terms</a>
+                    </div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+</body>
+</html>
