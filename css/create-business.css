@@ -1,726 +1,1003 @@
-:root {
-    --business-navy: #102D46;
-    --business-navy-hover: #174563;
-    --business-teal: #168C89;
-    --business-teal-hover: #117674;
-    --business-teal-light: #65D0C4;
-    --business-text: #243447;
-    --business-muted: #718096;
-    --business-border: #E1E8EE;
-    --business-background: #F5F7FB;
-    --business-surface: #FFFFFF;
-    --business-soft: #EDF7F7;
-    --business-shadow: 0 8px 28px rgba(16, 45, 70, 0.045);
+/* ========================================
+   BIZORA — CREATE BUSINESS
+======================================== */
+
+.business-page {
+    --business-navy: #102d46;
+    --business-teal: #168c89;
+    --business-teal-light: #65d0c4;
+    --business-text: #24364b;
+    --business-muted: #738195;
+    --business-border: #e2e8f0;
+    --business-surface: #ffffff;
+    --business-background: #f5f7fb;
     --business-radius: 18px;
+
+    min-height: 100vh;
+    background: var(--business-background);
+    color: var(--business-text);
 }
 
-* {
+.business-page *,
+.business-page *::before,
+.business-page *::after {
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 100px;
-}
-
-body {
-    min-width: 320px;
-    min-height: 100vh;
-    margin: 0;
-    color: var(--business-text);
-    background: var(--business-background);
-    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-size: 14px;
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-}
-
-button,
-input,
-select,
-textarea {
+.business-page button,
+.business-page input,
+.business-page select,
+.business-page textarea {
     font: inherit;
 }
 
-button,
-a,
-input,
-select,
-textarea {
+.business-page button,
+.business-page a {
     -webkit-tap-highlight-color: transparent;
 }
 
-a {
+.business-page a {
     color: inherit;
     text-decoration: none;
 }
 
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-    outline: 3px solid rgba(101, 208, 196, 0.8);
+.business-page button {
+    cursor: pointer;
+}
+
+.business-page button:focus-visible,
+.business-page a:focus-visible,
+.business-page input:focus-visible,
+.business-page select:focus-visible,
+.business-page textarea:focus-visible {
+    outline: 3px solid rgba(22, 140, 137, 0.25);
     outline-offset: 3px;
 }
 
-.business-page {
-    position: relative;
-    min-height: 100vh;
-    overflow: clip;
-    padding: 42px 24px 76px;
-    background:
-        radial-gradient(ellipse at 8% 0%, rgba(101, 208, 196, 0.09), transparent 31%),
-        radial-gradient(ellipse at 100% 28%, rgba(22, 140, 137, 0.045), transparent 27%),
-        var(--business-background);
+.business-page [hidden] {
+    display: none !important;
 }
 
-.business-container {
-    position: relative;
-    width: 100%;
-    max-width: 850px;
-    margin: 0 auto;
+/* ========================================
+   TOP BAR
+======================================== */
+
+.business-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 76px;
+    padding: 14px clamp(20px, 5vw, 76px);
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid var(--business-border);
+    backdrop-filter: blur(14px);
 }
 
-.business-heading {
-    margin-bottom: 30px;
-}
-
-.business-back-link {
+.business-topbar .brand {
     display: inline-flex;
     align-items: center;
-    gap: 9px;
-    margin-bottom: 30px;
-    color: var(--business-muted);
-    font-size: 13px;
-    font-weight: 650;
-    transition: color 180ms ease;
-}
-
-.business-back-link:hover {
-    color: var(--business-teal);
-}
-
-.business-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    margin: 0 0 12px;
-    color: var(--business-teal);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 1.7px;
-}
-
-.business-eyebrow::before {
-    width: 22px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--business-teal);
-    content: "";
-}
-
-.business-heading h1 {
-    max-width: 700px;
-    margin: 0 0 12px;
+    gap: 10px;
     color: var(--business-navy);
-    font-size: clamp(30px, 4.5vw, 43px);
+    font-size: 24px;
     font-weight: 800;
-    letter-spacing: -1.65px;
-    line-height: 1.18;
+    letter-spacing: -1px;
 }
 
-.business-heading > p:last-child {
-    max-width: 600px;
-    margin: 0;
+.business-topbar .brand-mark {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--business-navy);
+    color: white;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.business-topbar a:not(.brand) {
     color: var(--business-muted);
     font-size: 14px;
-    line-height: 1.85;
+    font-weight: 600;
+    transition: color 0.2s ease;
 }
 
-.business-form {
-    display: grid;
-    gap: 20px;
-}
-
-.business-card {
-    min-width: 0;
-    padding: 30px;
-    border: 1px solid rgba(225, 232, 238, 0.95);
-    border-radius: var(--business-radius);
-    background: var(--business-surface);
-    box-shadow: var(--business-shadow);
-    transition: border-color 180ms ease, box-shadow 180ms ease;
-}
-
-.business-card:focus-within {
-    border-color: rgba(22, 140, 137, 0.3);
-    box-shadow: 0 10px 32px rgba(16, 45, 70, 0.055);
-}
-
-.business-section-heading {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.business-step {
-    display: grid;
-    width: 43px;
-    height: 43px;
-    flex: 0 0 43px;
-    place-items: center;
-    border: 1px solid rgba(22, 140, 137, 0.13);
-    border-radius: 13px;
+.business-topbar a:not(.brand):hover {
     color: var(--business-teal);
-    background: var(--business-soft);
+}
+
+/* ========================================
+   WORKSPACE AND INTRODUCTION
+======================================== */
+
+.business-workspace {
+    width: min(1440px, 100%);
+    margin: 0 auto;
+    padding: 42px clamp(20px, 5vw, 76px) 60px;
+}
+
+.business-intro {
+    max-width: 720px;
+    margin-bottom: 32px;
+}
+
+.business-intro .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    color: var(--business-teal);
     font-size: 12px;
     font-weight: 800;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
-.business-section-heading > div {
-    min-width: 0;
-    padding-top: 1px;
-}
-
-.business-section-heading h2 {
-    margin: 0 0 4px;
+.business-intro h1 {
+    margin: 0;
     color: var(--business-navy);
-    font-size: 19px;
-    font-weight: 780;
-    letter-spacing: -0.45px;
-    line-height: 1.45;
+    font-size: clamp(30px, 4vw, 46px);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -1.8px;
 }
 
-.business-section-heading p {
-    margin: 0;
+.business-intro p {
+    max-width: 590px;
+    margin: 15px 0 0;
     color: var(--business-muted);
-    font-size: 12px;
-    line-height: 1.75;
+    font-size: 15px;
+    line-height: 1.8;
 }
 
-.business-grid {
+/* ========================================
+   MAIN TWO-COLUMN LAYOUT
+======================================== */
+
+.business-workspace > .business-layout,
+.business-workspace > .business-content,
+.business-workspace > .business-columns {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 21px 19px;
+    grid-template-columns: minmax(0, 1fr) minmax(290px, 350px);
+    align-items: start;
+    gap: 28px;
 }
 
-.business-field {
+/* Supports the layout when the preview and editor
+   are direct children of the workspace. */
+
+.business-workspace:has(> .business-preview-card):has(> .business-editor) {
     display: grid;
-    align-content: start;
-    gap: 8px;
-    min-width: 0;
-    margin: 0;
-    padding: 0;
-    border: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(290px, 350px);
+    align-items: start;
+    column-gap: 28px;
 }
 
-.business-field.full-width {
+.business-workspace:has(> .business-preview-card):has(> .business-editor)
+> .business-intro {
     grid-column: 1 / -1;
 }
 
-.business-field > label,
-.business-field legend {
-    padding: 0;
-    color: var(--business-text);
-    font-size: 12px;
+.business-workspace:has(> .business-preview-card):has(> .business-editor)
+> .business-preview-card {
+    grid-column: 2;
+    grid-row: 2;
+    position: sticky;
+    top: 100px;
+}
+
+.business-workspace:has(> .business-preview-card):has(> .business-editor)
+> .business-editor {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+}
+
+/* ========================================
+   BUSINESS PREVIEW
+======================================== */
+
+.business-preview-card {
+    min-width: 0;
+    overflow: hidden;
+    background: var(--business-surface);
+    border: 1px solid var(--business-border);
+    border-radius: var(--business-radius);
+    box-shadow: 0 8px 28px rgba(16, 45, 70, 0.045);
+}
+
+.business-preview-card > .preview-header {
+    padding: 22px 22px 18px;
+    border-bottom: 1px solid var(--business-border);
+}
+
+.business-preview-card h2,
+.business-preview-card h3 {
+    color: var(--business-navy);
+}
+
+.business-preview-card h2 {
+    margin: 0;
+    font-size: 17px;
     font-weight: 750;
+}
+
+.business-preview-card .preview-subtitle {
+    margin: 7px 0 0;
+    color: var(--business-muted);
+    font-size: 13px;
     line-height: 1.6;
 }
 
-.business-field input:not([type="checkbox"]):not([type="file"]),
-.business-field select,
-.business-field textarea {
-    display: block;
+.business-preview-card .preview-content {
+    padding: 24px;
+}
+
+.business-preview-card .preview-business-logo {
+    display: grid;
+    width: 76px;
+    height: 76px;
+    overflow: hidden;
+    place-items: center;
+    margin-bottom: 20px;
+    border: 1px solid var(--business-border);
+    border-radius: 20px;
+    background: #edf7f6;
+}
+
+.business-preview-card .preview-business-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.business-preview-card #preview-logo-letter {
+    color: var(--business-teal);
+    font-size: 29px;
+    font-weight: 800;
+}
+
+.business-preview-card #preview-business-name {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: var(--business-navy);
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: -0.6px;
+}
+
+.business-preview-card #preview-business-category {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 11px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    background: #eaf6f5;
+    color: #117c79;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.business-preview-card #preview-business-description {
+    margin: 18px 0 0;
+    color: var(--business-muted);
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.business-preview-card #preview-contact-label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--business-border);
+    color: var(--business-text);
+    font-size: 13px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+
+.business-preview-card .preview-state,
+.business-preview-card #preview-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 22px;
+    padding: 8px 11px;
+    border-radius: 8px;
+    background: #fff6e5;
+    color: #93651a;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.business-preview-card .preview-state::before,
+.business-preview-card #preview-state::before {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 50%;
+    background: currentColor;
+    content: "";
+}
+
+/* ========================================
+   EDITOR AND SECTION NAVIGATION
+======================================== */
+
+.business-editor {
+    min-width: 0;
+}
+
+.business-section-nav {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 20px;
+    padding: 7px;
+    overflow-x: auto;
+    border: 1px solid var(--business-border);
+    border-radius: 14px;
+    background: var(--business-surface);
+    scrollbar-width: thin;
+}
+
+.business-section-nav a,
+.business-section-nav button {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 39px;
+    padding: 9px 13px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--business-muted);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.business-section-nav a:hover,
+.business-section-nav button:hover,
+.business-section-nav a.active,
+.business-section-nav button.active {
+    background: #eaf6f5;
+    color: var(--business-teal);
+}
+
+/* ========================================
+   FORM CARDS
+======================================== */
+
+.business-card {
+    min-width: 0;
+    margin-bottom: 20px;
+    padding: clamp(20px, 3vw, 30px);
+    border: 1px solid var(--business-border);
+    border-radius: var(--business-radius);
+    background: var(--business-surface);
+    box-shadow: 0 5px 20px rgba(16, 45, 70, 0.025);
+    scroll-margin-top: 100px;
+}
+
+.business-card h2 {
+    margin: 0;
+    color: var(--business-navy);
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.35px;
+}
+
+.business-card > p {
+    margin: 9px 0 24px;
+    color: var(--business-muted);
+    font-size: 13px;
+    line-height: 1.75;
+}
+
+.business-card .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 21px 18px;
+}
+
+.business-card .form-group {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.business-card .form-group.full-width,
+.business-card .form-group:has(textarea),
+.business-card .form-group:has(input[type="file"]) {
+    grid-column: 1 / -1;
+}
+
+.business-card label {
+    color: var(--business-text);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.business-card label .optional,
+.business-card .field-hint {
+    color: var(--business-muted);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.business-card input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.business-card select,
+.business-card textarea {
     width: 100%;
     min-width: 0;
     min-height: 47px;
-    margin: 0;
     padding: 12px 14px;
-    border: 1px solid #DCE4EC;
+    border: 1px solid #dce4ed;
     border-radius: 10px;
-    outline: none;
+    background: #fff;
     color: var(--business-text);
-    background: #FFFFFF;
-    font-size: 13px;
-    line-height: 1.55;
-    transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    font-size: 14px;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-.business-field select {
-    padding-right: 34px;
-    cursor: pointer;
+.business-card input::placeholder,
+.business-card textarea::placeholder {
+    color: #a0acbb;
 }
 
-.business-field textarea {
-    min-height: 118px;
-    resize: vertical;
-}
-
-.business-field input:not([type="checkbox"]):not([type="file"]):hover,
-.business-field select:hover,
-.business-field textarea:hover {
-    border-color: #C4D2DE;
-}
-
-.business-field input:not([type="checkbox"]):not([type="file"]):focus,
-.business-field select:focus,
-.business-field textarea:focus {
+.business-card input:focus,
+.business-card select:focus,
+.business-card textarea:focus {
     border-color: var(--business-teal);
-    background: #FFFFFF;
+    outline: none;
     box-shadow: 0 0 0 3px rgba(22, 140, 137, 0.09);
 }
 
-.business-field input::placeholder,
-.business-field textarea::placeholder {
-    color: #9AA7B5;
-    opacity: 1;
-}
-
-.business-field input:disabled,
-.business-field select:disabled,
-.business-field textarea:disabled {
-    cursor: not-allowed;
-    background: #F3F6F9;
-    opacity: 0.7;
-}
-
-.business-field small {
-    color: var(--business-muted);
-    font-size: 11px;
+.business-card textarea {
+    min-height: 130px;
+    resize: vertical;
     line-height: 1.7;
 }
 
-.business-field input[type="file"] {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    padding: 12px;
-    border: 1px dashed #C9D7E1;
-    border-radius: 11px;
+.business-card .description-meta,
+.business-card .character-count,
+.business-card #description-count {
+    display: flex;
+    justify-content: flex-end;
     color: var(--business-muted);
-    background: #FAFCFD;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-.business-field input[type="file"]::file-selector-button {
-    margin-right: 12px;
-    padding: 8px 12px;
-    border: 0;
-    border-radius: 7px;
-    color: var(--business-navy);
-    background: #EAF1F6;
     font-size: 11px;
-    font-weight: 750;
-    cursor: pointer;
-    transition: background 180ms ease;
 }
 
-.business-field input[type="file"]::file-selector-button:hover {
-    background: #DCE9F0;
+.business-card input[type="checkbox"],
+.business-card input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    accent-color: var(--business-teal);
 }
 
-.business-logo-preview {
-    display: block;
-    width: 88px;
-    height: 88px;
-    margin-top: 7px;
-    padding: 4px;
-    border: 1px solid var(--business-border);
-    border-radius: 14px;
-    background: #FFFFFF;
-    object-fit: contain;
+.business-card .field-hint {
+    line-height: 1.6;
 }
 
-.business-logo-preview[hidden] {
-    display: none;
-}
+/* ========================================
+   LOGO UPLOAD
+======================================== */
 
-.business-goals {
-    gap: 13px;
-}
-
-.business-goals legend {
-    margin-bottom: 13px;
-}
-
-.goal-options {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 11px;
-}
-
-.goal-option {
-    position: relative;
+.business-card .logo-upload,
+.business-card .logo-upload-area,
+.business-card .upload-area {
     display: flex;
     align-items: center;
+    gap: 18px;
+    min-width: 0;
+    padding: 18px;
+    border: 1px dashed #c9d8e3;
+    border-radius: 13px;
+    background: #f9fbfd;
+}
+
+.business-card #logo-upload-preview {
+    width: 76px;
+    height: 76px;
+    flex: 0 0 76px;
+    border: 1px solid var(--business-border);
+    border-radius: 13px;
+    background: #fff;
+    object-fit: cover;
+}
+
+.business-card #logo-upload-fallback {
+    display: grid;
+    width: 76px;
+    height: 76px;
+    flex: 0 0 76px;
+    place-items: center;
+    border-radius: 13px;
+    background: #eaf6f5;
+    color: var(--business-teal);
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.business-card .logo-upload-content,
+.business-card .upload-content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+}
+
+.business-card .logo-upload-content p,
+.business-card .upload-content p {
+    margin: 0;
+    color: var(--business-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.business-card input[type="file"] {
+    width: 100%;
+    max-width: 100%;
+    color: var(--business-muted);
+    font-size: 12px;
+}
+
+.business-card input[type="file"]::file-selector-button {
+    margin-right: 10px;
+    padding: 9px 12px;
+    border: 1px solid var(--business-border);
+    border-radius: 8px;
+    background: white;
+    color: var(--business-navy);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ========================================
+   GOALS AND CHOICES
+======================================== */
+
+.business-card .goals-grid,
+.business-card .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.business-card .goal-option,
+.business-card .checkbox-option {
+    display: flex;
+    align-items: flex-start;
     gap: 11px;
     min-width: 0;
-    min-height: 57px;
-    padding: 13px 14px;
+    padding: 14px;
     border: 1px solid var(--business-border);
     border-radius: 11px;
-    background: #FFFFFF;
+    background: #fff;
     cursor: pointer;
-    transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
 }
 
-.goal-option:hover {
-    border-color: rgba(22, 140, 137, 0.5);
-    background: #FAFDFD;
+.business-card .goal-option:hover,
+.business-card .checkbox-option:hover {
+    border-color: #a9d9d5;
+    background: #f8fcfb;
 }
 
-.goal-option:has(input:checked) {
-    border-color: var(--business-teal);
-    background: var(--business-soft);
-    box-shadow: inset 0 0 0 1px rgba(22, 140, 137, 0.08);
+.business-card .goal-option input,
+.business-card .checkbox-option input {
+    margin-top: 2px;
 }
 
-.goal-option input {
-    width: 17px;
-    height: 17px;
-    flex: 0 0 17px;
-    margin: 0;
-    accent-color: var(--business-teal);
-    cursor: pointer;
-}
-
-.goal-option span {
+.business-card .goal-option span,
+.business-card .checkbox-option span {
     min-width: 0;
-    color: #435568;
+    color: var(--business-text);
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 650;
+    line-height: 1.6;
+}
+
+/* ========================================
+   PUBLISH PANEL
+======================================== */
+
+.business-publish-panel {
+    margin-top: 24px;
+    padding: 24px;
+    border: 1px solid #dce9eb;
+    border-radius: var(--business-radius);
+    background: linear-gradient(135deg, #ffffff 0%, #f0f9f8 100%);
+}
+
+.business-publish-panel h2 {
+    margin: 0;
+    color: var(--business-navy);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.business-publish-panel p {
+    margin: 9px 0 20px;
+    color: var(--business-muted);
+    font-size: 13px;
+    line-height: 1.75;
+}
+
+.business-publish-panel .publish-actions,
+.business-publish-panel .form-actions,
+.business-publish-panel .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 11px;
+}
+
+.business-page .btn,
+.business-page button.btn,
+.business-page .business-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 12px 18px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.3;
+    text-align: center;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.business-page .btn:active,
+.business-page .business-button:active {
+    transform: translateY(1px);
+}
+
+.business-page .btn-primary,
+.business-page button.btn-primary,
+.business-page #publish-button {
+    background: var(--business-teal);
+    color: white;
+}
+
+.business-page .btn-primary:hover,
+.business-page button.btn-primary:hover,
+.business-page #publish-button:hover {
+    background: #117a77;
+}
+
+.business-page .btn-secondary,
+.business-page button.btn-secondary,
+.business-page #save-button {
+    border-color: var(--business-border);
+    background: white;
+    color: var(--business-navy);
+}
+
+.business-page .btn-secondary:hover,
+.business-page button.btn-secondary:hover,
+.business-page #save-button:hover {
+    border-color: #b7c9d8;
+    background: #f8fafc;
+}
+
+.business-page .btn-ghost,
+.business-page button.btn-ghost,
+.business-page #preview-button {
+    border-color: #cfe5e3;
+    background: #edf8f7;
+    color: #117c79;
+}
+
+.business-page .btn-ghost:hover,
+.business-page button.btn-ghost:hover,
+.business-page #preview-button:hover {
+    background: #e0f2f0;
+}
+
+.business-page button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+/* ========================================
+   STATUS AND COMPLETION
+======================================== */
+
+.business-page #business-status {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    border: 1px solid var(--business-border);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--business-text);
+    font-size: 13px;
     line-height: 1.6;
     overflow-wrap: anywhere;
 }
 
-.goal-option:has(input:checked) span {
-    color: var(--business-navy);
-}
-
-.business-status {
-    padding: 13px 16px;
-    border: 1px solid transparent;
-    border-radius: 11px;
-    font-size: 12px;
-    font-weight: 550;
-    line-height: 1.75;
-    overflow-wrap: anywhere;
-}
-
-.business-status[hidden] {
+.business-page #business-status:empty {
     display: none;
 }
 
-.business-status.error {
-    border-color: #F4D1D4;
-    color: #A12C35;
-    background: #FFF2F3;
-}
-
-.business-status.success {
-    border-color: #C7EAD5;
-    color: #176B48;
-    background: #EDF9F1;
-}
-
-.business-status.info {
-    border-color: #D0E5F5;
-    color: #285D86;
-    background: #EFF7FD;
-}
-
-.business-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 11px;
-    padding-top: 2px;
-}
-
-.business-button {
-    display: inline-flex;
-    min-height: 47px;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 19px;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 750;
-    line-height: 1.4;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 180ms ease, color 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
-}
-
-.business-button:active:not(:disabled) {
-    transform: translateY(1px);
-}
-
-.business-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.business-button.primary {
-    border-color: var(--business-teal);
-    color: #FFFFFF;
-    background: var(--business-teal);
-    box-shadow: 0 4px 12px rgba(22, 140, 137, 0.13);
-}
-
-.business-button.primary:hover:not(:disabled) {
-    border-color: var(--business-teal-hover);
-    background: var(--business-teal-hover);
-    box-shadow: 0 6px 17px rgba(22, 140, 137, 0.18);
-}
-
-.business-button.secondary {
-    border-color: #DCE4EC;
-    color: var(--business-navy);
-    background: #FFFFFF;
-}
-
-.business-button.secondary:hover:not(:disabled) {
-    border-color: rgba(22, 140, 137, 0.55);
+.business-page #completion-percentage {
     color: var(--business-teal);
-    background: var(--business-soft);
+    font-weight: 800;
 }
 
-@media (min-width: 1200px) {
-    .business-page {
-        padding-top: 54px;
+.business-page #completion-bar {
+    width: 100%;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: #e8eef3;
+    appearance: none;
+}
+
+.business-page #completion-bar::-webkit-progress-bar {
+    border-radius: 99px;
+    background: #e8eef3;
+}
+
+.business-page #completion-bar::-webkit-progress-value {
+    border-radius: 99px;
+    background: var(--business-teal);
+    transition: width 0.3s ease;
+}
+
+.business-page #completion-bar::-moz-progress-bar {
+    border-radius: 99px;
+    background: var(--business-teal);
+}
+
+/* ========================================
+   FOOTER
+======================================== */
+
+.business-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 38px;
+    padding-top: 22px;
+    border-top: 1px solid var(--business-border);
+    color: var(--business-muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.business-footer p {
+    margin: 0;
+}
+
+.business-footer a {
+    color: var(--business-navy);
+    font-weight: 700;
+}
+
+.business-footer a:hover {
+    color: var(--business-teal);
+}
+
+/* ========================================
+   RESPONSIVE — TABLET
+======================================== */
+
+@media (max-width: 1000px) {
+    .business-workspace:has(> .business-preview-card):has(> .business-editor) {
+        grid-template-columns: minmax(0, 1fr) minmax(250px, 300px);
+        column-gap: 20px;
     }
 
-    .business-card {
-        padding: 34px;
+    .business-workspace > .business-layout,
+    .business-workspace > .business-content,
+    .business-workspace > .business-columns {
+        grid-template-columns: minmax(0, 1fr) minmax(250px, 300px);
+        gap: 20px;
+    }
+
+    .business-preview-card .preview-content {
+        padding: 20px;
     }
 }
+
+/* ========================================
+   RESPONSIVE — MOBILE
+======================================== */
 
 @media (max-width: 760px) {
-    .business-page {
-        padding: 30px 18px 52px;
+    .business-topbar {
+        min-height: 66px;
+        padding: 12px 20px;
     }
 
-    .business-container {
-        max-width: 620px;
+    .business-topbar .brand {
+        font-size: 22px;
     }
 
-    .business-heading {
-        margin-bottom: 25px;
+    .business-topbar .brand-mark {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
     }
 
-    .business-back-link {
-        margin-bottom: 25px;
+    .business-workspace {
+        padding: 30px 18px 42px;
     }
 
-    .business-heading h1 {
-        font-size: clamp(29px, 5.8vw, 37px);
+    .business-workspace:has(> .business-preview-card):has(> .business-editor) {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .business-workspace:has(> .business-preview-card):has(> .business-editor)
+    > .business-intro {
+        margin-bottom: 0;
+    }
+
+    .business-workspace:has(> .business-preview-card):has(> .business-editor)
+    > .business-preview-card {
+        position: static;
+        width: 100%;
+        order: 2;
+    }
+
+    .business-workspace:has(> .business-preview-card):has(> .business-editor)
+    > .business-editor {
+        width: 100%;
+        order: 1;
+    }
+
+    .business-workspace > .business-layout,
+    .business-workspace > .business-content,
+    .business-workspace > .business-columns {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .business-intro {
+        margin-bottom: 24px;
+    }
+
+    .business-intro h1 {
+        font-size: clamp(30px, 8vw, 39px);
         letter-spacing: -1.2px;
     }
 
-    .business-card {
-        padding: 25px;
-        border-radius: 16px;
+    .business-intro p {
+        font-size: 14px;
     }
 
-    .business-section-heading {
-        gap: 13px;
-        margin-bottom: 22px;
+    .business-preview-card {
+        width: 100%;
     }
 
-    .business-step {
-        width: 39px;
-        height: 39px;
-        flex-basis: 39px;
-        border-radius: 11px;
-    }
-
-    .business-grid {
-        gap: 18px 15px;
-    }
-
-    .goal-option {
-        min-height: 55px;
-        padding: 12px;
-    }
-
-    .business-actions {
-        gap: 9px;
-    }
-
-    .business-button {
-        min-height: 45px;
-        padding: 11px 15px;
-    }
-}
-
-@media (max-width: 540px) {
-    html {
-        scroll-padding-top: 75px;
-    }
-
-    .business-page {
-        padding: 24px 14px 36px;
-    }
-
-    .business-heading {
-        margin-bottom: 22px;
-    }
-
-    .business-back-link {
-        margin-bottom: 23px;
-        font-size: 12px;
-    }
-
-    .business-eyebrow {
-        font-size: 9px;
-        letter-spacing: 1.4px;
-    }
-
-    .business-heading h1 {
-        margin-bottom: 10px;
-        font-size: clamp(28px, 8vw, 35px);
-        letter-spacing: -1.15px;
-        line-height: 1.2;
-    }
-
-    .business-heading > p:last-child {
-        font-size: 13px;
-    }
-
-    .business-form {
-        gap: 15px;
+    .business-section-nav {
+        margin-bottom: 16px;
     }
 
     .business-card {
-        padding: 22px 18px;
+        margin-bottom: 16px;
+        padding: 21px 18px;
         border-radius: 15px;
     }
 
-    .business-section-heading {
-        gap: 11px;
-        margin-bottom: 21px;
-    }
-
-    .business-step {
-        width: 35px;
-        height: 35px;
-        flex-basis: 35px;
-        border-radius: 10px;
-        font-size: 11px;
-    }
-
-    .business-section-heading h2 {
-        font-size: 17px;
-        letter-spacing: -0.3px;
-    }
-
-    .business-section-heading p {
-        font-size: 11px;
-    }
-
-    .business-grid {
+    .business-card .form-grid {
         grid-template-columns: minmax(0, 1fr);
-        gap: 17px;
+        gap: 19px;
     }
 
-    .business-field.full-width {
+    .business-card .form-group.full-width,
+    .business-card .form-group:has(textarea),
+    .business-card .form-group:has(input[type="file"]) {
         grid-column: auto;
     }
 
-    .business-field > label,
-    .business-field legend {
-        font-size: 12px;
-    }
-
-    .business-field input:not([type="checkbox"]):not([type="file"]),
-    .business-field select,
-    .business-field textarea {
-        min-height: 47px;
-        padding: 12px;
-        font-size: 13px;
-    }
-
-    .business-field textarea {
-        min-height: 110px;
-    }
-
-    .business-field input[type="file"] {
-        padding: 10px;
-        font-size: 11px;
-    }
-
-    .goal-options {
+    .business-card .goals-grid,
+    .business-card .checkbox-grid {
         grid-template-columns: minmax(0, 1fr);
-        gap: 9px;
     }
 
-    .goal-option {
-        min-height: 52px;
-        padding: 12px 13px;
+    .business-publish-panel {
+        padding: 21px 18px;
     }
 
-    .goal-option span {
-        font-size: 12px;
+    .business-publish-panel .publish-actions,
+    .business-publish-panel .form-actions,
+    .business-publish-panel .button-group {
+        flex-direction: column;
     }
 
-    .business-actions {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 10px;
-        padding-top: 3px;
-    }
-
-    .business-button {
+    .business-page .btn,
+    .business-page button.btn,
+    .business-page .business-button,
+    .business-page #preview-button,
+    .business-page #save-button,
+    .business-page #publish-button {
         width: 100%;
         min-height: 47px;
-        padding: 12px 16px;
-        font-size: 13px;
     }
 
-    .business-status {
-        padding: 12px 13px;
-        font-size: 12px;
+    .business-footer {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px;
+        margin-top: 28px;
     }
 }
 
-@media (max-width: 360px) {
-    .business-page {
-        padding-right: 11px;
-        padding-left: 11px;
+/* ========================================
+   SMALL MOBILE
+======================================== */
+
+@media (max-width: 400px) {
+    .business-workspace {
+        padding-right: 13px;
+        padding-left: 13px;
+    }
+
+    .business-topbar {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    .business-intro h1 {
+        font-size: 29px;
     }
 
     .business-card {
-        padding: 19px 14px;
+        padding: 18px 15px;
     }
 
-    .business-heading h1 {
-        font-size: 27px;
+    .business-card .logo-upload,
+    .business-card .logo-upload-area,
+    .business-card .upload-area {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
-    .business-section-heading h2 {
-        font-size: 16px;
+    .business-preview-card .preview-content {
+        padding: 18px;
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    html {
-        scroll-behavior: auto;
-    }
+/* ========================================
+   REDUCED MOTION
+======================================== */
 
-    *,
-    *::before,
-    *::after {
+@media (prefers-reduced-motion: reduce) {
+    .business-page *,
+    .business-page *::before,
+    .business-page *::after {
         scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
     }
 }
