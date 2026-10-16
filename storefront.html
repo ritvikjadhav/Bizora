@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#F5F7FB">
+    <meta name="description" content="Discover local businesses, explore their products and services, and connect directly with them.">
+
+    <title>Business Storefront | Bizora</title>
+
+    <link rel="stylesheet" href="./css/storefront.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="./javascript/supabase.js" defer></script>
+    <script src="./javascript/storefront.js" defer></script>
+</head>
+
+<body class="storefront-page">
+
+    <header class="storefront-header">
+        <a href="./index.html" class="storefront-brand" aria-label="Bizora home">
+            <span class="storefront-brand-mark">B</span>
+            <span>bizora<span class="brand-period">.</span></span>
+        </a>
+
+        <span class="storefront-header-label">BUSINESS PROFILE</span>
+    </header>
+
+    <main class="storefront-main">
+
+        <section class="storefront-identity" aria-labelledby="business-name">
+            <div class="identity-topline">
+                <span class="identity-badge">
+                    <span class="identity-status-dot"></span>
+                    <span id="business-category">Local business</span>
+                </span>
+
+                <button
+                    class="share-button"
+                    id="share-storefront"
+                    type="button"
+                    aria-label="Share this business"
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <path d="m8.7 10.6 6.6-4.2M8.7 13.4l6.6 4.2"></path>
+                    </svg>
+                    <span>Share</span>
+                </button>
+            </div>
+
+            <div class="identity-content">
+                <div class="business-logo" id="business-logo-container">
+                    <img
+                        id="business-logo"
+                        src=""
+                        alt=""
+                        hidden
+                    >
+                    <span id="business-logo-fallback" aria-hidden="true">B</span>
+                </div>
+
+                <div class="business-heading">
+                    <h1 id="business-name">Discovering business...</h1>
+
+                    <p class="business-location" id="business-location" hidden>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                            <circle cx="12" cy="10" r="2.5"></circle>
+                        </svg>
+                        <span id="business-address"></span>
+                    </p>
+                </div>
+            </div>
+
+            <p class="business-description" id="business-description" hidden></p>
+
+            <div class="business-contact-actions" id="business-contact-actions" hidden>
+                <a
+                    class="contact-button contact-button-primary"
+                    id="whatsapp-link"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    hidden
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M20.5 11.7a8.5 8.5 0 0 1-12.6 7.4L3 20l.9-4.7a8.5 8.5 0 1 1 16.6-3.6Z"></path>
+                        <path d="M8.5 8.2c.3-.5.6-.5.9-.5h.4c.2 0 .4.1.5.4l.8 1.8c.1.2.1.4-.1.6l-.6.7c-.2.2-.2.4 0 .7.5.8 1.2 1.5 2 1.9.3.2.5.2.7-.1l.8-.9c.2-.2.4-.2.7-.1l1.7.8c.3.1.4.3.4.5 0 .4-.2 1-.6 1.4-.4.4-1.2.7-2 .5-1-.2-2.3-.8-3.5-1.9-1-.9-1.8-2.1-2.1-3.1-.3-1 .1-1.9.4-2.3Z"></path>
+                    </svg>
+                    <span>WhatsApp</span>
+                </a>
+
+                <a
+                    class="contact-button contact-button-secondary"
+                    id="call-link"
+                    href="#"
+                    hidden
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M21 16.5v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 3.7 2 2 0 0 1 3.1 1.5h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7 9.4a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.8 2.2Z"></path>
+                    </svg>
+                    <span>Call</span>
+                </a>
+
+                <a
+                    class="contact-button contact-button-secondary"
+                    id="website-link"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    hidden
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9.5"></circle>
+                        <path d="M2.5 12h19M12 2.5a15 15 0 0 1 0 19M12 2.5a15 15 0 0 0 0 19"></path>
+                    </svg>
+                    <span>Website</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="catalogue-section" aria-labelledby="catalogue-title">
+            <div class="catalogue-heading">
+                <div>
+                    <p class="section-eyebrow">THE COLLECTION</p>
+                    <h2 id="catalogue-title">Products &amp; Services</h2>
+                </div>
+
+                <span class="catalogue-count" id="catalogue-count" hidden></span>
+            </div>
+
+            <div
+                class="catalogue-grid"
+                id="catalogue-grid"
+                aria-live="polite"
+                aria-busy="true"
+            >
+                <div class="catalogue-loading" id="catalogue-loading">
+                    <span class="loading-indicator"></span>
+                    <p>Loading the collection...</p>
+                </div>
+            </div>
+
+            <div class="catalogue-empty" id="catalogue-empty" hidden>
+                <div class="empty-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+                        <path d="M7 9h10M7 13h6"></path>
+                    </svg>
+                </div>
+
+                <h3>Something new is on the way</h3>
+                <p>This business hasn't added any products or services yet.</p>
+            </div>
+        </section>
+
+        <section class="business-about" id="business-about" hidden>
+            <p class="section-eyebrow">GET TO KNOW US</p>
+            <h2>About this business</h2>
+            <p id="business-about-description"></p>
+
+            <a
+                class="about-instagram-link"
+                id="instagram-link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                hidden
+            >
+                Follow on Instagram <span aria-hidden="true">↗</span>
+            </a>
+        </section>
+
+        <section class="storefront-error" id="storefront-error" hidden>
+            <div class="error-mark" aria-hidden="true">!</div>
+            <h1 id="error-title">Business unavailable</h1>
+            <p id="error-description">
+                This business profile may be unavailable or the link may be incorrect.
+            </p>
+            <a href="./index.html" class="error-home-link">Visit Bizora</a>
+        </section>
+
+    </main>
+
+    <footer class="storefront-footer">
+        <a href="./index.html" class="footer-brand">
+            bizora<span>.</span>
+        </a>
+
+        <p>Your business. Ready for more.</p>
+
+        <a href="./index.html" class="footer-cta">
+            Create your business profile <span aria-hidden="true">→</span>
+        </a>
+    </footer>
+
+    <div class="storefront-toast" id="storefront-toast" role="status" aria-live="polite" hidden></div>
+
+</body>
+</html>
