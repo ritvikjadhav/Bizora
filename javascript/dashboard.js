@@ -3,7 +3,6 @@
 
     const CONFIG = {
         authPage: "./auth.html",
-        dashboardPage: "./dashboard.html",
         businessPage: "./create-business.html",
         productsPage: "./products.html",
         storefrontPage: "./storefront.html",
@@ -85,14 +84,11 @@
             .split(/\s+/)
             .filter(Boolean);
 
-        if (!words.length) {
-            return "B";
-        }
-
-        return words
-            .slice(0, 2)
-            .map(word => word.charAt(0).toUpperCase())
-            .join("");
+        return words.length
+            ? words.slice(0, 2)
+                .map(word => word.charAt(0).toUpperCase())
+                .join("")
+            : "B";
     }
 
     function formatNumber(value) {
@@ -128,20 +124,6 @@
         }
     }
 
-    function setDisabled(element, disabled) {
-        if (!element) {
-            return;
-        }
-
-        element.setAttribute("aria-disabled", String(disabled));
-
-        if (disabled) {
-            element.setAttribute("tabindex", "-1");
-        } else {
-            element.removeAttribute("tabindex");
-        }
-    }
-
     function getSupabaseClient() {
         if (window.bizoraSupabase?.auth) {
             return window.bizoraSupabase;
@@ -169,7 +151,7 @@
                 if (Date.now() - startedAt >= timeout) {
                     reject(
                         new Error(
-                            "Supabase client was not initialized. Check javascript/supabase.js."
+                            "Supabase client unavailable. Check javascript/supabase.js and script loading order."
                         )
                     );
                     return;
@@ -192,27 +174,25 @@
             throw error;
         }
 
-        const session = data?.session;
-
-        if (!session?.user) {
+        if (!data?.session?.user) {
             window.location.replace(CONFIG.authPage);
             return false;
         }
 
-        state.user = session.user;
+        state.user = data.session.user;
 
         return true;
     }
 
-    function getDisplayName(user = state.user) {
-        const metadata = user?.user_metadata || {};
+    function getDisplayName() {
+        const metadata = state.user?.user_metadata || {};
 
         return (
             metadata.full_name ||
             metadata.fullName ||
             metadata.name ||
             metadata.username ||
-            user?.email?.split("@")[0] ||
+            state.user?.email?.split("@")[0] ||
             "Business owner"
         );
     }
@@ -235,7 +215,7 @@
         setText("#settings-avatar", avatar);
     }
 
-    // Business and products
+    // Business data
 
     async function loadBusiness() {
         const { data, error } = await state.client
@@ -276,7 +256,7 @@
         return state.products;
     }
 
-    // Dashboard business status
+    // Business status
 
     function setBusinessStatus({
         label,
@@ -307,15 +287,25 @@
             setButtonLabel(primary, primaryText);
             primary.href = primaryUrl;
             primary.hidden = false;
-            setDisabled(primary, false);
+            primary.removeAttribute("aria-disabled");
+            primary.removeAttribute("tabindex");
         }
 
         if (secondary) {
             setButtonLabel(secondary, secondaryText);
             secondary.href = secondaryUrl;
             secondary.hidden = !secondaryText;
-            setDisabled(secondary, false);
+            secondary.removeAttribute("aria-disabled");
+            secondary.removeAttribute("tabindex");
         }
+    }
+
+    function getStorefrontUrl(business) {
+        if (!business?.slug) {
+            return CONFIG.businessPage;
+        }
+
+        return `${CONFIG.storefrontPage}?slug=${encodeURIComponent(business.slug)}`;
     }
 
     function renderBusinessStatus() {
@@ -351,26 +341,22 @@
             return;
         }
 
-        const storefrontUrl = business.slug
-            ? `${CONFIG.storefrontPage}?slug=${encodeURIComponent(business.slug)}`
-            : CONFIG.businessPage;
-
         setBusinessStatus({
             label: "BUSINESS PUBLISHED",
             title: "Your business is online.",
             description:
-                "Your business profile is published. Keep your business information and listings up to date.",
+                "Your business profile is published. Keep your information and listings up to date.",
             primaryText: business.slug
                 ? "View storefront"
                 : "Edit business profile",
-            primaryUrl: storefrontUrl,
+            primaryUrl: getStorefrontUrl(business),
             secondaryText: "Manage products",
             secondaryUrl: CONFIG.productsPage,
             published: true
         });
     }
 
-    // Dashboard overview
+    // Overview statistics
 
     function renderOverview() {
         const business = state.business;
@@ -391,7 +377,7 @@
 
         const completion = business
             ? Math.round(
-                (completedFields / requiredFields.length) * 100
+                completedFields / requiredFields.length * 100
             )
             : 0;
 
@@ -400,6 +386,7 @@
         );
 
         setText("#profile-completion", `${completion}%`);
+
         setText(
             "#profile-completion-description",
             business
@@ -435,7 +422,6 @@
                     : "Your storefront isn't public yet"
         );
 
-        // Support alternative IDs from earlier layouts.
         setText("#business-count", business ? "1" : "0");
         setText(
             "#products-count",
@@ -493,15 +479,14 @@
                 business.address
             ];
 
-            const hasMissingFields = requiredFields.some(value =>
+            const missingFields = requiredFields.some(value =>
                 typeof value === "string"
                     ? !value.trim()
                     : !value
             );
 
-            if (hasMissingFields) {
+            if (missingFields) {
                 steps.push({
-                    number: "",
                     title: "Complete your business information",
                     description:
                         "Review your profile and fill in any missing details.",
@@ -511,7 +496,6 @@
 
             if (products.length === 0) {
                 steps.push({
-                    number: "",
                     title: "Add your first product or service",
                     description:
                         "Create a listing so customers can discover what you offer.",
@@ -521,7 +505,6 @@
 
             if (!business.is_published) {
                 steps.push({
-                    number: "",
                     title: "Get your storefront ready",
                     description:
                         "Review your business details and publish your profile when ready.",
@@ -533,14 +516,11 @@
                     title: "Your business is online",
                     description:
                         "Your storefront is published. Keep your information and listings current.",
-                    destination: business.slug
-                        ? `${CONFIG.storefrontPage}?slug=${encodeURIComponent(business.slug)}`
-                        : CONFIG.businessPage
+                    destination: getStorefrontUrl(business)
                 });
             }
 
             steps.push({
-                number: "",
                 title: "Learn how to grow digitally",
                 description:
                     "Explore online visibility, digital tools and payment safety.",
@@ -585,7 +565,7 @@
         });
     }
 
-    // Navigation and profile menu
+    // Mobile navigation
 
     function setSidebarOpen(open) {
         const sidebar = $(SELECTORS.sidebar);
@@ -598,13 +578,11 @@
 
         sidebar.classList.toggle("is-open", open);
 
-        if (button) {
-            button.setAttribute("aria-expanded", String(open));
-            button.setAttribute(
-                "aria-label",
-                open ? "Close navigation menu" : "Open navigation menu"
-            );
-        }
+        button?.setAttribute("aria-expanded", String(open));
+        button?.setAttribute(
+            "aria-label",
+            open ? "Close navigation menu" : "Open navigation menu"
+        );
 
         if (overlay) {
             overlay.hidden = !open;
@@ -644,6 +622,8 @@
         });
     }
 
+    // Profile dropdown
+
     function closeProfileMenu() {
         const menu = $(SELECTORS.profileMenu);
         const button = $(SELECTORS.profileButton);
@@ -676,16 +656,6 @@
             button.setAttribute("aria-expanded", String(open));
         });
 
-        menu.addEventListener("click", event => {
-            if (event.target.closest(SELECTORS.logoutButtons)) {
-                return;
-            }
-
-            if (event.target.closest("[data-settings-link]")) {
-                closeProfileMenu();
-            }
-        });
-
         document.addEventListener("click", event => {
             if (
                 !menu.contains(event.target) &&
@@ -696,8 +666,102 @@
         });
     }
 
+    // Settings navigation
+
     function setupSettingsNavigation() {
-const currentFile = window.location.pathname
+        $$("[data-settings-link]").forEach(link => {
+            link.addEventListener("click", event => {
+                const target = $("#account-settings");
+
+                if (!target) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                closeProfileMenu();
+                setSidebarOpen(false);
+
+                target.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            });
+        });
+    }
+
+    // Business action links
+
+    function setupBusinessActions() {
+        [
+            $("#business-primary-action"),
+            $("#business-secondary-action")
+        ].filter(Boolean).forEach(link => {
+            link.addEventListener("click", event => {
+                if (link.hidden) {
+                    event.preventDefault();
+                }
+            });
+        });
+    }
+
+    // Logout
+
+    async function logout() {
+        if (state.isLoggingOut || !state.client) {
+            return;
+        }
+
+        state.isLoggingOut = true;
+
+        $$(SELECTORS.logoutButtons).forEach(button => {
+            button.setAttribute("aria-disabled", "true");
+
+            if ("disabled" in button) {
+                button.disabled = true;
+            }
+        });
+
+        try {
+            const { error } = await state.client.auth.signOut();
+
+            if (error) {
+                throw error;
+            }
+
+            window.location.replace(CONFIG.authPage);
+        } catch (error) {
+            console.error("Logout error:", error);
+            state.isLoggingOut = false;
+
+            $$(SELECTORS.logoutButtons).forEach(button => {
+                button.removeAttribute("aria-disabled");
+
+                if ("disabled" in button) {
+                    button.disabled = false;
+                }
+            });
+
+            showMessage(
+                "We couldn't sign you out. Please try again.",
+                "error"
+            );
+        }
+    }
+
+    function setupLogout() {
+        $$(SELECTORS.logoutButtons).forEach(button => {
+            button.addEventListener("click", event => {
+                event.preventDefault();
+                logout();
+            });
+        });
+    }
+
+    // Active navigation
+
+    function setupActiveNavigation() {
+        const currentFile = window.location.pathname
             .split("/")
             .pop() || "dashboard.html";
 
@@ -734,7 +798,7 @@ const currentFile = window.location.pathname
         });
     }
 
-    // Auth listener
+    // Authentication state listener
 
     function setupAuthListener() {
         state.client.auth.onAuthStateChange((event, session) => {
@@ -750,7 +814,30 @@ const currentFile = window.location.pathname
         });
     }
 
-    // Initialize dashboard
+    // Dashboard data loading
+
+    async function loadDashboard() {
+        hideMessage();
+
+        try {
+            await loadBusiness();
+            await loadProducts();
+
+            renderUserDetails();
+            renderBusinessStatus();
+            renderOverview();
+            renderNextSteps();
+        } catch (error) {
+            console.error("Dashboard data error:", error);
+
+            showMessage(
+                "We couldn't load your business data. Check your Supabase connection, table permissions and RLS policies, then refresh the page.",
+                "error"
+            );
+        }
+    }
+
+    // Initialization
 
     async function initializeDashboard() {
         if (state.initialized) {
@@ -790,27 +877,6 @@ const currentFile = window.location.pathname
         }
     }
 
-    async function loadDashboard() {
-        hideMessage();
-
-        try {
-            await loadBusiness();
-            await loadProducts();
-
-            renderUserDetails();
-            renderBusinessStatus();
-            renderOverview();
-            renderNextSteps();
-        } catch (error) {
-            console.error("Dashboard data error:", error);
-
-            showMessage(
-                "We couldn't load your business data. Check your Supabase connection, table permissions and RLS policies, then refresh the page.",
-                "error"
-            );
-        }
-    }
-
     if (document.readyState === "loading") {
         document.addEventListener(
             "DOMContentLoaded",
@@ -821,4 +887,3 @@ const currentFile = window.location.pathname
         initializeDashboard();
     }
 })();
-     
