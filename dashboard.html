@@ -23,7 +23,6 @@
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
         defer
     ></script>
-
     <script src="./javascript/supabase.js" defer></script>
     <script src="./javascript/dashboard.js" defer></script>
 </head>
@@ -32,13 +31,11 @@
 
     <div class="workspace-shell">
 
-        <!-- SIDEBAR -->
         <aside
             class="workspace-sidebar"
             id="dashboard-sidebar"
             aria-label="Workspace sidebar"
         >
-
             <a
                 class="workspace-brand"
                 href="./index.html"
@@ -51,7 +48,6 @@
             <div class="sidebar-caption">WORKSPACE</div>
 
             <nav class="workspace-nav" aria-label="Main navigation">
-
                 <a
                     class="workspace-nav-link is-active"
                     href="./dashboard.html"
@@ -85,7 +81,6 @@
                     <span class="nav-icon" aria-hidden="true">✳</span>
                     <span>Grow Digitally</span>
                 </a>
-
             </nav>
 
             <div class="sidebar-bottom">
@@ -143,10 +138,8 @@
                 </div>
 
             </div>
-
         </aside>
 
-        <!-- MOBILE SIDEBAR OVERLAY -->
         <button
             class="sidebar-scrim"
             id="sidebar-overlay"
@@ -155,10 +148,8 @@
             hidden
         ></button>
 
-        <!-- MAIN WORKSPACE -->
         <div class="workspace-main">
 
-            <!-- TOP BAR -->
             <header class="workspace-topbar">
 
                 <button
@@ -198,15 +189,12 @@
 
             </header>
 
-            <!-- DASHBOARD CONTENT -->
             <main class="workspace-content">
 
-                <!-- WELCOME -->
                 <section
                     class="welcome-block"
                     aria-labelledby="welcome-title"
                 >
-
                     <div>
                         <p class="eyebrow">A FRESH START, EVERY DAY</p>
 
@@ -214,9 +202,7 @@
                             Good to see you<span
                                 id="welcome-name-wrap"
                                 hidden
-                            >,
-                                <span id="welcome-name"></span>
-                            </span><span class="heading-dot">.</span>
+                            >, <span id="welcome-name"></span></span><span class="heading-dot">.</span>
                         </h1>
 
                         <p class="welcome-copy">
@@ -224,15 +210,12 @@
                             for customers to discover your business.
                         </p>
                     </div>
-
                 </section>
 
-                <!-- PRIMARY ACTION -->
                 <section
                     class="launch-card"
                     aria-labelledby="launch-title"
                 >
-
                     <div class="launch-copy">
 
                         <span class="launch-label">
@@ -243,8 +226,7 @@
                         </span>
 
                         <h2 id="launch-title">
-                            Give your business
-                            <br class="desktop-break">
+                            Give your business<br class="desktop-break">
                             a place online.
                         </h2>
 
@@ -260,7 +242,9 @@
                                 class="button button-primary"
                                 id="business-primary-action"
                             >
-                                Set up my business
+                                <span id="business-primary-label">
+                                    Set up my business
+                                </span>
                                 <span aria-hidden="true">→</span>
                             </a>
 
@@ -281,7 +265,6 @@
 
                     </div>
 
-                    <!-- DECORATIVE BUSINESS PREVIEW -->
                     <div class="launch-art" aria-hidden="true">
 
                         <div class="art-ring ring-large"></div>
@@ -325,15 +308,12 @@
                         <span class="art-spark spark-two">✧</span>
 
                     </div>
-
                 </section>
 
-                <!-- BUSINESS SNAPSHOT -->
                 <section
                     class="snapshot-section"
                     aria-labelledby="snapshot-title"
                 >
-
                     <div class="section-heading">
 
                         <div>
@@ -349,28 +329,20 @@
 
                     <div class="snapshot-grid">
 
-                        <!-- PROFILE -->
                         <article class="snapshot-card">
-
                             <div class="snapshot-card-top">
-
                                 <span
                                     class="snapshot-icon icon-teal"
                                     aria-hidden="true"
                                 >▤</span>
 
-                                <span class="card-overline">
-                                    YOUR PROFILE
-                                </span>
-
+                                <span class="card-overline">YOUR PROFILE</span>
                             </div>
 
                             <strong
                                 class="snapshot-value"
                                 id="profile-completion"
-                            >
-                                Not started
-                            </strong>
+                            >Not started</strong>
 
                             <p id="profile-completion-description">
                                 Add your business details to get started.
@@ -383,23 +355,16 @@
                                 Manage profile
                                 <span aria-hidden="true">→</span>
                             </a>
-
                         </article>
 
-                        <!-- PRODUCTS -->
                         <article class="snapshot-card">
-
                             <div class="snapshot-card-top">
-
                                 <span
                                     class="snapshot-icon icon-blue"
                                     aria-hidden="true"
                                 >▦</span>
 
-                                <span class="card-overline">
-                                    YOUR SHOWCASE
-                                </span>
-
+                                <span class="card-overline">YOUR SHOWCASE</span>
                             </div>
 
                             <strong
@@ -418,31 +383,22 @@
                                 Manage showcase
                                 <span aria-hidden="true">→</span>
                             </a>
-
                         </article>
 
-                        <!-- ONLINE PRESENCE -->
                         <article class="snapshot-card">
-
                             <div class="snapshot-card-top">
-
                                 <span
                                     class="snapshot-icon icon-amber"
                                     aria-hidden="true"
                                 >◎</span>
 
-                                <span class="card-overline">
-                                    YOUR VISIBILITY
-                                </span>
-
+                                <span class="card-overline">YOUR VISIBILITY</span>
                             </div>
 
                             <strong
                                 class="snapshot-value"
                                 id="publication-status"
-                            >
-                                Not published
-                            </strong>
+                            >Not published</strong>
 
                             <p id="publication-description">
                                 Publish your profile when it is ready to share.
@@ -455,21 +411,16 @@
                                 Publishing options
                                 <span aria-hidden="true">→</span>
                             </a>
-
                         </article>
 
                     </div>
-
                 </section>
 
-                <!-- NEXT STEPS -->
                 <section
                     class="path-section"
                     aria-labelledby="path-title"
                 >
-
                     <div class="section-heading">
-
                         <div>
                             <p class="eyebrow">A SIMPLE WAY FORWARD</p>
                             <h2 id="path-title">Your next steps</h2>
@@ -478,7 +429,6 @@
                                 Build a useful online presence at your own pace.
                             </p>
                         </div>
-
                     </div>
 
                     <div class="path-list" id="next-steps-list">
@@ -532,16 +482,13 @@
                         </a>
 
                     </div>
-
                 </section>
 
-                <!-- ACCOUNT SETTINGS -->
                 <section
                     class="account-section"
                     id="account-settings"
                     aria-labelledby="account-title"
                 >
-
                     <div class="section-heading">
                         <div>
                             <p class="eyebrow">YOUR DETAILS</p>
@@ -561,14 +508,13 @@
                             <span id="settings-email">Loading account…</span>
 
                             <small>
-                                Your sign-in details are protected by
-                                Bizora authentication.
-                                           </small>
+                                Your sign-in details are protected by Bizora authentication.
+                            </small>
                         </div>
+
                     </div>
                 </section>
 
-                <!-- STATUS MESSAGE -->
                 <div
                     class="dashboard-message"
                     id="dashboard-message"
@@ -577,7 +523,6 @@
                     hidden
                 ></div>
 
-                <!-- FOOTER -->
                 <footer class="workspace-footer">
 
                     <a class="footer-wordmark" href="./index.html">
@@ -592,12 +537,8 @@
                     </div>
 
                 </footer>
-
             </main>
-
         </div>
-
     </div>
-
 </body>
 </html>
