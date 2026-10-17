@@ -1467,6 +1467,302 @@
     }
 }
 
+/* ================================
+   BIZORA — STOREFRONT PRODUCT CARDS
+================================ */
+
+.catalogue-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.storefront-product-card {
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e5eaf0;
+  border-radius: 18px;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.storefront-product-card:hover {
+  transform: translateY(-4px);
+  border-color: #d4e1eb;
+  box-shadow: 0 14px 35px rgba(16, 45, 70, 0.09);
+}
+
+/* Product image */
+
+.storefront-product-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #f2f5f8;
+}
+
+.storefront-product-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 250ms ease;
+}
+
+.storefront-product-card:hover .storefront-product-image {
+  transform: scale(1.035);
+}
+
+.storefront-product-image-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #168c89;
+  font-size: 42px;
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(101, 208, 196, 0.16),
+      transparent 65%
+    ),
+    #f2f6f8;
+}
+
+.storefront-product-image-fallback[hidden] {
+  display: none !important;
+}
+
+/* Product / service label */
+
+.storefront-product-type {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #23465b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  backdrop-filter: blur(8px);
+}
+
+/* Card content */
+
+.storefront-product-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 19px;
+}
+
+.storefront-product-name {
+  margin: 0;
+  color: #102d46;
+  font-family: "Manrope", "DM Sans", sans-serif;
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.storefront-product-description {
+  margin: 9px 0 18px;
+  color: #647487;
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Price and availability */
+
+.storefront-product-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #edf0f4;
+}
+
+.storefront-product-price {
+  color: #102d46;
+  font-family: "Manrope", sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.storefront-product-availability {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #16816f;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.storefront-product-availability::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #22a581;
+}
+
+/* Loading, empty and error states */
+
+.catalogue-loading,
+.catalogue-empty {
+  padding: 38px 20px;
+  text-align: center;
+  color: #647487;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.loading-indicator {
+  width: 27px;
+  height: 27px;
+  margin: 0 auto 14px;
+  border: 3px solid #e2ecef;
+  border-top-color: #168c89;
+  border-radius: 50%;
+  animation: bizora-spin 700ms linear infinite;
+}
+
+@keyframes bizora-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-icon {
+  margin-bottom: 12px;
+  color: #168c89;
+  font-size: 32px;
+}
+
+/* Preserve JavaScript-controlled visibility */
+
+[hidden] {
+  display: none !important;
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+  .catalogue-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .storefront-product-content {
+    padding: 16px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 560px) {
+  .catalogue-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .storefront-product-card {
+    border-radius: 14px;
+  }
+
+  .storefront-product-image-wrap {
+    aspect-ratio: 1 / 1;
+  }
+
+  .storefront-product-type {
+    top: 8px;
+    left: 8px;
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  .storefront-product-content {
+    padding: 12px;
+  }
+
+  .storefront-product-name {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .storefront-product-description {
+    margin: 7px 0 13px;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .storefront-product-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 12px;
+  }
+
+  .storefront-product-price {
+    font-size: 14px;
+  }
+}
+
+/* Small phones */
+
+@media (max-width: 360px) {
+  .catalogue-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .storefront-product-image-wrap {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* Respect reduced-motion preferences */
+
+@media (prefers-reduced-motion: reduce) {
+  .storefront-product-card,
+  .storefront-product-image {
+    transition: none;
+  }
+
+  .storefront-product-card:hover {
+    transform: none;
+  }
+
+  .storefront-product-card:hover .storefront-product-image {
+    transform: none;
+  }
+
+  .loading-indicator {
+    animation-duration: 1.8s;
+  }
+}
 
 /* 18. REDUCED MOTION */
 
