@@ -25,7 +25,8 @@
         user: null,
         business: null,
         products: [],
-        isLoggingOut: false
+        isLoggingOut: false,
+        initialized: false
     };
 
     const $ = (selector, parent = document) =>
@@ -60,17 +61,22 @@
         }
 
         element.hidden = false;
-        element.setAttribute("role", type === "error" ? "alert" : "status");
+        element.setAttribute(
+            "role",
+            type === "error" ? "alert" : "status"
+        );
     }
 
     function hideMessage() {
         const element = $(SELECTORS.message);
 
-        if (element) {
-            element.hidden = true;
-            element.textContent = "";
-            element.classList.remove("is-error", "is-success");
+        if (!element) {
+            return;
         }
+
+        element.hidden = true;
+        element.textContent = "";
+        element.classList.remove("is-error", "is-success");
     }
 
     function initials(value) {
@@ -89,14 +95,6 @@
             .join("");
     }
 
-    function formatDate(date = new Date()) {
-        return new Intl.DateTimeFormat("en-IN", {
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        }).format(date);
-    }
-
     function formatNumber(value) {
         return new Intl.NumberFormat("en-IN").format(value);
     }
@@ -106,50 +104,51 @@
             return;
         }
 
+        const labelElement = element.querySelector(
+            "#business-primary-label, #business-secondary-label"
+        );
+
+        if (labelElement) {
+            labelElement.textContent = label;
+            return;
+        }
+
         const textNode = Array.from(element.childNodes).find(
-            node => node.nodeType === Node.TEXT_NODE &&
+            node =>
+                node.nodeType === Node.TEXT_NODE &&
                 node.textContent.trim()
         );
 
         if (textNode) {
             textNode.textContent = ` ${label} `;
         } else {
-            element.textContent = label;
+            element.prepend(
+                document.createTextNode(`${label} `)
+            );
         }
     }
 
-    function setDisabled(button, disabled) {
-        if (!button) {
+    function setDisabled(element, disabled) {
+        if (!element) {
             return;
         }
 
-        button.disabled = disabled;
-        button.setAttribute("aria-disabled", String(disabled));
-    }
+        element.setAttribute("aria-disabled", String(disabled));
 
-    function setInitialDate() {
-        setText("#welcome-date", formatDate());
+        if (disabled) {
+            element.setAttribute("tabindex", "-1");
+        } else {
+            element.removeAttribute("tabindex");
+        }
     }
-
-    // =========================================
-    // SUPABASE INITIALIZATION
-    // =========================================
 
     function getSupabaseClient() {
-        if (window.bizoraSupabase) {
+        if (window.bizoraSupabase?.auth) {
             return window.bizoraSupabase;
         }
 
-        if (window.supabaseClient) {
+        if (window.supabaseClient?.auth) {
             return window.supabaseClient;
-        }
-
-        if (
-            window.supabase &&
-            typeof window.supabase.from === "function" &&
-            window.supabase.auth
-        ) {
-            return window.supabase;
         }
 
         return null;
@@ -157,9 +156,9 @@
 
     function waitForSupabase(timeout = 10000) {
         return new Promise((resolve, reject) => {
-            const start = Date.now();
+            const startedAt = Date.now();
 
-            const check = () => {
+            function check() {
                 const client = getSupabaseClient();
 
                 if (client) {
@@ -167,7 +166,7 @@
                     return;
                 }
 
-                if (Date.now() - start >= timeout) {
+                if (Date.now() - startedAt >= timeout) {
                     reject(
                         new Error(
                             "Supabase client was not initialized. Check javascript/supabase.js."
@@ -177,18 +176,17 @@
                 }
 
                 window.setTimeout(check, 100);
-            };
+            }
 
             check();
         });
     }
 
-    // =========================================
-    // AUTHENTICATION
-    // =========================================
+    // Authentication
 
     async function verifySession() {
-        const { data, error } = await state.client.auth.getSession();
+        const { data, error } =
+            await state.client.auth.getSession();
 
         if (error) {
             throw error;
@@ -206,22 +204,17 @@
         return true;
     }
 
-    function getDisplayName(user) {
+    function getDisplayName(user = state.user) {
         const metadata = user?.user_metadata || {};
 
-        const businessName = state.business?.name;
-
-        const metadataName =
+        return (
             metadata.full_name ||
             metadata.fullName ||
             metadata.name ||
-            metadata.username;
-
-        const emailName = user?.email
-            ? user.email.split("@")[0]
-            : "";
-
-        return businessName || metadataName || emailName || "Business owner";
+            metadata.username ||
+            user?.email?.split("@")[0] ||
+            "Business owner"
+        );
     }
 
     function renderUserDetails() {
@@ -229,35 +222,20 @@
             return;
         }
 
-        const name = getDisplayName(state.user);
+        const name = getDisplayName();
         const email = state.user.email || "";
+        const avatar = initials(name);
 
         setText("#welcome-name", name);
         setText("#profile-name", name);
         setText("#profile-email", email);
         setText("#settings-name", name);
         setText("#settings-email", email);
-
-        const avatar = initials(name);
-
         setText("#profile-avatar", avatar);
         setText("#settings-avatar", avatar);
-
-        $$(".profile-avatar, .settings-avatar").forEach(element => {
-            if (
-                element.tagName === "IMG" &&
-                element instanceof HTMLImageElement
-            ) {
-                element.alt = `${name} profile`;
-            } else {
-                element.setAttribute("aria-label", `${name} profile`);
-            }
-        });
     }
 
-    // =========================================
-    // BUSINESS DATA
-    // =========================================
+    // Business and products
 
     async function loadBusiness() {
         const { data, error } = await state.client
@@ -283,7 +261,9 @@
 
         const { data, error } = await state.client
             .from("products")
-            .select("id, name, description, price, item_type, is_available")
+            .select(
+                "id, name, description, price, item_type, is_available, created_at"
+            )
             .eq("business_id", state.business.id)
             .order("created_at", { ascending: false });
 
@@ -296,9 +276,7 @@
         return state.products;
     }
 
-    // =========================================
-    // BUSINESS STATUS
-    // =========================================
+    // Dashboard business status
 
     function setBusinessStatus({
         label,
@@ -311,6 +289,7 @@
         published = false
     }) {
         setText("#business-status-label", label);
+        setText("#launch-title", title);
         setText("#business-status-title", title);
         setText("#business-status-description", description);
 
@@ -326,15 +305,16 @@
 
         if (primary) {
             setButtonLabel(primary, primaryText);
-            primary.dataset.destination = primaryUrl;
+            primary.href = primaryUrl;
             primary.hidden = false;
             setDisabled(primary, false);
         }
 
         if (secondary) {
             setButtonLabel(secondary, secondaryText);
-            secondary.dataset.destination = secondaryUrl;
+            secondary.href = secondaryUrl;
             secondary.hidden = !secondaryText;
+            setDisabled(secondary, false);
         }
     }
 
@@ -344,7 +324,7 @@
         if (!business) {
             setBusinessStatus({
                 label: "GET STARTED",
-                title: "Bring your business online.",
+                title: "Give your business a place online.",
                 description:
                     "Create your business profile to start building your digital presence with Bizora.",
                 primaryText: "Set up my business",
@@ -361,7 +341,7 @@
                 label: "PROFILE IN PROGRESS",
                 title: "Your business is taking shape.",
                 description:
-                    "Your business profile exists, but your public storefront is not published yet. Review your details and publish when you're ready.",
+                    "Your business profile is saved, but your public storefront is not published yet. Review your details and publish when you're ready.",
                 primaryText: "Edit business profile",
                 primaryUrl: CONFIG.businessPage,
                 secondaryText: "Manage products",
@@ -371,27 +351,30 @@
             return;
         }
 
+        const storefrontUrl = business.slug
+            ? `${CONFIG.storefrontPage}?slug=${encodeURIComponent(business.slug)}`
+            : CONFIG.businessPage;
+
         setBusinessStatus({
             label: "BUSINESS PUBLISHED",
             title: "Your business is online.",
             description:
-                "Your public business profile is published. Keep your information and product listings up to date.",
-            primaryText: "View storefront",
-            primaryUrl: `${CONFIG.storefrontPage}?slug=${encodeURIComponent(business.slug || "")}`,
+                "Your business profile is published. Keep your business information and listings up to date.",
+            primaryText: business.slug
+                ? "View storefront"
+                : "Edit business profile",
+            primaryUrl: storefrontUrl,
             secondaryText: "Manage products",
             secondaryUrl: CONFIG.productsPage,
             published: true
         });
     }
 
-    // =========================================
-    // DASHBOARD OVERVIEW
-    // =========================================
+    // Dashboard overview
 
     function renderOverview() {
         const business = state.business;
 
-        // Business profile completion is based on actual saved fields.
         const requiredFields = [
             business?.name,
             business?.category,
@@ -407,11 +390,32 @@
         ).length;
 
         const completion = business
-            ? Math.round((completedFields / requiredFields.length) * 100)
+            ? Math.round(
+                (completedFields / requiredFields.length) * 100
+            )
             : 0;
 
+        const availableProducts = state.products.filter(
+            product => product.is_available
+        );
+
         setText("#profile-completion", `${completion}%`);
-        setText("#product-count", formatNumber(state.products.length));
+        setText(
+            "#profile-completion-description",
+            business
+                ? `${completedFields} of ${requiredFields.length} key details completed`
+                : "Set up your business profile to get started"
+        );
+
+        setText(
+            "#product-count",
+            formatNumber(state.products.length)
+        );
+
+        setText(
+            "#product-count-description",
+            `${availableProducts.length} available listing${availableProducts.length === 1 ? "" : "s"}`
+        );
 
         setText(
             "#publication-status",
@@ -422,18 +426,28 @@
                     : "Draft"
         );
 
-        // Also support alternative IDs used by an earlier dashboard layout.
+        setText(
+            "#publication-description",
+            !business
+                ? "Your profile hasn't been created yet"
+                : business.is_published
+                    ? "Your storefront is visible to customers"
+                    : "Your storefront isn't public yet"
+        );
+
+        // Support alternative IDs from earlier layouts.
         setText("#business-count", business ? "1" : "0");
-        setText("#products-count", formatNumber(state.products.length));
+        setText(
+            "#products-count",
+            formatNumber(state.products.length)
+        );
         setText(
             "#visibility-count",
             business?.is_published ? "Live" : "Not live"
         );
     }
 
-    // =========================================
-    // NEXT STEPS
-    // =========================================
+    // Next steps
 
     function renderNextSteps() {
         const container = $("#next-steps-list");
@@ -444,33 +458,32 @@
 
         const business = state.business;
         const products = state.products;
-
         const steps = [];
 
         if (!business) {
-            steps.push({
-                number: "01",
-                title: "Create your business profile",
-                description:
-                    "Add your business name, category, contact details and description.",
-                destination: CONFIG.businessPage
-            });
-
-            steps.push({
-                number: "02",
-                title: "Add your products or services",
-                description:
-                    "Show customers what your business offers.",
-                destination: CONFIG.productsPage
-            });
-
-            steps.push({
-                number: "03",
-                title: "Explore digital growth",
-                description:
-                    "Learn about UPI safety, digital tools and online visibility.",
-                destination: CONFIG.growPage
-            });
+            steps.push(
+                {
+                    number: "01",
+                    title: "Create your business profile",
+                    description:
+                        "Add your business name, category, contact details and description.",
+                    destination: CONFIG.businessPage
+                },
+                {
+                    number: "02",
+                    title: "Add your products or services",
+                    description:
+                        "Show customers what your business offers.",
+                    destination: CONFIG.productsPage
+                },
+                {
+                    number: "03",
+                    title: "Explore digital growth",
+                    description:
+                        "Learn about online visibility, digital tools and payment safety.",
+                    destination: CONFIG.growPage
+                }
+            );
         } else {
             const requiredFields = [
                 business.name,
@@ -480,15 +493,15 @@
                 business.address
             ];
 
-            const missingFields = requiredFields.some(value =>
+            const hasMissingFields = requiredFields.some(value =>
                 typeof value === "string"
                     ? !value.trim()
                     : !value
             );
 
-            if (missingFields) {
+            if (hasMissingFields) {
                 steps.push({
-                    number: "01",
+                    number: "",
                     title: "Complete your business information",
                     description:
                         "Review your profile and fill in any missing details.",
@@ -498,7 +511,7 @@
 
             if (products.length === 0) {
                 steps.push({
-                    number: steps.length ? "02" : "01",
+                    number: "",
                     title: "Add your first product or service",
                     description:
                         "Create a listing so customers can discover what you offer.",
@@ -508,31 +521,37 @@
 
             if (!business.is_published) {
                 steps.push({
-                    number: String(steps.length + 1).padStart(2, "0"),
+                    number: "",
                     title: "Get your storefront ready",
                     description:
                         "Review your business details and publish your profile when ready.",
                     destination: CONFIG.businessPage
                 });
+            } else {
+                steps.push({
+                    number: "✓",
+                    title: "Your business is online",
+                    description:
+                        "Your storefront is published. Keep your information and listings current.",
+                    destination: business.slug
+                        ? `${CONFIG.storefrontPage}?slug=${encodeURIComponent(business.slug)}`
+                        : CONFIG.businessPage
+                });
             }
 
             steps.push({
-                number: String(steps.length + 1).padStart(2, "0"),
+                number: "",
                 title: "Learn how to grow digitally",
                 description:
                     "Explore online visibility, digital tools and payment safety.",
                 destination: CONFIG.growPage
             });
 
-            if (business.is_published && products.length > 0) {
-                steps.unshift({
-                    number: "✓",
-                    title: "Your business is online",
-                    description:
-                        "Your storefront is published. Keep your information and listings current.",
-                    destination: CONFIG.storefrontPage
-                });
-            }
+            steps.forEach((step, index) => {
+                if (!step.number) {
+                    step.number = String(index + 1).padStart(2, "0");
+                }
+            });
         }
 
         container.replaceChildren();
@@ -566,36 +585,7 @@
         });
     }
 
-    // =========================================
-    // LOAD DASHBOARD
-    // =========================================
-
-    async function loadDashboard() {
-        hideMessage();
-
-        try {
-            await loadBusiness();
-            renderUserDetails();
-            renderBusinessStatus();
-
-            await loadProducts();
-
-            renderOverview();
-            renderNextSteps();
-            renderUserDetails();
-        } catch (error) {
-            console.error("Dashboard data error:", error);
-
-            showMessage(
-                "We couldn't load all your business data. Check your connection and Supabase permissions, then refresh the page.",
-                "error"
-            );
-        }
-    }
-
-    // =========================================
-    // MOBILE SIDEBAR
-    // =========================================
+    // Navigation and profile menu
 
     function setSidebarOpen(open) {
         const sidebar = $(SELECTORS.sidebar);
@@ -640,18 +630,12 @@
             setSidebarOpen(false);
         });
 
-        $$(".dashboard-navigation a", sidebar).forEach(link => {
-            link.addEventListener("click", () => {
-                setSidebarOpen(false);
+        $$(".workspace-nav a, .dashboard-navigation a", sidebar)
+            .forEach(link => {
+                link.addEventListener("click", () => {
+                    setSidebarOpen(false);
+                });
             });
-        });
-
-        document.addEventListener("keydown", event => {
-            if (event.key === "Escape") {
-                setSidebarOpen(false);
-                closeProfileMenu();
-            }
-        });
 
         window.addEventListener("resize", () => {
             if (window.innerWidth > 900) {
@@ -659,10 +643,6 @@
             }
         });
     }
-
-    // =========================================
-    // PROFILE MENU
-    // =========================================
 
     function closeProfileMenu() {
         const menu = $(SELECTORS.profileMenu);
@@ -687,16 +667,23 @@
         button.setAttribute("aria-expanded", "false");
 
         button.addEventListener("click", event => {
-    event.stopPropagation();
+            event.preventDefault();
+            event.stopPropagation();
 
             const open = menu.hidden;
-
             menu.hidden = !open;
+
             button.setAttribute("aria-expanded", String(open));
         });
 
         menu.addEventListener("click", event => {
-            event.stopPropagation();
+            if (event.target.closest(SELECTORS.logoutButtons)) {
+                return;
+            }
+
+            if (event.target.closest("[data-settings-link]")) {
+                closeProfileMenu();
+            }
         });
 
         document.addEventListener("click", event => {
@@ -709,141 +696,45 @@
         });
     }
 
-    // =========================================
-    // DASHBOARD BUTTONS
-    // =========================================
-
-    function setupBusinessActions() {
-        const primary = $("#business-primary-action");
-        const secondary = $("#business-secondary-action");
-
-        primary?.addEventListener("click", () => {
-            const destination = primary.dataset.destination;
-
-            if (destination) {
-                window.location.href = destination;
-            }
-        });
-
-        secondary?.addEventListener("click", () => {
-            const destination = secondary.dataset.destination;
-
-            if (destination) {
-                window.location.href = destination;
-            }
-        });
-
-        // Support a manual refresh button if the HTML includes one.
-        $("#refresh-dashboard")?.addEventListener("click", loadDashboard);
-    }
-
     function setupSettingsNavigation() {
-        const settingsLink = $("#settings-link");
-
-        settingsLink?.addEventListener("click", event => {
-            const settings = $("#settings");
-
-            if (!settings) {
-                return;
-            }
-
-            event.preventDefault();
-            settings.scrollIntoView({
-                behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-                    ? "auto"
-                    : "smooth",
-                block: "start"
-            });
-
-            history.replaceState(null, "", "#settings");
-            setSidebarOpen(false);
-        });
-    }
-
-    // =========================================
-    // LOGOUT
-    // =========================================
-
-    async function logout() {
-        if (state.isLoggingOut) {
-            return;
-        }
-
-        state.isLoggingOut = true;
-
-        const buttons = $$(SELECTORS.logoutButtons);
-        const originalLabels = buttons.map(button => button.textContent);
-
-        buttons.forEach(button => {
-            setDisabled(button, true);
-            button.textContent = "Signing out…";
-        });
-
-        try {
-            const { error } = await state.client.auth.signOut();
-
-            if (error) {
-                throw error;
-            }
-
-            window.location.replace(CONFIG.authPage);
-        } catch (error) {
-            console.error("Logout error:", error);
-
-            state.isLoggingOut = false;
-
-            buttons.forEach((button, index) => {
-                setDisabled(button, false);
-                button.textContent = originalLabels[index];
-            });
-
-            showMessage(
-                "We couldn't sign you out. Please try again.",
-                "error"
-            );
-        }
-    }
-
-    function setupLogout() {
-        $$(SELECTORS.logoutButtons).forEach(button => {
-            button.addEventListener("click", event => {
-                event.preventDefault();
-                logout();
-            });
-        });
-    }
-
-    // =========================================
-    // ACTIVE NAVIGATION
-    // =========================================
-
-    function setupActiveNavigation() {
-        const currentFile = window.location.pathname
+const currentFile = window.location.pathname
             .split("/")
             .pop() || "dashboard.html";
 
-        $$(".dashboard-navigation .nav-item").forEach(link => {
-            const href = link.getAttribute("href");
+        $$(".workspace-nav-link, .dashboard-navigation .nav-item")
+            .forEach(link => {
+                const href = link.getAttribute("href");
 
-            if (!href) {
-                return;
-            }
+                if (!href) {
+                    return;
+                }
 
-            const linkFile = href.split("#")[0].split("/").pop();
+                const linkFile = href
+                    .split("?")[0]
+                    .split("#")[0]
+                    .split("/")
+                    .pop();
 
-            if (linkFile === currentFile) {
-                link.classList.add("active");
-                link.setAttribute("aria-current", "page");
-            } else {
-                link.classList.remove("active");
-                link.removeAttribute("aria-current");
+                if (linkFile === currentFile) {
+                    link.classList.add("active");
+                    link.setAttribute("aria-current", "page");
+                } else {
+                    link.classList.remove("active");
+                    link.removeAttribute("aria-current");
+                }
+            });
+    }
+
+    function setupGlobalKeyboardNavigation() {
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                setSidebarOpen(false);
+                closeProfileMenu();
             }
         });
     }
 
-    // =========================================
-    // AUTH STATE CHANGES
-    // =========================================
+    // Auth listener
 
     function setupAuthListener() {
         state.client.auth.onAuthStateChange((event, session) => {
@@ -852,22 +743,21 @@
                 return;
             }
 
-            if (
-                event === "USER_UPDATED" &&
-                session?.user
-            ) {
+            if (event === "USER_UPDATED" && session?.user) {
                 state.user = session.user;
                 renderUserDetails();
             }
         });
     }
 
-    // =========================================
-    // INITIALIZE
-    // =========================================
+    // Initialize dashboard
 
     async function initializeDashboard() {
-        setInitialDate();
+        if (state.initialized) {
+            return;
+        }
+
+        state.initialized = true;
 
         setupMobileNavigation();
         setupProfileMenu();
@@ -875,6 +765,7 @@
         setupSettingsNavigation();
         setupLogout();
         setupActiveNavigation();
+        setupGlobalKeyboardNavigation();
 
         try {
             state.client = await waitForSupabase();
@@ -886,7 +777,6 @@
             }
 
             setupAuthListener();
-
             renderUserDetails();
 
             await loadDashboard();
@@ -894,7 +784,28 @@
             console.error("Dashboard initialization error:", error);
 
             showMessage(
-                "Bizora couldn't connect to your account. Check your internet connection and Supabase configuration.",
+                "Bizora couldn't connect to your account. Check your internet connection and Supabase configuration, then refresh the page.",
+                "error"
+            );
+        }
+    }
+
+    async function loadDashboard() {
+        hideMessage();
+
+        try {
+            await loadBusiness();
+            await loadProducts();
+
+            renderUserDetails();
+            renderBusinessStatus();
+            renderOverview();
+            renderNextSteps();
+        } catch (error) {
+            console.error("Dashboard data error:", error);
+
+            showMessage(
+                "We couldn't load your business data. Check your Supabase connection, table permissions and RLS policies, then refresh the page.",
                 "error"
             );
         }
@@ -910,3 +821,4 @@
         initializeDashboard();
     }
 })();
+     
