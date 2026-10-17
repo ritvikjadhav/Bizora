@@ -1447,4 +1447,112 @@
         transition-duration: 0.01ms !important;
     }
 }
-       
+       /* Next steps */
+#next-steps-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 24px;
+}
+
+#next-steps-list .next-step {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 24px;
+    align-items: start;
+    gap: 14px;
+    padding: 20px;
+    border: 1px solid #e3eaf0;
+    border-radius: 16px;
+    background: #ffffff;
+    color: #102d46;
+    text-decoration: none;
+    transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+}
+
+#next-steps-list .next-step:hover {
+    border-color: #168c89;
+    box-shadow: 0 8px 24px rgb(16 45 70 / 7%);
+    transform: translateY(-2px);
+}
+
+#next-steps-list .step-number {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 12px;
+    background: #eaf6f5;
+    color: #168c89;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+#next-steps-list .step-content {
+    min-width: 0;
+}
+
+#next-steps-list .step-content h3 {
+    margin: 2px 0 8px;
+    color: #102d46;
+    font-family: "Manrope", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+#next-steps-list .step-content p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+#next-steps-list .step-arrow {
+    align-self: center;
+    color: #168c89;
+    font-size: 22px;
+    transition: transform 180ms ease;
+}
+
+#next-steps-list .next-step:hover .step-arrow {
+    transform: translateX(4px);
+}
+
+@media (max-width: 600px) {
+    #next-steps-list {
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+    #next-steps-list .next-step {
+        grid-template-columns: 36px minmax(0, 1fr) 18px;
+        gap: 12px;
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    #next-steps-list .step-number {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+
+    #next-steps-list .step-content h3 {
+        font-size: 15px;
+    }
+
+    #next-steps-list .step-content p {
+        font-size: 13px;
+        line-height: 1.65;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #next-steps-list .next-step,
+    #next-steps-list .step-arrow {
+        transition: none;
+    }
+}
