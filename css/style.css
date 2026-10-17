@@ -309,25 +309,45 @@ p {
 }
 
 
-/* HERO IMAGE */
+/* HERO IMAGE — Seamless Integration */
 
 .hero-visual {
+    position: relative;
     min-width: 0;
+    width: 100%;
 }
 
 .hero-image-frame {
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    border-radius: 21px;
-    background: #eaf2f8;
-    box-shadow: var(--shadow);
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .hero-image {
+    display: block;
     width: 100%;
     height: auto;
     aspect-ratio: 1.5;
     object-fit: contain;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        #000 7%,
+        #000 88%,
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        #000 7%,
+        #000 88%,
+        transparent 100%
+    );
 }
 
 .hero-image-caption {
@@ -337,14 +357,15 @@ p {
     align-items: center;
     justify-content: center;
     gap: 9px;
-    margin: 16px auto 0;
+    margin: 10px auto 0;
     padding: 9px 15px;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 999px;
     color: #526879;
-    background: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.72);
     font-size: 11px;
     font-weight: 600;
+    backdrop-filter: blur(10px);
 }
 
 .caption-dot {
@@ -1016,8 +1037,16 @@ button:focus-visible {
     }
 
     .hero-image-frame {
-        border-radius: 17px;
-    }
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.hero-image {
+    aspect-ratio: 1.25;
+}
 
     .hero-image-caption {
         margin-top: 12px;
