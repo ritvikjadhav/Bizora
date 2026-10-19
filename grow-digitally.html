@@ -3,17 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#102D46">
-
-  <title>Grow Digitally | Bizvero</title>
 
   <meta
     name="description"
-    content="Learn how to grow your small business online, use digital payments safely, reach customers, and build trust."
+    content="Discover practical ways to grow your business online with Bizvero."
   >
 
-  <link rel="stylesheet" href="./css/style.css">
-  <link rel="stylesheet" href="./css/grow-digitally.css">
+  <meta name="theme-color" content="#123047">
+
+  <title>Grow Digitally | Bizvero</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,1067 +20,909 @@
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   >
+
+  <link rel="stylesheet" href="./css/dashboard.css">
+  <link rel="stylesheet" href="./css/grow-digitally.css">
+
+  <script src="./js/supabase.js" defer></script>
+  <script src="./js/grow-digitally.js" defer></script>
 </head>
 
 <body class="growth-page">
 
-<div class="app-layout">
+  <div class="app-layout">
 
-  <!-- SIDEBAR -->
+    <!-- ==================================================
+         SIDEBAR — SHARED BIZVERO NAVIGATION
+    =================================================== -->
 
-  <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar">
 
-    <a href="./dashboard.html" class="brand" aria-label="Bizvero home">
-      <span class="brand-mark">B</span>
-      <span class="brand-name">bizvero<span>.</span></span>
-    </a>
+      <!-- Brand -->
 
-    <div class="sidebar-label">WORKSPACE</div>
-
-    <nav class="sidebar-nav" aria-label="Main navigation">
-
-      <a href="./dashboard.html" class="nav-link">
-        <span class="nav-icon">▦</span>
-        <span>Overview</span>
+      <a class="brand" href="./dashboard.html" aria-label="Bizvero home">
+        <span class="brand-mark">B</span>
+        <span class="brand-name">bizvero<span>.</span></span>
       </a>
 
-      <a href="./create-business.html" class="nav-link">
-        <span class="nav-icon">⌂</span>
-        <span>My Business</span>
-      </a>
+      <!-- Main navigation -->
 
-      <a href="./products.html" class="nav-link">
-        <span class="nav-icon">▤</span>
-        <span>Products &amp; Services</span>
-      </a>
+      <div class="sidebar-section-label">Workspace</div>
 
-      <a
-        href="./grow-digitally.html"
-        class="nav-link active"
-        aria-current="page"
-      >
-        <span class="nav-icon">↗</span>
-        <span>Grow Digitally</span>
-      </a>
+      <nav class="sidebar-nav" aria-label="Main navigation">
 
-    </nav>
+        <a class="nav-link" href="./dashboard.html">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect x="4" y="4" width="6" height="6" rx="1.5"/>
+              <rect x="14" y="4" width="6" height="6" rx="1.5"/>
+              <rect x="4" y="14" width="6" height="6" rx="1.5"/>
+              <rect x="14" y="14" width="6" height="6" rx="1.5"/>
+            </svg>
+          </span>
+          <span>Overview</span>
+        </a>
 
-    <div class="sidebar-bottom">
+        <a class="nav-link" href="./my-business.html">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M4 10.5 12 4l8 6.5V20H4V10.5Z"/>
+              <path d="M9 20v-6h6v6"/>
+            </svg>
+          </span>
+          <span>My Business</span>
+        </a>
 
-      <div class="sidebar-help">
-        <span class="help-icon">?</span>
+        <a class="nav-link" href="./products-services.html">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect x="4" y="4" width="16" height="16" rx="2"/>
+              <path d="M4 9h16M4 14h16M9 4v16M14 4v16"/>
+            </svg>
+          </span>
+          <span>Products &amp; Services</span>
+        </a>
 
-        <div>
-          <strong>Need a hand?</strong>
-          <p>Learn one step at a time.</p>
-        </div>
+        <a
+          class="nav-link is-active"
+          href="./grow-digitally.html"
+          aria-current="page"
+        >
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 3v18M3 12h18M5.64 5.64l12.72 12.72M18.36 5.64 5.64 18.36"/>
+              <circle cx="12" cy="12" r="4"/>
+            </svg>
+          </span>
+          <span>Grow Digitally</span>
+        </a>
+
+      </nav>
+
+      <!-- Secondary navigation -->
+
+      <div class="sidebar-secondary">
+
+        <a class="nav-link" href="./account-settings.html">
+          <span class="nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="m19.4 15 .1.1 1.1.9-1.5 2.6-1.4-.6a8 8 0 0 1-1.8 1l-.2 1.5h-3l-.2-1.5a8 8 0 0 1-1.8-1l-1.4.6-1.5-2.6 1.1-.9a7 7 0 0 1 0-2l-1.1-.9 1.5-2.6 1.4.6a8 8 0 0 1 1.8-1L12.8 7h3l.2 1.5a8 8 0 0 1 1.8 1l1.4-.6 1.5 2.6-1.1.9a7 7 0 0 1-.2 2.6Z" transform="translate(-2 -2)"/>
+            </svg>
+          </span>
+          <span>Account settings</span>
+        </a>
+
       </div>
 
-      <button
-        type="button"
-        class="sidebar-logout"
-        id="logout-button"
-      >
-        ↗ Sign out
-      </button>
+      <!-- Guidance card -->
 
-    </div>
+      <div class="sidebar-guidance">
 
-  </aside>
+        <span class="guidance-eyebrow">A LITTLE GUIDANCE</span>
 
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <h2>Make digital feel simple.</h2>
 
+        <p>
+          Explore practical ideas to help more customers find your business.
+        </p>
 
-  <!-- MAIN CONTENT -->
+        <a href="#growth-guides" class="guidance-link">
+          Explore guides
+          <span aria-hidden="true">→</span>
+        </a>
 
-  <main class="growth-main">
-
-    <!-- TOPBAR -->
-
-    <header class="growth-topbar">
-
-      <button
-        type="button"
-        class="mobile-menu-button"
-        id="mobile-menu-button"
-        aria-label="Open navigation menu"
-        aria-controls="sidebar"
-        aria-expanded="false"
-      >
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M4 6h16M4 12h16M4 18h16"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-          />
-        </svg>
-      </button>
-
-      <div class="breadcrumb">
-        <a href="./dashboard.html">Workspace</a>
-        <span>/</span>
-        <span aria-current="page">Grow Digitally</span>
       </div>
 
-      <a href="./storefront.html" class="topbar-storefront-link">
-        View storefront ↗
-      </a>
+      <!-- Signed-in user -->
 
-    </header>
+      <div class="sidebar-user">
 
-
-    <div class="growth-content">
-
-      <!-- HERO -->
-
-      <section class="growth-hero" aria-labelledby="growth-title">
-
-        <div class="growth-hero-content">
-
-          <div class="eyebrow">
-            <span class="eyebrow-dot"></span>
-            YOUR DIGITAL GROWTH STUDIO
-          </div>
-
-          <h1 id="growth-title">
-            Your business.<br>
-            <span>Ready for more.</span>
-          </h1>
-
-          <p class="growth-hero-description">
-            You don't need a big budget or technical skills to begin.
-            Learn practical ways to help customers find your business,
-            protect your payments, and show what you offer online.
-          </p>
-
-          <a href="#learning-library" class="primary-cta">
-            Explore the lessons ↓
-          </a>
-
-          <div class="hero-note">
-            ✓ Practical guidance for everyday business owners
-          </div>
-
+        <div class="sidebar-user-avatar" id="sidebar-user-avatar">
+          R
         </div>
 
-        <div class="growth-hero-visual" aria-hidden="true">
+        <div class="sidebar-user-details">
+          <span class="sidebar-user-name" id="sidebar-user-name">
+            Ritvik
+          </span>
 
-          <div class="hero-orbit hero-orbit-outer"></div>
-          <div class="hero-orbit hero-orbit-inner"></div>
-
-          <div class="hero-center">
-
-            <div class="hero-store-icon">
-              <svg viewBox="0 0 64 64" fill="none">
-                <path
-                  d="M10 27h44v27H10z"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                />
-
-                <path
-                  d="M7 27 14 10h36l7 17"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                />
-
-                <path
-                  d="M23 54V38h18v16"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                />
-              </svg>
-            </div>
-
-            <span>Your local business</span>
-
-          </div>
-
-          <div class="hero-floating-item hero-floating-discover">
-            <span class="floating-icon">⌕</span>
-            <span>Be discovered</span>
-          </div>
-
-          <div class="hero-floating-item hero-floating-payments">
-            <span class="floating-icon">₹</span>
-            <span>Stay payment-safe</span>
-          </div>
-
-          <div class="hero-floating-item hero-floating-customers">
-            <span class="floating-icon">↗</span>
-            <span>Reach customers</span>
-          </div>
-
+          <span class="sidebar-user-email" id="sidebar-user-email">
+            Your account
+          </span>
         </div>
 
-      </section>
-
-
-      <!-- LEARNING PROGRESS -->
-
-      <section
-        class="growth-overview"
-        aria-label="Your learning progress"
-      >
-
-        <div class="growth-overview-panel">
-
-          <div class="overview-progress-icon">↗</div>
-
-          <div class="overview-progress-copy">
-
-            <strong id="growth-progress-title">
-              Build your digital foundations
-            </strong>
-
-            <p id="growth-progress-description">
-              Explore each topic and mark the lesson complete when you're done.
-            </p>
-
-          </div>
-
-          <div class="overview-progress-value">
-
-            <strong id="completed-lessons">0 of 4</strong>
-
-            <span>lessons completed</span>
-
-            <div class="overview-progress-track">
-              <span id="learning-progress-bar"></span>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- LEARNING LIBRARY -->
-
-      <section
-        class="learning-library"
-        id="learning-library"
-        aria-labelledby="library-title"
-      >
-
-        <div class="section-heading library-heading">
-
-          <div>
-            <span class="section-kicker">LEARN · APPLY · GROW</span>
-            <h2 id="library-title">Make your next move.</h2>
-          </div>
-
-          <p>
-            Four practical topics for your everyday business.
-          </p>
-
-        </div>
-
-
-        <!-- MODULE 1: ONLINE PRESENCE -->
-
-        <article class="learning-module" id="module-discovery">
-
-          <div class="module-visual module-visual-discovery">
-
-            <div class="module-visual-label">
-              01 / DISCOVERABILITY
-            </div>
-
-            <div class="discovery-visual-content">
-
-              <div class="discovery-search">
-                <span>⌕</span>
-                <span>Find a local business</span>
-              </div>
-
-              <div class="discovery-business-preview">
-
-                <div class="discovery-placeholder-logo">B</div>
-
-                <div>
-                  <strong>Your business name</strong>
-                  <span>Photos · Hours · Directions</span>
-                </div>
-
-                <span class="discovery-status">Example</span>
-
-              </div>
-
-              <div class="discovery-location-line">
-                ⌖ Accurate details help customers find you.
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="module-content">
-
-            <div class="module-meta">
-              <span class="module-category">ONLINE PRESENCE</span>
-              <span class="module-duration">5–8 min</span>
-            </div>
-
-            <h3>Help the right customers find you.</h3>
-
-            <p>
-              Make it easier for nearby customers to discover your
-              business with useful photos and accurate contact details.
-            </p>
-
-            <ul class="module-learning-points">
-              <li>Prepare your business name, address and hours.</li>
-              <li>Learn how Google Business Profile works.</li>
-              <li>Keep your public information up to date.</li>
-            </ul>
-
-            <div class="module-actions">
-
-              <a
-                href="https://support.google.com/business/"
-                class="module-primary-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Official learning guide ↗
-              </a>
-
-              <button
-                type="button"
-                class="module-complete-button"
-                data-complete-module="discovery"
-              >
-                Mark as complete
-              </button>
-
-            </div>
-
-          </div>
-
-        </article>
-
-
-        <!-- MODULE 2: PAYMENT SAFETY -->
-
-        <article
-          class="learning-module learning-module-reverse"
-          id="module-payments"
+        <button
+          class="sidebar-user-menu"
+          id="logout-button"
+          type="button"
+          aria-label="Sign out"
+          title="Sign out"
         >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="5" cy="12" r="1"/>
+            <circle cx="12" cy="12" r="1"/>
+            <circle cx="19" cy="12" r="1"/>
+          </svg>
+        </button>
 
-          <div class="module-visual module-visual-payments">
+      </div>
 
-            <div class="module-visual-label">
-              02 / PAYMENT CONFIDENCE
-            </div>
+    </aside>
 
-            <div class="payment-visual-content">
+    <!-- ==================================================
+         MAIN CONTENT
+    =================================================== -->
 
-              <div class="payment-qr-example">
+    <main class="growth-main">
 
-                <div class="qr-example-pattern" aria-hidden="true">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
+      <!-- Top bar -->
 
-                <div class="qr-example-caption">
-                  <strong>Merchant QR</strong>
-                  <span>Illustrative example only</span>
-                </div>
+      <header class="growth-topbar">
 
-              </div>
+        <div class="breadcrumb">
+          <span>Workspace</span>
+          <span class="breadcrumb-divider">/</span>
+          <span class="breadcrumb-current">Grow Digitally</span>
+        </div>
 
-              <div class="payment-safety-note">
-
-                <span class="safety-check">✓</span>
-
-                <div>
-                  <strong>Verify the payment</strong>
-                  <span>Check your own payment app.</span>
-                </div>
-
-              </div>
-
-              <div class="payment-warning-note">
-                ! Never share your UPI PIN or OTP.
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="module-content">
-
-            <div class="module-meta">
-              <span class="module-category">UPI &amp; SAFETY</span>
-              <span class="module-duration">5–8 min</span>
-            </div>
-
-            <h3>Know what's safe before you pay.</h3>
-
-            <p>
-              Understand merchant QR payments and spot common tricks
-              before they cost your business money.
-            </p>
-
-            <ul class="module-learning-points">
-              <li>Check payment status in your own app or bank account.</li>
-              <li>Never share your UPI PIN or OTP.</li>
-              <li>Receiving money does not require entering your UPI PIN.</li>
-            </ul>
-
-            <div class="module-actions">
-
-              <a
-                href="https://www.npci.org.in/what-we-do/upi/faqs"
-                class="module-primary-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Official UPI guidance ↗
-              </a>
-
-              <button
-                type="button"
-                class="module-complete-button"
-                data-complete-module="payments"
-              >
-                Mark as complete
-              </button>
-
-            </div>
-
-          </div>
-
-        </article>
-
-
-        <!-- MODULE 3: DIGITAL CATALOGUE -->
-
-        <article class="learning-module" id="module-catalogue">
-
-          <div class="module-visual module-visual-catalogue">
-
-            <div class="module-visual-label">
-              03 / YOUR OFFERING
-            </div>
-
-            <div class="catalogue-visual-content">
-
-              <div class="catalogue-example-header">
-                <span>YOUR CATALOGUE</span>
-                <span class="catalogue-example-dot"></span>
-              </div>
-
-              <div class="catalogue-example-items">
-
-                <div class="catalogue-example-item">
-
-                  <div class="catalogue-example-image catalogue-example-image-one">
-                    <span>☕</span>
-                  </div>
-
-                  <div>
-                    <strong>Freshly brewed coffee</strong>
-                    <span>Sample listing</span>
-                  </div>
-
-                  <span class="catalogue-item-arrow">↗</span>
-
-                </div>
-
-                <div class="catalogue-example-item">
-
-                  <div class="catalogue-example-image catalogue-example-image-two">
-                    <span>✿</span>
-                  </div>
-
-                  <div>
-                    <strong>Everyday essentials</strong>
-                    <span>Sample listing</span>
-                  </div>
-
-                  <span class="catalogue-item-arrow">↗</span>
-
-                </div>
-
-              </div>
-
-              <p class="catalogue-example-disclaimer">
-                Illustrative examples, not real products.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="module-content">
-
-            <div class="module-meta">
-              <span class="module-category">DIGITAL CATALOGUE</span>
-              <span class="module-duration">5 min</span>
-            </div>
-
-            <h3>Let customers see what you offer.</h3>
-
-            <p>
-              Present your products or services in a simple catalogue
-              that customers can browse and share.
-            </p>
-
-            <ul class="module-learning-points">
-              <li>Take clear photos in good light.</li>
-              <li>Write short, accurate descriptions.</li>
-              <li>Keep prices, availability and details current.</li>
-            </ul>
-
-            <div class="module-actions">
-
-              <a
-                href="./products.html"
-                class="module-primary-link"
-              >
-                Create your catalogue →
-              </a>
-
-              <button
-                type="button"
-                class="module-complete-button"
-                data-complete-module="catalogue"
-              >
-                Mark as complete
-              </button>
-
-            </div>
-
-          </div>
-
-        </article>
-
-
-        <!-- MODULE 4: CUSTOMER TRUST -->
-
-        <article
-          class="learning-module learning-module-reverse"
-          id="module-trust"
+        <a
+          class="topbar-storefront-link"
+          href="./my-business.html"
         >
+          View storefront
+          <span aria-hidden="true">↗</span>
+        </a>
 
-          <div class="module-visual module-visual-trust">
+      </header>
 
-            <div class="module-visual-label">
-              04 / CUSTOMER TRUST
-            </div>
+      <!-- Page content -->
 
-            <div class="trust-visual-content">
+      <div class="growth-content">
 
-              <div class="trust-quote-mark">“</div>
+        <!-- ==================================================
+             HERO
+        =================================================== -->
 
-              <h4>
-                Trust is built through the small things customers notice.
-              </h4>
+        <section class="growth-hero">
 
-              <div class="trust-principles">
-                <div><span>✓</span> Honest information</div>
-                <div><span>✓</span> Clear communication</div>
-                <div><span>✓</span> Respect for privacy</div>
-              </div>
+          <div class="growth-hero-content">
 
-            </div>
-
-          </div>
-
-
-          <div class="module-content">
-
-            <div class="module-meta">
-              <span class="module-category">CUSTOMER EXPERIENCE</span>
-              <span class="module-duration">4–6 min</span>
-            </div>
-
-            <h3>Give customers a reason to return.</h3>
-
-            <p>
-              Make customers feel confident with reliable information
-              and respectful, professional communication.
-            </p>
-
-            <ul class="module-learning-points">
-              <li>Use accurate contact information.</li>
-              <li>Respond clearly and politely.</li>
-              <li>Protect customer and business information.</li>
-            </ul>
-
-            <div class="module-actions">
-
-              <a
-                href="./storefront.html"
-                class="module-primary-link"
-              >
-                Review your storefront →
-              </a>
-
-              <button
-                type="button"
-                class="module-complete-button"
-                data-complete-module="trust"
-              >
-                Mark as complete
-              </button>
-
-            </div>
-
-          </div>
-
-        </article>
-
-      </section>
-
-
-      <!-- PAYMENT SAFETY CHALLENGE -->
-
-      <section
-        class="payment-safety"
-        id="payment-safety"
-        aria-labelledby="simulator-title"
-      >
-
-        <div class="section-heading">
-
-          <div>
-            <span class="section-kicker">
-              PRACTISE BEFORE IT HAPPENS
+            <span class="eyebrow">
+              <span class="eyebrow-dot"></span>
+              YOUR BUSINESS, MORE DISCOVERABLE
             </span>
 
-            <h2 id="simulator-title">
-              Would you trust this payment?
-            </h2>
-          </div>
+            <h1>
+              Take your business
+              <span>further online.</span>
+            </h1>
 
-          <p>
-            Five everyday situations. Choose the safest action and learn why.
-          </p>
-
-        </div>
-
-
-        <div class="simulator-panel" id="payment-challenge">
-
-          <div class="simulator-topline">
-
-            <span class="simulator-label" id="simulator-label">
-              SCENARIO 01 OF 05
-            </span>
-
-            <span class="simulator-score" id="simulator-score">
-              Score: 0
-            </span>
-
-          </div>
-
-          <div class="simulator-progress-track">
-            <span id="simulator-progress-bar"></span>
-          </div>
-
-
-          <div class="simulator-situation">
-
-            <div class="simulator-icon" id="simulator-icon">
-              ₹
-            </div>
-
-            <h3 id="simulator-question">
-              A customer shows you a payment screenshot.
-            </h3>
-
-            <p id="simulator-description">
-              They say the money has been sent and ask you to hand over the goods.
+            <p class="growth-hero-description">
+              Simple, practical ways to help customers discover your
+              business, explore what you offer and connect with you online.
             </p>
 
-            <strong id="simulator-prompt">
-              What should you do?
-            </strong>
+            <div class="growth-hero-actions">
+
+              <a href="#growth-guides" class="primary-cta">
+                Explore growth guides
+                <span aria-hidden="true">→</span>
+              </a>
+
+              <a href="./my-business.html" class="secondary-cta">
+                View my business
+              </a>
+
+            </div>
+
+            <p class="hero-note">
+              Practical ideas. Clear next steps. Built for small businesses.
+            </p>
 
           </div>
 
+          <!-- Decorative business illustration -->
 
-          <div
-            class="simulator-choices"
-            id="simulator-options"
-          ></div>
+          <div class="growth-hero-visual" aria-hidden="true">
 
+            <div class="hero-orbit hero-orbit-outer"></div>
+            <div class="hero-orbit hero-orbit-inner"></div>
 
-          <div
-            class="simulator-feedback"
-            id="simulator-feedback"
-            role="status"
-            aria-live="polite"
-            hidden
-          ></div>
+            <div class="hero-center">
+              <div class="hero-store-icon">
+                <svg viewBox="0 0 64 64" fill="none">
+                  <path
+                    d="M12 27h40v27H12V27Z"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="m9 27 5-15h36l5 15"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M9 27c0 4 3 7 7 7s7-3 7-7c0 4 3 7 7 7s7-3 7-7c0 4 3 7 7 7s7-3 7-7"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M23 54V39h13v15"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
 
+            <div class="hero-floating-item hero-floating-discover">
+              <span class="floating-icon">✦</span>
+              <span>
+                <strong>Get discovered</strong>
+                <small>Reach more customers</small>
+              </span>
+            </div>
 
-          <div class="simulator-controls">
+            <div class="hero-floating-item hero-floating-payments">
+              <span class="floating-icon">₹</span>
+              <span>
+                <strong>Accept payments</strong>
+                <small>Make digital easier</small>
+              </span>
+            </div>
 
-            <button
-              type="button"
-              class="module-primary-link"
-              id="simulator-check"
-              disabled
-            >
-              Check answer →
-            </button>
-
-            <button
-              type="button"
-              class="module-complete-button"
-              id="simulator-next"
-              hidden
-            >
-              Next scenario →
-            </button>
-
-            <button
-              type="button"
-              class="module-primary-link"
-              id="simulator-restart"
-              hidden
-            >
-              Try again ↻
-            </button>
+            <div class="hero-floating-item hero-floating-customers">
+              <span class="floating-icon">↗</span>
+              <span>
+                <strong>Grow your reach</strong>
+                <small>Build your online presence</small>
+              </span>
+            </div>
 
           </div>
 
-          <p class="simulator-disclaimer">
-            Practice only. If a payment is disputed, contact your bank
-            or payment provider through its official channel.
-          </p>
+        </section>
 
-        </div>
+        <!-- ==================================================
+             GROWTH GUIDES
+        =================================================== -->
 
-      </section>
-
-
-      <!-- DIGITAL TOOLS -->
-
-      <section
-        class="digital-tools"
-        id="digital-tools"
-        aria-labelledby="tools-title"
-      >
-
-        <div class="section-heading">
-
-          <div>
-            <span class="section-kicker">YOUR DIGITAL TOOLKIT</span>
-            <h2 id="tools-title">Choose the right tool.</h2>
-          </div>
-
-          <p>
-            Start with one tool that solves a real need.
-          </p>
-
-        </div>
-
-
-        <div
-          class="tool-filter-list"
-          aria-label="Filter digital tools"
+        <section
+          class="learning-library"
+          id="growth-guides"
+          aria-labelledby="growth-guides-title"
         >
 
-          <button
-            type="button"
-            class="is-active"
-            data-tool-filter="all"
-            aria-pressed="true"
-          >
-            All tools
-          </button>
-
-          <button
-            type="button"
-            data-tool-filter="discovery"
-            aria-pressed="false"
-          >
-            Get discovered
-          </button>
-
-          <button
-            type="button"
-            data-tool-filter="communication"
-            aria-pressed="false"
-          >
-            Communication
-          </button>
-
-          <button
-            type="button"
-            data-tool-filter="payments"
-            aria-pressed="false"
-          >
-            Payments
-          </button>
-
-          <button
-            type="button"
-            data-tool-filter="catalogue"
-            aria-pressed="false"
-          >
-            Catalogue
-          </button>
-
-        </div>
-
-
-        <div class="tool-list">
-
-          <article
-            class="tool-item"
-            data-tool-category="discovery"
-          >
-
-            <span class="tool-item-icon">⌕</span>
+          <div class="section-heading library-heading">
 
             <div>
-              <h3>Google Business Profile</h3>
+              <span class="section-kicker">GROW YOUR BUSINESS</span>
+
+              <h2 id="growth-guides-title">
+                Small steps. Real progress.
+              </h2>
+
               <p>
-                Help customers find your business on Google Search and Maps.
+                Explore practical ideas you can use in your business.
               </p>
             </div>
 
-            <a
-              href="https://www.google.com/business/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Explore Google Business Profile"
-            >
-              ↗
-            </a>
+          </div>
+
+          <!-- Guide 1 -->
+
+          <article class="learning-module">
+
+            <div class="module-visual module-visual-discovery">
+
+              <span class="module-visual-label">
+                BE EASIER TO FIND
+              </span>
+
+              <div class="discovery-visual-content">
+
+                <div class="discovery-search">
+                  <span aria-hidden="true">⌕</span>
+                  <span>Your business online</span>
+                </div>
+
+                <div class="discovery-business-preview">
+
+                  <div class="discovery-placeholder-logo">
+                    B
+                  </div>
+
+                  <div>
+                    <strong>Your business</strong>
+
+                    <div class="discovery-location-line">
+                      Help customers find you
+                    </div>
+                  </div>
+
+                  <span class="discovery-status">
+                    Online
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="module-content">
+
+              <div class="module-meta">
+                <span class="module-category">Online visibility</span>
+                <span class="module-duration">Getting started</span>
+              </div>
+
+              <h3>Help customers discover your business</h3>
+
+              <p>
+                Make it easier for people nearby to find out what you do,
+                where you are and how to contact you.
+              </p>
+
+              <ul class="module-learning-points">
+                <li>Keep your business information clear and accurate.</li>
+                <li>Make your location and contact details easy to find.</li>
+                <li>Help customers understand what makes your business useful.</li>
+              </ul>
+
+              <div class="module-actions">
+                <a
+                  class="module-primary-link"
+                  href="https://www.google.com/business/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Explore business profiles
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+
+            </div>
 
           </article>
 
+          <!-- Guide 2 -->
 
-          <article
-            class="tool-item"
-            data-tool-category="communication"
-          >
+          <article class="learning-module learning-module-reverse">
 
-            <span class="tool-item-icon">◉</span>
+            <div class="module-visual module-visual-payments">
+
+              <span class="module-visual-label">
+                SIMPLE DIGITAL PAYMENTS
+              </span>
+
+              <div class="payment-visual-content">
+
+                <div class="payment-qr-example">
+
+                  <div class="qr-example-pattern">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+
+                  <div class="qr-example-caption">
+                    Digital payments
+                  </div>
+
+                </div>
+
+                <div class="payment-safety-note">
+                  <span class="safety-check">✓</span>
+
+                  <div>
+                    <strong>Check before you trust</strong>
+                    <small>Confirm payments in your own account.</small>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="module-content">
+
+              <div class="module-meta">
+                <span class="module-category">Digital payments</span>
+                <span class="module-duration">Everyday essentials</span>
+              </div>
+
+              <h3>Make digital payments easier</h3>
+
+              <p>
+                Understand how UPI and QR payments work and how to
+                verify that a payment has actually reached your account.
+              </p>
+
+              <ul class="module-learning-points">
+                <li>Understand the basics of UPI and QR payments.</li>
+                <li>Check your own payment app or bank account for confirmation.</li>
+                <li>Never share your UPI PIN or OTP.</li>
+              </ul>
+
+              <div class="module-actions">
+                <a
+                  class="module-primary-link"
+                  href="https://www.npci.org.in/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Learn about UPI
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+
+            </div>
+
+          </article>
+
+          <!-- Guide 3 -->
+
+          <article class="learning-module">
+
+            <div class="module-visual module-visual-catalogue">
+
+              <span class="module-visual-label">
+                SHOW WHAT YOU OFFER
+              </span>
+
+              <div class="catalogue-visual-content">
+
+                <div class="catalogue-example-header">
+                  <span class="catalogue-example-dot"></span>
+                  <span class="catalogue-example-dot"></span>
+                  <span class="catalogue-example-dot"></span>
+                  <span class="catalogue-example-title">
+                    Your catalogue
+                  </span>
+                </div>
+
+                <div class="catalogue-example-item">
+                  <div class="catalogue-example-image"></div>
+
+                  <div>
+                    <strong>Product or service</strong>
+                    <small>Clear details</small>
+                  </div>
+
+                  <span class="catalogue-item-arrow">→</span>
+                </div>
+
+                <div class="catalogue-example-item">
+                  <div class="catalogue-example-image catalogue-example-image-two"></div>
+
+                  <div>
+                    <strong>What you offer</strong>
+                    <small>Helpful information</small>
+                  </div>
+
+                  <span class="catalogue-item-arrow">→</span>
+                </div>
+
+                <p class="catalogue-example-disclaimer">
+                  An example of a simple business catalogue
+                </p>
+
+              </div>
+
+            </div>
+
+            <div class="module-content">
+
+              <div class="module-meta">
+                <span class="module-category">Products &amp; services</span>
+                <span class="module-duration">Build your catalogue</span>
+              </div>
+
+              <h3>Show customers what you offer</h3>
+
+              <p>
+                Present your products or services clearly so customers
+                can understand your offerings before contacting you.
+              </p>
+
+              <ul class="module-learning-points">
+                <li>Use clear names and descriptions.</li>
+                <li>Add useful photos when available.</li>
+                <li>Keep prices and availability accurate.</li>
+              </ul>
+
+              <div class="module-actions">
+                <a
+                  class="module-primary-link"
+                  href="./products-services.html"
+                >
+                  Manage products &amp; services
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
+
+            </div>
+
+          </article>
+
+          <!-- Guide 4 -->
+
+          <article class="learning-module learning-module-reverse">
+
+            <div class="module-visual module-visual-trust">
+
+              <span class="module-visual-label">
+                BUILD CUSTOMER TRUST
+              </span>
+
+              <div class="trust-visual-content">
+
+                <span class="trust-quote-mark">“</span>
+
+                <h4>
+                  Clear information builds confidence.
+                </h4>
+
+                <div class="trust-principles">
+
+                  <span>
+                    <span aria-hidden="true">✓</span>
+                    Accurate details
+                  </span>
+
+                  <span>
+                    <span aria-hidden="true">✓</span>
+                    Helpful communication
+                  </span>
+
+                  <span>
+                    <span aria-hidden="true">✓</span>
+                    Consistent service
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="module-content">
+
+              <div class="module-meta">
+                <span class="module-category">Customer relationships</span>
+                <span class="module-duration">Build trust</span>
+              </div>
+
+              <h3>Build trust with your customers</h3>
+
+              <p>
+                A reliable online presence starts with accurate details,
+                clear communication and a consistent customer experience.
+              </p>
+
+              <ul class="module-learning-points">
+                <li>Respond clearly to customer questions.</li>
+                <li>Share genuine information about your offerings.</li>
+                <li>Keep your business details up to date.</li>
+              </ul>
+
+              <div class="module-actions">
+                <a
+                  class="module-primary-link"
+                  href="./my-business.html"
+                >
+                  Review my business
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
+
+            </div>
+
+          </article>
+
+        </section>
+
+        <!-- ==================================================
+             DIGITAL TOOLS
+        =================================================== -->
+
+       <section
+          class="digital-tools"
+          id="digital-tools"
+          aria-labelledby="digital-tools-title"
+        >
+
+          <div class="section-heading">
 
             <div>
-              <h3>WhatsApp Business</h3>
+              <span class="section-kicker">USEFUL RESOURCES</span>
+
+              <h2 id="digital-tools-title">
+                Tools for your next step
+              </h2>
+
               <p>
-                Communicate with customers and share your offerings.
+                Explore services that can help you manage and grow your business.
               </p>
             </div>
+
+          </div>
+
+          <!-- Tool filters -->
+
+          <div class="tool-filter-list" aria-label="Filter digital tools">
+
+            <button
+              class="tool-filter is-active"
+              type="button"
+              data-tool-filter="all"
+              aria-pressed="true"
+            >
+              All tools
+            </button>
+
+            <button
+              class="tool-filter"
+              type="button"
+              data-tool-filter="visibility"
+              aria-pressed="false"
+            >
+              Online visibility
+            </button>
+
+            <button
+              class="tool-filter"
+              type="button"
+              data-tool-filter="payments"
+              aria-pressed="false"
+            >
+              Payments
+            </button>
+
+            <button
+              class="tool-filter"
+              type="button"
+              data-tool-filter="communication"
+              aria-pressed="false"
+            >
+              Communication
+            </button>
+
+          </div>
+
+          <!-- Tool list -->
+
+          <div class="tool-list">
+
+            <article
+              class="tool-item"
+              data-tool-category="visibility"
+            >
+
+              <div class="tool-item-icon" aria-hidden="true">
+                G
+              </div>
+
+              <div class="tool-item-content">
+                <h3>Google Business Profile</h3>
+
+                <p>
+                  Help local customers discover your business on Google.
+                </p>
+              </div>
+
+              <a
+                href="https://www.google.com/business/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tool-item-link"
+                aria-label="Explore Google Business Profile"
+              >
+                ↗
+              </a>
+
+            </article>
+
+            <article
+              class="tool-item"
+              data-tool-category="payments"
+            >
+
+              <div class="tool-item-icon" aria-hidden="true">
+                ₹
+              </div>
+
+              <div class="tool-item-content">
+                <h3>UPI and digital payments</h3>
+
+                <p>
+                  Learn about digital payment options and payment safety.
+                </p>
+              </div>
+
+              <a
+                href="https://www.npci.org.in/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tool-item-link"
+                aria-label="Explore NPCI resources"
+              >
+                ↗
+              </a>
+
+            </article>
+
+            <article
+              class="tool-item"
+              data-tool-category="communication"
+            >
+
+              <div class="tool-item-icon" aria-hidden="true">
+                W
+              </div>
+
+              <div class="tool-item-content">
+                <h3>WhatsApp Business</h3>
+
+                <p>
+                  Explore business messaging and customer communication features.
+                </p>
+              </div>
+
+              <a
+                href="https://business.whatsapp.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="tool-item-link"
+                aria-label="Explore WhatsApp Business"
+              >
+                ↗
+              </a>
+
+            </article>
+
+          </div>
+
+        </section>
+
+        <!-- ==================================================
+             TRUSTED RESOURCES
+        =================================================== -->
+
+        <section
+          class="trusted-resources"
+          aria-labelledby="trusted-resources-title"
+        >
+
+          <div class="section-heading">
+
+            <div>
+              <span class="section-kicker">LEARN FROM TRUSTED SOURCES</span>
+
+              <h2 id="trusted-resources-title">
+                A little more guidance
+              </h2>
+
+              <p>
+                Explore official resources to learn more about digital business.
+              </p>
+            </div>
+
+          </div>
+
+          <div class="resource-links">
+
+            <a
+              href="https://www.npci.org.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="resource-link"
+            >
+              <span>
+                <strong>NPCI</strong>
+                <small>UPI and digital payment information</small>
+              </span>
+
+              <span aria-hidden="true">↗</span>
+            </a>
 
             <a
               href="https://business.whatsapp.com/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Explore WhatsApp Business"
+              class="resource-link"
             >
-              ↗
+              <span>
+                <strong>WhatsApp Business</strong>
+                <small>Business communication tools</small>
+              </span>
+
+              <span aria-hidden="true">↗</span>
             </a>
 
-          </article>
-
-
-          <article
-            class="tool-item"
-            data-tool-category="payments"
-          >
-
-            <span class="tool-item-icon">₹</span>
-
-            <div>
-              <h3>UPI merchant payments</h3>
-              <p>
-                Ask your bank or payment provider about merchant QR options.
-              </p>
-            </div>
-
             <a
-              href="https://www.npci.org.in/what-we-do/upi/faqs"
+              href="https://www.google.com/business/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Read official UPI guidance"
+              class="resource-link"
             >
-              ↗
+              <span>
+                <strong>Google Business Profile</strong>
+                <small>Help customers find your business</small>
+              </span>
+
+              <span aria-hidden="true">↗</span>
             </a>
 
-          </article>
-
-
-          <article
-            class="tool-item"
-            data-tool-category="communication"
-          >
-
-            <span class="tool-item-icon">◎</span>
-
-            <div>
-              <h3>Instagram</h3>
-              <p>
-                Share product photos, business updates and stories.
-              </p>
-            </div>
-
-            <a
-              href="https://www.instagram.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Explore Instagram"
-            >
-              ↗
-            </a>
-
-          </article>
-
-
-          <article
-            class="tool-item"
-            data-tool-category="catalogue"
-          >
-
-            <span class="tool-item-icon">B</span>
-
-            <div>
-              <h3>Bizvero storefront</h3>
-              <p>
-                Present your business, products and services online.
-              </p>
-            </div>
-
-            <a
-              href="./storefront.html"
-              aria-label="View your Bizvero storefront"
-            >
-              ↗
-            </a>
-
-          </article>
-
-        </div>
-
-      </section>
-
-
-      <!-- TRUSTED RESOURCES -->
-
-      <section
-        class="trusted-resources"
-        id="trusted-resources"
-        aria-labelledby="resources-title"
-      >
-
-        <div class="section-heading">
-
-          <div>
-            <span class="section-kicker">KEEP LEARNING</span>
-            <h2 id="resources-title">Guidance you can trust.</h2>
           </div>
 
-        </div>
+        </section>
 
+        <!-- ==================================================
+             FOOTER
+        =================================================== -->
 
-        <div class="resource-links">
+        <footer class="growth-footer">
 
-          <a
-            href="https://support.google.com/business/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span>
-              <strong>Google Business Profile Help</strong>
-              <small>Business listings and online discovery</small>
-            </span>
+          <span>
+            Bizvero
+            <span aria-hidden="true">·</span>
+            Your business, moving forward.
+          </span>
 
-            <span>↗</span>
+          <a href="./dashboard.html">
+            Back to overview
+            <span aria-hidden="true">→</span>
           </a>
 
+        </footer>
 
-          <a
-            href="https://www.npci.org.in/what-we-do/upi/faqs"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span>
-              <strong>NPCI UPI FAQs</strong>
-              <small>Official UPI information and safety basics</small>
-            </span>
+      </div>
 
-            <span>↗</span>
-          </a>
+    </main>
 
+  </div>
 
-          <a
-            href="https://business.whatsapp.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span>
-              <strong>WhatsApp Business</strong>
-              <small>Tools for business communication</small>
-            </span>
+  <!-- Toast notifications -->
 
-            <span>↗</span>
-          </a>
-
-        </div>
-
-      </section>
-
-
-      <!-- FOOTER -->
-
-      <footer class="growth-footer">
-
-        <span>bizvero.</span>
-
-        <p>
-          Small steps today. More possibilities tomorrow.
-        </p>
-
-      </footer>
-
-    </div>
-
-  </main>
-
-</div>
-
-
-<!-- TOAST NOTIFICATION -->
-
-<div
-  class="growth-toast"
-  id="growth-toast"
-  role="status"
-  aria-live="polite"
-></div>
-
-
-<!-- SCRIPTS -->
-
-<script
-  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  defer
-></script>
-
-<script src="./javascript/supabase.js" defer></script>
-
-<script src="./javascript/grow-digitally.js" defer></script>
+  <div
+    class="growth-toast"
+    id="growth-toast"
+    role="status"
+    aria-live="polite"
+  ></div>
 
 </body>
 </html>
