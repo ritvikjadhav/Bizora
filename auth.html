@@ -2,12 +2,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#102D46"><meta
-    name="description"
-    content="Sign in to Bizvero or create your account to bring your business online."
->
-
-<title>Sign in or Create Account | Bizvero</title>
+    <meta name="theme-color" content="#102D46">
+    <meta
+        name="description"
+        content="Sign in to Bizvero or create your account to bring your business online."
+    ><title>Sign in or Create Account | Bizvero</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,388 +28,385 @@
 <script src="./javascript/supabase.js" defer></script>
 <script src="./javascript/auth.js" defer></script>
 
-</head><body class="auth-page"><main class="auth-layout">
+</head><body class="auth-page">
+<main class="auth-layout"><!-- BRAND PANEL -->
+<aside class="auth-brand-panel">
 
-    <!-- BRAND PANEL -->
-    <aside class="auth-brand-panel">
+    <!-- Same brand classes as the homepage -->
+    <a
+        href="./index.html"
+        class="auth-brand"
+        aria-label="Bizvero home"
+    >
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span class="brand-name">Bizvero</span>
+    </a>
 
-        <!-- Same brand classes as the homepage -->
-        <a
-            href="./index.html"
-            class="auth-brand"
-            aria-label="Bivero home"
-        >
-            <span class="brand-mark" aria-hidden="true">B</span>
-            <span class="brand-name">Bizvero</span>
-        </a>
+    <div class="brand-content">
 
-        <div class="brand-content">
+        <span class="eyebrow">
+            YOUR NEXT CHAPTER STARTS HERE
+        </span>
 
-            <span class="eyebrow">
-                YOUR NEXT CHAPTER STARTS HERE
-            </span>
+        <h1>
+            Your business.<br>
+            <span>Ready for more.</span>
+        </h1>
 
-            <h1>
-                Your business.<br>
-                <span>Ready for more.</span>
-            </h1>
+        <p class="brand-description">
+            Bring your business into the digital world.
+            Showcase what you offer, build your online presence,
+            and help more customers discover you.
+        </p>
 
-            <p class="brand-description">
-                Bring your business into the digital world.
-                Showcase what you offer, build your online presence,
-                and help more customers discover you.
-            </p>
+        <!-- Decorative orbital illustration -->
+        <div class="brand-visual" aria-hidden="true">
 
-            <!-- Decorative orbital illustration -->
-            <div class="brand-visual" aria-hidden="true">
+            <div class="visual-orbit orbit-one"></div>
+            <div class="visual-orbit orbit-two"></div>
 
-                <div class="visual-orbit orbit-one"></div>
-                <div class="visual-orbit orbit-two"></div>
+            <div class="visual-core">
+                <svg
+                    viewBox="0 0 100 100"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M20 72L40 52L54 62L80 31"
+                        stroke="currentColor"
+                        stroke-width="5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
 
-                <div class="visual-core">
-                    <svg
-                        viewBox="0 0 100 100"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M20 72L40 52L54 62L80 31"
-                            stroke="currentColor"
-                            stroke-width="5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
+                    <path
+                        d="M61 31H80V50"
+                        stroke="currentColor"
+                        stroke-width="5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
 
-                        <path
-                            d="M61 31H80V50"
-                            stroke="currentColor"
-                            stroke-width="5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
-
-                        <circle cx="20" cy="72" r="5" fill="currentColor"/>
-                        <circle cx="40" cy="52" r="5" fill="currentColor"/>
-                        <circle cx="54" cy="62" r="5" fill="currentColor"/>
-                    </svg>
-                </div>
-
-                <span class="visual-dot dot-one"></span>
-                <span class="visual-dot dot-two"></span>
-                <span class="visual-dot dot-three"></span>
-
+                    <circle cx="20" cy="72" r="5" fill="currentColor"/>
+                    <circle cx="40" cy="52" r="5" fill="currentColor"/>
+                    <circle cx="54" cy="62" r="5" fill="currentColor"/>
+                </svg>
             </div>
 
-            <div class="brand-note">
-                <span class="note-line" aria-hidden="true"></span>
-                <p>Small beginnings. Bigger possibilities.</p>
-            </div>
+            <span class="visual-dot dot-one"></span>
+            <span class="visual-dot dot-two"></span>
+            <span class="visual-dot dot-three"></span>
 
         </div>
 
-        <footer class="brand-footer">
-            <span>© 2026 Bizvero</span>
-            <span>Built for businesses moving forward.</span>
-        </footer>
+        <div class="brand-note">
+            <span class="note-line" aria-hidden="true"></span>
+            <p>Small beginnings. Bigger possibilities.</p>
+        </div>
 
-    </aside>
+    </div>
+
+    <footer class="brand-footer">
+        <span>© 2026 Bizvero</span>
+        <span>Built for businesses moving forward.</span>
+    </footer>
+
+</aside>
 
 
-    <!-- AUTHENTICATION PANEL -->
-    <section class="auth-main" aria-label="Account access">
+<!-- AUTHENTICATION PANEL -->
+<section class="auth-main" aria-label="Account access">
 
-        <!-- Consistent mobile branding -->
-        <a
-            href="./index.html"
-            class="auth-mobile-brand"
-            aria-label="Bizvero home"
+    <!-- Consistent mobile branding -->
+    <a
+        href="./index.html"
+        class="auth-mobile-brand"
+        aria-label="Bizvero home"
+    >
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span class="brand-name">Bizvero</span>
+    </a>
+
+    <div class="auth-container">
+
+        <!-- LOGIN PANEL -->
+        <section
+            id="login-panel"
+            class="auth-panel"
+            aria-labelledby="login-title"
         >
-            <span class="brand-mark" aria-hidden="true">B</span>
-            <span class="brand-name">Bizora</span>
-        </a>
 
-        <div class="auth-container">
+            <div class="auth-heading">
 
-            <!-- LOGIN PANEL -->
-            <section
-                id="login-panel"
-                class="auth-panel"
-                aria-labelledby="login-title"
-            >
+                <span class="eyebrow">WELCOME BACK</span>
 
-                <div class="auth-heading">
+                <h2 id="login-title">Good to see you.</h2>
 
-                    <span class="eyebrow">WELCOME BACK</span>
+                <p>
+                    Sign in to continue building your business.
+                </p>
 
-                    <h2 id="login-title">Good to see you.</h2>
+            </div>
 
-                    <p>
-                        Sign in to continue building your business.
-                    </p>
-
-                </div>
-
-                <div
-                    id="login-message"
-                    class="auth-message"
-                    role="status"
-                    aria-live="polite"
-                    hidden
-                ></div>
-
-                <form id="login-form" class="auth-form">
-
-                    <div class="form-field">
-
-                        <label for="login-email">Email address</label>
-
-                        <input
-                            type="email"
-                            id="login-email"
-                            name="email"
-                            placeholder="you@example.com"
-                            autocomplete="email"
-                            autocapitalize="none"
-                            spellcheck="false"
-                            required
-                        >
-
-                    </div>
-
-                    <div class="form-field">
-
-                        <label for="login-password">Password</label>
-
-                        <div class="password-field">
-
-                            <input
-                                type="password"
-                                id="login-password"
-                                name="password"
-                                placeholder="Enter your password"
-                                autocomplete="current-password"
-                                required
-                            >
-
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                data-password-target="login-password"
-                                aria-label="Show password"
-                                aria-pressed="false"
-                            >
-                                Show
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <button
-                        type="submit"
-                        id="login-submit"
-                        class="auth-submit"
-                    >
-                        <span>Log in</span>
-                        <span class="submit-arrow" aria-hidden="true">→</span>
-                    </button>
-
-                </form>
-
-                <div class="auth-switch">
-                    <span>New to Bizvero?</span>
-
-                    <button
-                        type="button"
-                        id="show-register"
-                        class="text-button"
-                    >
-                        Create account
-                    </button>
-                </div>
-
-            </section>
-
-
-            <!-- REGISTRATION PANEL -->
-            <section
-                id="register-panel"
-                class="auth-panel"
-                aria-labelledby="register-title"
+            <div
+                id="login-message"
+                class="auth-message"
+                role="status"
+                aria-live="polite"
                 hidden
-            >
+            ></div>
 
-                <div class="auth-heading">
+            <form id="login-form" class="auth-form">
 
-                    <span class="eyebrow">YOUR BUSINESS JOURNEY</span>
+                <div class="form-field">
 
-                    <h2 id="register-title">Let's get started.</h2>
+                    <label for="login-email">Email address</label>
 
-                    <p>
-                        Create your account and take the first step online.
-                    </p>
+                    <input
+                        type="email"
+                        id="login-email"
+                        name="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        autocapitalize="none"
+                        spellcheck="false"
+                        required
+                    >
 
                 </div>
 
-                <div
-                    id="register-message"
-                    class="auth-message"
-                    role="status"
-                    aria-live="polite"
-                    hidden
-                ></div>
+                <div class="form-field">
 
-                <form id="register-form" class="auth-form">
+                    <label for="login-password">Password</label>
 
-                    <div class="form-field">
-
-                        <label for="full-name">Full name</label>
-
-                        <input
-                            type="text"
-                            id="full-name"
-                            name="full_name"
-                            placeholder="Enter your full name"
-                            autocomplete="name"
-                            maxlength="100"
-                            required
-                        >
-
-                    </div>
-
-                    <div class="form-field">
-
-                        <label for="email">Email address</label>
-
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="you@example.com"
-                            autocomplete="email"
-                            autocapitalize="none"
-                            spellcheck="false"
-                            required
-                        >
-
-                    </div>
-
-                    <div class="form-field">
-
-                        <label for="password">Create password</label>
-
-                        <div class="password-field">
-
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                placeholder="At least 8 characters"
-                                autocomplete="new-password"
-                                minlength="8"
-                                required
-                            >
-
-                            <button
-                                type="button"
-                                class="password-toggle"
-                                data-password-target="password"
-                                aria-label="Show password"
-                                aria-pressed="false"
-                            >
-                                Show
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <div class="form-field">
-
-                        <label for="confirm-password">
-                            Confirm password
-                        </label>
+                    <div class="password-field">
 
                         <input
                             type="password"
-                            id="confirm-password"
-                            name="confirm_password"
-                            placeholder="Enter your password again"
+                            id="login-password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-password-target="login-password"
+                            aria-label="Show password"
+                            aria-pressed="false"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <button
+                    type="submit"
+                    id="login-submit"
+                    class="auth-submit"
+                >
+                    <span>Log in</span>
+                    <span class="submit-arrow" aria-hidden="true">→</span>
+                </button>
+
+            </form>
+
+            <div class="auth-switch">
+                <span>New to Bizvero?</span>
+
+                <button
+                    type="button"
+                    id="show-register"
+                    class="text-button"
+                >
+                    Create account
+                </button>
+            </div>
+
+        </section>
+
+
+        <!-- REGISTRATION PANEL -->
+        <section
+            id="register-panel"
+            class="auth-panel"
+            aria-labelledby="register-title"
+            hidden
+        >
+
+            <div class="auth-heading">
+
+                <span class="eyebrow">YOUR BUSINESS JOURNEY</span>
+
+                <h2 id="register-title">Let's get started.</h2>
+
+                <p>
+                    Create your account and take the first step online.
+                </p>
+
+            </div>
+
+            <div
+                id="register-message"
+                class="auth-message"
+                role="status"
+                aria-live="polite"
+                hidden
+            ></div>
+
+            <form id="register-form" class="auth-form">
+
+                <div class="form-field">
+
+                    <label for="full-name">Full name</label>
+
+                    <input
+                        type="text"
+                        id="full-name"
+                        name="full_name"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        maxlength="100"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-field">
+
+                    <label for="email">Email address</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        autocapitalize="none"
+                        spellcheck="false"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-field">
+
+                    <label for="password">Create password</label>
+
+                    <div class="password-field">
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="At least 8 characters"
                             autocomplete="new-password"
                             minlength="8"
                             required
                         >
 
-                    </div>
-
-                    <div class="terms-field">
-
-                        <input
-                            type="checkbox"
-                            id="accept-terms"
-                            name="accept_terms"
-                            required
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-password-target="password"
+                            aria-label="Show password"
+                            aria-pressed="false"
                         >
-
-                        <label for="accept-terms">
-                            I agree to the
-                            <a href="./legal.html#terms">
-                                Terms &amp; Conditions
-                            </a>
-                            and
-                            <a href="./legal.html#privacy">
-                                Privacy Policy
-                            </a>.
-                        </label>
+                            Show
+                        </button>
 
                     </div>
 
-                    <button
-                        type="submit"
-                        id="register-submit"
-                        class="auth-submit"
-                    >
-                        <span>Create account</span>
-                        <span class="submit-arrow" aria-hidden="true">→</span>
-                    </button>
-
-                </form>
-
-                <div class="auth-switch">
-                    <span>Already have an account?</span>
-
-                    <button
-                        type="button"
-                        id="show-login"
-                        class="text-button"
-                    >
-                        Log in
-                    </button>
                 </div>
 
-            </section>
+                <div class="form-field">
 
+                    <label for="confirm-password">
+                        Confirm password
+                    </label>
 
-            <!-- LEGAL LINKS -->
-            <div class="auth-legal">
+                    <input
+                        type="password"
+                        id="confirm-password"
+                        name="confirm_password"
+                        placeholder="Enter your password again"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
 
-                <a href="./legal.html#privacy">Privacy</a>
+                </div>
 
-                <span aria-hidden="true">·</span>
+                <div class="terms-field">
 
-                <a href="./legal.html#terms">Terms</a>
+                    <input
+                        type="checkbox"
+                        id="accept-terms"
+                        name="accept_terms"
+                        required
+                    >
 
-                <span aria-hidden="true">·</span>
+                    <label for="accept-terms">
+                        I agree to the
+                        <a href="./legal.html#terms">
+                            Terms &amp; Conditions
+                        </a>
+                        and
+                        <a href="./legal.html#privacy">
+                            Privacy Policy
+                        </a>.
+                    </label>
 
-                <a href="./index.html">Back to home</a>
+                </div>
 
+                <button
+                    type="submit"
+                    id="register-submit"
+                    class="auth-submit"
+                >
+                    <span>Create account</span>
+                    <span class="submit-arrow" aria-hidden="true">→</span>
+                </button>
+
+            </form>
+
+            <div class="auth-switch">
+                <span>Already have an account?</span>
+
+                <button
+                    type="button"
+                    id="show-login"
+                    class="text-button"
+                >
+                    Log in
+                </button>
             </div>
+
+        </section>
+
+
+        <!-- LEGAL LINKS -->
+        <div class="auth-legal">
+
+            <a href="./legal.html#privacy">Privacy</a>
+
+            <span aria-hidden="true">·</span>
+
+            <a href="./legal.html#terms">Terms</a>
+
+            <span aria-hidden="true">·</span>
+
+            <a href="./index.html">Back to home</a>
 
         </div>
 
-    </section>
+    </div>
 
-</main>
+</section>
 
-</body>
+</main></body>
 </html>
