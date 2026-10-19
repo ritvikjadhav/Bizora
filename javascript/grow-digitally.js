@@ -1,10 +1,14 @@
 /* =========================================================
    BIZVERO — GROW DIGITALLY
-   Lesson progress, payment safety, tools and navigation
+   Lesson progress, digital tools, payment safety and navigation
    ========================================================= */
 
 (() => {
   "use strict";
+
+  /* =======================================================
+     SELECTORS & CONSTANTS
+  ======================================================= */
 
   const $ = (selector, parent = document) =>
     parent.querySelector(selector);
@@ -13,22 +17,19 @@
     Array.from(parent.querySelectorAll(selector));
 
   const STORAGE_KEY = "bizvero_growth_completed_lessons";
+  const TOAST_DURATION = 3000;
 
   let toastTimer;
-  let currentScenario = 0;
-  let score = 0;
-  let answered = false;
-  let selectedAnswer = null;
 
   /* =======================================================
-     TOAST
+     TOAST NOTIFICATIONS
   ======================================================= */
 
   function showToast(message) {
     const toast = $("#growth-toast");
 
     if (!toast) {
-      console.info(message);
+      console.info(`[Bizvero] ${message}`);
       return;
     }
 
@@ -37,9 +38,9 @@
 
     clearTimeout(toastTimer);
 
-    toastTimer = setTimeout(() => {
+    toastTimer = window.setTimeout(() => {
       toast.classList.remove("is-visible");
-    }, 3000);
+    }, TOAST_DURATION);
   }
 
   /* =======================================================
@@ -49,8 +50,14 @@
   function readStorage(key, fallback) {
     try {
       const value = localStorage.getItem(key);
-      return value ? JSON.parse(value) : fallback;
-    } catch {
+
+      if (value === null) {
+        return fallback;
+      }
+
+      return JSON.parse(value);
+    } catch (error) {
+      console.warn("[Bizvero] Could not read saved data:", error);
       return fallback;
     }
   }
@@ -59,31 +66,50 @@
     try {
       localStorage.setItem(key, JSON.stringify(value));
       return true;
-    } catch {
+    } catch (error) {
+      console.error("[Bizvero] Could not save progress:", error);
       showToast("Progress could not be saved on this device.");
       return false;
     }
   }
 
   /* =======================================================
-     LESSON COMPLETION
+     LESSON COMPLETION & PROGRESS
   ======================================================= */
 
   function getCompletedLessons() {
     const saved = readStorage(STORAGE_KEY, []);
 
-    return Array.isArray(saved)
-      ? [...new Set(saved.filter((id) => typeof id === "string"))]
-      : [];
+    if (!Array.isArray(saved)) {
+      return [];
+    }
+
+    return [
+      ...new Set(
+        saved.filter(
+          (id) => typeof id === "string" && id.trim() !== ""
+        )
+      )
+    ];
+  }
+
+  function getLessonButtons() {
+    return $$("[data-complete-module]");
   }
 
   function updateLessonProgress() {
-    const buttons = $$("[data-complete-module]");
+    const buttons = getLessonButtons();
+
     const lessonIds = [
-      ...new Set(buttons.map((button) => button.dataset.completeModule))
-    ].filter(Boolean);
+      ...new Set(
+        buttons
+          .map((button) => button.dataset.completeModule)
+          .filter(Boolean)
+      )
+    ];
 
     const completed = getCompletedLessons();
+
     const total = lessonIds.length;
 
     const completedCount = lessonIds.filter((id) =>
@@ -93,6 +119,8 @@
     const percentage = total
       ? Math.round((completedCount / total) * 100)
       : 0;
+
+    /* Update lesson buttons and cards. */
 
     buttons.forEach((button) => {
       const id = button.dataset.completeModule;
@@ -110,11 +138,15 @@
       }
     });
 
+    /* Update completed lesson count. */
+
     const count = $("#completed-lessons");
 
     if (count) {
       count.textContent = `${completedCount} of ${total}`;
     }
+
+    /* Update progress heading. */
 
     const title = $("#growth-progress-title");
 
@@ -125,6 +157,8 @@
           : "Your digital growth progress";
     }
 
+    /* Update progress description. */
+
     const description = $("#growth-progress-description");
 
     if (description) {
@@ -134,23 +168,38 @@
           : "Explore practical lessons and mark each one complete as you learn.";
     }
 
+    /* Update progress bar. */
+
     const progressBar = $(".growth-progress-track > span");
 
     if (progressBar) {
       progressBar.style.width = `${percentage}%`;
+
       progressBar.setAttribute("role", "progressbar");
       progressBar.setAttribute("aria-valuemin", "0");
       progressBar.setAttribute("aria-valuemax", "100");
       progressBar.setAttribute("aria-valuenow", String(percentage));
+      progressBar.setAttribute(
+        "aria-label",
+        "Completed lesson progress"
+      );
     }
+
+    return {
+      total,
+      completedCount,
+      percentage
+    };
   }
 
   function setupLessonCompletion() {
-    $$("[data-complete-module]").forEach((button) => {
+    getLessonButtons().forEach((button) => {
       button.addEventListener("click", () => {
         const id = button.dataset.completeModule;
 
-        if (!id) return;
+        if (!id) {
+          return;
+        }
 
         const completed = getCompletedLessons();
         const isComplete = completed.includes(id);
@@ -159,7 +208,9 @@
           ? completed.filter((item) => item !== id)
           : [...completed, id];
 
-        if (!writeStorage(STORAGE_KEY, updated)) return;
+        if (!writeStorage(STORAGE_KEY, updated)) {
+          return;
+        }
 
         updateLessonProgress();
 
@@ -182,38 +233,48 @@
     const filters = $$("[data-tool-filter]");
     const cards = $$("[data-tool-category]");
 
-    if (!filters.length || !cards.length) return;
+    if (!filters.length || !cards.length) {
+      return;
+    }
 
-    function applyFilter(button) {
-      const category = button.dataset.toolFilter;
+    function applyFilter(selectedButton) {
+      const selectedCategory = selectedButton.dataset.toolFilter;
 
-      filters.forEach((filter) => {
-        const active = filter === button;
+      filters.forEach((button) => {
+        const isActive = button === selectedButton;
 
-        filter.classList.toggle("is-active", active);
-        filter.setAttribute("aria-pressed", String(active));
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
       });
 
       cards.forEach((card) => {
-        card.hidden =
-          category !== "all" &&
-          card.dataset.toolCategory !== category;
+        const cardCategory = card.dataset.toolCategory;
+
+        const shouldHide =
+          selectedCategory !== "all" &&
+          cardCategory !== selectedCategory;
+
+        card.hidden = shouldHide;
       });
     }
 
     filters.forEach((button) => {
-      button.addEventListener("click", () => applyFilter(button));
+      button.addEventListener("click", () => {
+        applyFilter(button);
+      });
     });
 
-    applyFilter(
+    const initialFilter =
       filters.find((button) =>
         button.classList.contains("is-active")
-      ) || filters[0]
-    );
+      ) || filters[0];
+
+    applyFilter(initialFilter);
   }
 
   /* =======================================================
-     PAYMENT SAFETY CHALLENGE — FIVE SCENARIOS
+     PAYMENT SAFETY CHALLENGE
+     Five practical UPI safety scenarios
   ======================================================= */
 
   const scenarios = [
@@ -222,6 +283,7 @@
       description:
         "They say the money has been sent and ask you to hand over the goods.",
       question: "What should you do?",
+
       options: [
         {
           id: "trust-screenshot",
@@ -239,9 +301,11 @@
           detail: "Use it to confirm the payment."
         }
       ],
+
       correct: "verify-payment",
+
       explanation:
-        "Correct practice: verify the transaction in your own payment app or bank account before handing over goods. Screenshots and sounds alone are not proof of payment."
+        "Verify the transaction in your own payment app or bank account before handing over goods. Screenshots and sounds alone are not proof of payment."
     },
 
     {
@@ -249,6 +313,7 @@
       description:
         "The person claims that entering your PIN will help them transfer money to your account.",
       question: "What is the safest response?",
+
       options: [
         {
           id: "enter-pin",
@@ -266,9 +331,11 @@
           detail: "Decline and verify the request independently."
         }
       ],
+
       correct: "never-share",
+
       explanation:
-        "Correct! Never share your UPI PIN or OTP. You do not need to disclose these secrets to receive money. Contact your bank through its official channel if you are concerned."
+        "Never share your UPI PIN or OTP. You do not need to disclose these secrets to receive money. Contact your bank through its official channel if you are concerned."
     },
 
     {
@@ -276,6 +343,7 @@
       description:
         "A stranger says you must approve the request to receive a refund or prize.",
       question: "What should you do?",
+
       options: [
         {
           id: "approve-request",
@@ -293,9 +361,11 @@
           detail: "Ask the stranger to explain the request."
         }
       ],
+
       correct: "check-request",
+
       explanation:
-        "Correct! A collect request may ask you to authorise a payment from your account. Do not approve unexpected requests. Verify any refund through the business or provider's official channel."
+        "A collect request may ask you to authorise a payment from your account. Do not approve unexpected requests. Verify any refund through the business or provider's official channel."
     },
 
     {
@@ -303,6 +373,7 @@
       description:
         "They show a pending transaction screen and ask you to release the goods now.",
       question: "What is the safest action?",
+
       options: [
         {
           id: "release-goods",
@@ -320,9 +391,11 @@
           detail: "A payment notification is enough."
         }
       ],
+
       correct: "verify-status",
+
       explanation:
-        "Correct! A pending transaction is not confirmation that money has reached you. Check your own account and follow your payment provider's guidance if the status remains unclear."
+        "A pending transaction is not confirmation that money has reached you. Check your own account and follow your payment provider's guidance if the status remains unclear."
     },
 
     {
@@ -330,6 +403,7 @@
       description:
         "They tell you to scan it and enter your UPI PIN to receive money.",
       question: "What should you do?",
+
       options: [
         {
           id: "scan-enter-pin",
@@ -347,9 +421,11 @@
           detail: "Do not authorise an unfamiliar payment."
         }
       ],
+
       correct: "refuse-verify",
+
       explanation:
-        "Correct! Do not follow unfamiliar QR-code or PIN instructions to receive a refund. A QR payment flow may initiate money leaving your account. Contact the business or provider using a trusted, official channel."
+        "Do not follow unfamiliar QR-code or PIN instructions to receive a refund. A QR payment flow may initiate money leaving your account. Contact the business or provider using a trusted, official channel."
     }
   ];
 
@@ -357,20 +433,44 @@
     const container = $("#simulator-options");
     const panel = $(".simulator-panel");
 
-    if (!container || !panel) return;
+    if (!container || !panel) {
+      return;
+    }
 
     const situation = $(".simulator-situation", panel);
     const feedback = $("#simulator-feedback");
     const checkButton = $("#simulator-check");
     const retryButton = $("#simulator-retry");
 
-    if (!situation || !checkButton) return;
+    if (!situation || !checkButton) {
+      return;
+    }
+
+    const heading = $("#simulator-title");
+
+    const sectionDescription = heading
+      ? heading.closest(".section-heading")?.querySelector("p")
+      : null;
+
+    if (sectionDescription) {
+      sectionDescription.textContent =
+        "Five everyday situations. Choose the safest action and learn why.";
+    }
+
+    /* Challenge state. */
+
+    let currentScenario = 0;
+    let score = 0;
+    let answered = false;
+    let selectedAnswer = null;
+
+    /* Find or create the Next button. */
 
     let nextButton = $("#simulator-next");
 
-    // Create a Next button if the HTML does not already contain one.
     if (!nextButton) {
       nextButton = document.createElement("button");
+
       nextButton.type = "button";
       nextButton.id = "simulator-next";
       nextButton.className = "module-primary-link";
@@ -386,26 +486,35 @@
       }
     }
 
-    const heading = $("#simulator-title");
-    const sectionDescription = heading
-      ? heading.closest(".section-heading")?.querySelector("p")
-      : null;
-
-    if (sectionDescription) {
-      sectionDescription.textContent =
-        "Five everyday situations. Choose the safest action and learn why.";
-    }
+    /* Find or create the final results container. */
 
     let resultSummary = $("#simulator-result");
 
     if (!resultSummary) {
       resultSummary = document.createElement("div");
+
       resultSummary.id = "simulator-result";
       resultSummary.className = "simulator-result";
       resultSummary.hidden = true;
       resultSummary.setAttribute("role", "status");
+
       panel.appendChild(resultSummary);
     }
+
+    /* Score label. */
+
+    let scoreLabel = $("#simulator-score");
+
+    if (!scoreLabel) {
+      scoreLabel = document.createElement("strong");
+
+      scoreLabel.id = "simulator-score";
+      scoreLabel.className = "simulator-score";
+
+      situation.insertBefore(scoreLabel, situation.firstChild);
+    }
+
+    /* Render one scenario. */
 
     function renderScenario() {
       const scenario = scenarios[currentScenario];
@@ -424,65 +533,79 @@
           `SCENARIO ${String(currentScenario + 1).padStart(2, "0")} OF ${scenarios.length}`;
       }
 
-      let scoreLabel = $("#simulator-score");
-
-      if (!scoreLabel) {
-        scoreLabel = document.createElement("strong");
-        scoreLabel.id = "simulator-score";
-        scoreLabel.className = "simulator-score";
-        situation.insertBefore(scoreLabel, situation.firstChild);
-      }
-
       scoreLabel.textContent = `Score: ${score}`;
 
-      if (icon) icon.textContent = "₹";
-      if (title) title.textContent = scenario.title;
-      if (description) description.textContent = scenario.description;
-      if (question) question.textContent = scenario.question;
+      if (icon) {
+        icon.textContent = "₹";
+        icon.setAttribute("aria-hidden", "true");
+      }
+
+      if (title) {
+        title.textContent = scenario.title;
+      }
+
+      if (description) {
+        description.textContent = scenario.description;
+      }
+
+      if (question) {
+        question.textContent = scenario.question;
+      }
+
+      /* Rebuild answer choices safely. */
 
       container.replaceChildren();
+      container.hidden = false;
 
       scenario.options.forEach((option, index) => {
         const button = document.createElement("button");
+
         button.type = "button";
         button.dataset.simulatorAnswer = option.id;
         button.setAttribute("aria-pressed", "false");
 
         const letter = document.createElement("span");
+
         letter.className = "simulator-choice-letter";
         letter.textContent = String.fromCharCode(65 + index);
+        letter.setAttribute("aria-hidden", "true");
 
         const content = document.createElement("span");
 
-        const title = document.createElement("strong");
-        title.textContent = option.title;
+        const optionTitle = document.createElement("strong");
+        optionTitle.textContent = option.title;
 
         const detail = document.createElement("small");
         detail.textContent = option.detail;
 
-        content.append(title, detail);
+        content.append(optionTitle, detail);
         button.append(letter, content);
 
         button.addEventListener("click", () => {
-          if (answered) return;
+          if (answered) {
+            return;
+          }
 
           selectedAnswer = option.id;
 
           $$("[data-simulator-answer]", container).forEach((item) => {
-            const selected = item === button;
+            const isSelected = item === button;
 
-            item.classList.toggle("is-selected", selected);
-            item.setAttribute("aria-pressed", String(selected));
+            item.classList.toggle("is-selected", isSelected);
+            item.setAttribute("aria-pressed", String(isSelected));
           });
 
           if (feedback) {
             feedback.hidden = true;
             feedback.textContent = "";
+            feedback.classList.remove("is-warning", "is-correct");
           }
         });
 
         container.appendChild(button);
       });
+
+      /* Reset feedback and controls. */
 
       if (feedback) {
         feedback.hidden = true;
@@ -495,27 +618,44 @@
       checkButton.textContent = "Check answer →";
 
       nextButton.hidden = true;
-      retryButton.hidden = true;
+
+      if (retryButton) {
+        retryButton.hidden = true;
+      }
+
       resultSummary.hidden = true;
+
+      situation.hidden = false;
     }
+
+    /* Display the final score. */
 
     function finishChallenge() {
       container.hidden = true;
       situation.hidden = true;
       checkButton.hidden = true;
-      retryButton.hidden = true;
       nextButton.hidden = true;
+
+      if (retryButton) {
+        retryButton.hidden = true;
+      }
 
       if (feedback) {
         feedback.hidden = true;
       }
 
-      const message =
-        score === scenarios.length
-          ? "Excellent! You answered all five scenarios correctly."
-          : score >= 3
-            ? "Good work! Review the explanations to strengthen your payment safety."
-            : "Keep learning. Review the safety tips and practise again.";
+      let message;
+
+      if (score === scenarios.length) {
+        message =
+          "Excellent! You answered all five scenarios correctly.";
+      } else if (score >= 3) {
+        message =
+          "Good work! Review the explanations to strengthen your payment safety.";
+      } else {
+        message =
+          "Keep learning. Review the safety tips and practise again.";
+      }
 
       resultSummary.replaceChildren();
 
@@ -523,12 +663,14 @@
       title.textContent = "Challenge complete";
 
       const scoreText = document.createElement("p");
-      scoreText.textContent = `Your score: ${score} / ${scenarios.length}`;
+      scoreText.textContent =
+        `Your score: ${score} / ${scenarios.length}`;
 
       const description = document.createElement("p");
       description.textContent = message;
 
       const restartButton = document.createElement("button");
+
       restartButton.type = "button";
       restartButton.className = "module-primary-link";
       restartButton.textContent = "Try all scenarios again →";
@@ -536,17 +678,31 @@
       restartButton.addEventListener("click", () => {
         currentScenario = 0;
         score = 0;
+
+        resultSummary.hidden = true;
+
         container.hidden = false;
         situation.hidden = false;
+
         renderScenario();
       });
 
-      resultSummary.append(title, scoreText, description, restartButton);
+      resultSummary.append(
+        title,
+        scoreText,
+        description,
+        restartButton
+      );
+
       resultSummary.hidden = false;
     }
 
+    /* Check the selected answer. */
+
     checkButton.addEventListener("click", () => {
-      if (answered) return;
+      if (answered) {
+        return;
+      }
 
       if (!selectedAnswer) {
         showToast("Choose an answer first.");
@@ -554,50 +710,55 @@
       }
 
       const scenario = scenarios[currentScenario];
-      const correct = selectedAnswer === scenario.correct;
+      const isCorrect = selectedAnswer === scenario.correct;
 
       answered = true;
 
-      if (correct) score++;
+      if (isCorrect) {
+        score++;
+      }
 
       $$("[data-simulator-answer]", container).forEach((button) => {
         button.disabled = true;
 
-        if (button.dataset.simulatorAnswer === scenario.correct) {
+        const answerId = button.dataset.simulatorAnswer;
+
+        if (answerId === scenario.correct) {
           button.classList.add("is-correct");
-        } else if (button.dataset.simulatorAnswer === selectedAnswer) {
+        } else if (answerId === selectedAnswer) {
           button.classList.add("is-incorrect");
         }
       });
 
       if (feedback) {
-        feedback.hidden = false;
+        const resultText = isCorrect ? "Correct!" : "Not quite.";
+
         feedback.textContent =
-          `${correct ? "Correct!" : "Not quite."} ${scenario.explanation}`;
+          `${resultText} ${scenario.explanation}`;
 
-        feedback.classList.toggle("is-warning", !correct);
-        feedback.classList.toggle("is-correct", correct);
+        feedback.hidden = false;
+
+        feedback.classList.toggle("is-warning", !isCorrect);
+        feedback.classList.toggle("is-correct", isCorrect);
       }
 
-      const scoreLabel = $("#simulator-score");
-
-      if (scoreLabel) {
-        scoreLabel.textContent = `Score: ${score}`;
-      }
+      scoreLabel.textContent = `Score: ${score}`;
 
       checkButton.hidden = true;
+      nextButton.hidden = false;
 
-      if (currentScenario < scenarios.length - 1) {
-        nextButton.hidden = false;
-        nextButton.textContent = "Next scenario →";
-      } else {
-        nextButton.hidden = false;
-        nextButton.textContent = "See final score →";
-      }
+      nextButton.textContent =
+        currentScenario < scenarios.length - 1
+          ? "Next scenario →"
+          : "See final score →";
     });
 
+    /* Continue to the next scenario or finish. */
+
     nextButton.addEventListener("click", () => {
-      if (!answered) return;
+      if (!answered) {
+        return;
+      }
 
       if (currentScenario < scenarios.length - 1) {
         currentScenario++;
@@ -606,6 +767,8 @@
         finishChallenge();
       }
     });
+
+    /* Optional retry control, if present in the HTML. */
 
     if (retryButton) {
       retryButton.addEventListener("click", () => {
@@ -617,81 +780,86 @@
   }
 
   /* =======================================================
-     MOBILE SIDEBAR
+     SIDEBAR NAVIGATION
+     Supports existing mobile-menu HTML if present.
   ======================================================= */
 
   function setupMobileSidebar() {
-  const menuButton = $("#mobile-menu-button");
-  const sidebar = $("#sidebar");
-  const overlay = $("#sidebar-overlay");
+    const menuButton = $("#mobile-menu-button");
+    const sidebar = $("#sidebar");
+    const overlay = $("#sidebar-overlay");
 
-  if (!menuButton || !sidebar) return;
+    if (!menuButton || !sidebar) {
+      return;
+    }
 
-  function closeSidebar() {
-    sidebar.classList.remove("is-open");
+    function closeSidebar() {
+      sidebar.classList.remove("is-open");
+
+      if (overlay) {
+        overlay.classList.remove("is-visible");
+      }
+
+      menuButton.setAttribute("aria-expanded", "false");
+      document.body.classList.remove("sidebar-open");
+    }
+
+    function openSidebar() {
+      sidebar.classList.add("is-open");
+
+      if (overlay) {
+        overlay.classList.add("is-visible");
+      }
+
+      menuButton.setAttribute("aria-expanded", "true");
+      document.body.classList.add("sidebar-open");
+    }
+
+    menuButton.addEventListener("click", () => {
+      const isOpen = sidebar.classList.contains("is-open");
+
+      if (isOpen) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
 
     if (overlay) {
-      overlay.classList.remove("is-visible");
+      overlay.addEventListener("click", closeSidebar);
     }
 
-    menuButton.setAttribute("aria-expanded", "false");
-    document.body.classList.remove("sidebar-open");
-  }
+    sidebar.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", closeSidebar);
+    });
 
-  function openSidebar() {
-    sidebar.classList.add("is-open");
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeSidebar();
+      }
+    });
 
-    if (overlay) {
-      overlay.classList.add("is-visible");
-    }
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 900) {
+        closeSidebar();
+      }
+    });
 
-    menuButton.setAttribute("aria-expanded", "true");
-    document.body.classList.add("sidebar-open");
-  }
-
-  menuButton.addEventListener("click", () => {
-    const isOpen = sidebar.classList.contains("is-open");
-
-    if (isOpen) {
-      closeSidebar();
-    } else {
-      openSidebar();
-    }
-  });
-
-  if (overlay) {
-    overlay.addEventListener("click", closeSidebar);
-  }
-
-  sidebar.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", closeSidebar);
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
+    if (window.innerWidth <= 900) {
       closeSidebar();
     }
-  });
-
-  window.addEventListener("resize", () => {
-    if (window.innerWidth > 900) {
-      closeSidebar();
-    }
-  });
-
-  if (window.innerWidth <= 900) {
-    closeSidebar();
   }
-}
 
- /* =======================================================
+  /* =======================================================
      LOGOUT
   ======================================================= */
 
   function setupLogout() {
     const button = $("#logout-button");
 
-    if (!button) return;
+    if (!button) {
+      return;
+    }
 
     button.addEventListener("click", async () => {
       const originalText = button.textContent;
@@ -700,16 +868,20 @@
       button.textContent = "Signing out…";
 
       try {
-        const client = window.bizveroSupabase || window.bizoraSupabase;
+        const client =
+          window.bizveroSupabase || window.bizoraSupabase;
 
         if (client?.auth) {
           const { error } = await client.auth.signOut();
-          if (error) throw error;
+
+          if (error) {
+            throw error;
+          }
         }
 
         window.location.href = "./auth.html";
       } catch (error) {
-        console.error("Sign out failed:", error);
+        console.error("[Bizvero] Sign out failed:", error);
 
         showToast("Could not sign out. Please try again.");
 
@@ -725,21 +897,21 @@
 
   function setupExternalLinks() {
     $$('a[target="_blank"]').forEach((link) => {
-      const rel = new Set(
+      const relValues = new Set(
         (link.getAttribute("rel") || "")
           .split(/\s+/)
           .filter(Boolean)
       );
 
-      rel.add("noopener");
-      rel.add("noreferrer");
+      relValues.add("noopener");
+      relValues.add("noreferrer");
 
-      link.setAttribute("rel", [...rel].join(" "));
+      link.setAttribute("rel", [...relValues].join(" "));
     });
   }
 
   /* =======================================================
-     INITIALISE
+     INITIALISATION
   ======================================================= */
 
   function init() {
@@ -750,11 +922,13 @@
     setupLogout();
     setupExternalLinks();
 
-    console.info("Bizvero Grow Digitally initialised.");
+    console.info("[Bizvero] Grow Digitally initialised.");
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", init, {
+      once: true
+    });
   } else {
     init();
   }
