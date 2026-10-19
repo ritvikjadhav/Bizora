@@ -1,427 +1,420 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#102D46">
-    <meta name="description" content="Build your Bizora business profile and help more customers discover what you offer.">
+    <meta name="description" content="Build your Bizvero business profile and help more customers discover what you offer."><title>My Business | Bizvero</title>
 
-    <title>My Business | Bizora</title>
+<link rel="stylesheet" href="./css/style.css">
+<link rel="stylesheet" href="./css/create-business.css">
 
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/create-business.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="./javascript/supabase.js" defer></script>
+<script src="./javascript/create-business.js" defer></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-    <script src="./javascript/supabase.js" defer></script>
-    <script src="./javascript/create-business.js" defer></script>
-</head>
+</head><body class="business-page"><header class="business-topbar">
+    <a class="business-brand" href="./dashboard.html" aria-label="Bizvero dashboard">
+        <span class="business-brand-mark">B</span>
+        <span>bizvero<span class="brand-period">.</span></span>
+    </a>
 
-<body class="business-page">
+    <a class="business-back-link" href="./dashboard.html">
+        <span aria-hidden="true">←</span>
+        <span>Dashboard</span>
+    </a>
+</header>
 
-    <header class="business-topbar">
-        <a class="business-brand" href="./dashboard.html" aria-label="Bizora dashboard">
-            <span class="business-brand-mark">B</span>
-            <span>bizora<span class="brand-period">.</span></span>
-        </a>
+<main class="business-workspace">
 
-        <a class="business-back-link" href="./dashboard.html">
-            <span aria-hidden="true">←</span>
-            <span>Dashboard</span>
-        </a>
-    </header>
+    <section class="business-intro">
+        <div class="business-intro-copy">
+            <span class="business-eyebrow">
+                <span class="business-eyebrow-dot"></span>
+                YOUR BUSINESS, ONLINE
+            </span>
 
-    <main class="business-workspace">
+            <h1 id="page-title">Give your business<br>its place online.</h1>
 
-        <section class="business-intro">
-            <div class="business-intro-copy">
-                <span class="business-eyebrow">
-                    <span class="business-eyebrow-dot"></span>
-                    YOUR BUSINESS, ONLINE
+            <p>
+                Create a profile that tells your story, showcases what you offer,
+                and makes it easier for customers to reach you.
+            </p>
+
+            <div class="business-intro-points">
+                <span><span aria-hidden="true">✓</span> Your own business page</span>
+                <span><span aria-hidden="true">✓</span> Products and services showcase</span>
+                <span><span aria-hidden="true">✓</span> Direct customer connections</span>
+            </div>
+        </div>
+
+        <aside class="business-preview-card" aria-label="Business profile preview">
+            <div class="preview-card-top">
+                <span class="preview-card-label">YOUR BUSINESS CARD</span>
+                <span class="preview-live-indicator">
+                    <span></span>
+                    <span id="preview-state">IN PROGRESS</span>
                 </span>
+            </div>
 
-                <h1 id="page-title">Give your business<br>its place online.</h1>
+            <div class="preview-business-identity">
+                <div class="preview-business-logo" id="preview-logo-wrap">
+                    <img id="logo-preview" alt="Business logo preview" hidden>
+                    <span id="preview-logo-letter">B</span>
+                </div>
 
-                <p>
-                    Create a profile that tells your story, showcases what you offer,
-                    and makes it easier for customers to reach you.
-                </p>
-
-                <div class="business-intro-points">
-                    <span><span aria-hidden="true">✓</span> Your own business page</span>
-                    <span><span aria-hidden="true">✓</span> Products and services showcase</span>
-                    <span><span aria-hidden="true">✓</span> Direct customer connections</span>
+                <div class="preview-business-copy">
+                    <h2 id="preview-business-name">Your business name</h2>
+                    <p id="preview-business-category">Your business category</p>
                 </div>
             </div>
 
-            <aside class="business-preview-card" aria-label="Business profile preview">
-                <div class="preview-card-top">
-                    <span class="preview-card-label">YOUR BUSINESS CARD</span>
-                    <span class="preview-live-indicator">
-                        <span></span>
-                        <span id="preview-state">IN PROGRESS</span>
-                    </span>
-                </div>
+            <p class="preview-business-description" id="preview-business-description">
+                Your business story will appear here as you fill in your profile.
+            </p>
 
-                <div class="preview-business-identity">
-                    <div class="preview-business-logo" id="preview-logo-wrap">
-                        <img id="logo-preview" alt="Business logo preview" hidden>
-                        <span id="preview-logo-letter">B</span>
-                    </div>
+            <div class="preview-business-divider"></div>
 
-                    <div class="preview-business-copy">
-                        <h2 id="preview-business-name">Your business name</h2>
-                        <p id="preview-business-category">Your business category</p>
-                    </div>
-                </div>
-
-                <p class="preview-business-description" id="preview-business-description">
-                    Your business story will appear here as you fill in your profile.
-                </p>
-
-                <div class="preview-business-divider"></div>
-
-                <div class="preview-contact-row">
-                    <span class="preview-contact-icon" aria-hidden="true">↗</span>
-                    <div>
-                        <span>Customer connection</span>
-                        <strong id="preview-contact-label">Your contact details</strong>
-                    </div>
-                </div>
-
-                <div class="preview-card-footer">
-                    <span>Powered by Bizora</span>
-                    <span>YOUR BUSINESS. READY FOR MORE.</span>
-                </div>
-            </aside>
-        </section>
-
-        <section class="business-editor" aria-labelledby="editor-title">
-
-            <div class="business-editor-heading">
+            <div class="preview-contact-row">
+                <span class="preview-contact-icon" aria-hidden="true">↗</span>
                 <div>
-                    <p class="business-eyebrow">BUILD YOUR PROFILE</p>
-                    <h2 id="editor-title">Make it yours.</h2>
-                    <p>Start with the essentials. You can update your details whenever you need.</p>
-                </div>
-
-                <div class="business-completion">
-                    <div class="completion-label-row">
-                        <span>Profile progress</span>
-                        <strong id="completion-percentage">0%</strong>
-                    </div>
-                    <div class="completion-track">
-                        <span id="completion-bar"></span>
-                    </div>
+                    <span>Customer connection</span>
+                    <strong id="preview-contact-label">Your contact details</strong>
                 </div>
             </div>
 
-            <nav class="business-section-nav" aria-label="Profile sections">
-                <a href="#business-details" class="section-nav-item active" data-section-link="business-details">
-                    <span>01</span> Details
-                </a>
-                <a href="#business-contact" class="section-nav-item" data-section-link="business-contact">
-                    <span>02</span> Contact
-                </a>
-                <a href="#business-presence" class="section-nav-item" data-section-link="business-presence">
-                    <span>03</span> Online presence
-                </a>
-                <a href="#business-goals" class="section-nav-item" data-section-link="business-goals">
-                    <span>04</span> Growth goals
-                </a>
-            </nav>
+            <div class="preview-card-footer">
+                <span>Powered by Bizvero</span>
+                <span>YOUR BUSINESS. READY FOR MORE.</span>
+            </div>
+        </aside>
+    </section>
 
-            <form id="business-form" class="business-form">
+    <section class="business-editor" aria-labelledby="editor-title">
 
-                <section class="business-card" id="business-details" aria-labelledby="details-heading">
-                    <div class="business-section-heading">
-                        <span class="business-step">01</span>
-                        <div>
-                            <h2 id="details-heading">Tell your story</h2>
-                            <p>Introduce your business and help customers understand what makes it yours.</p>
+        <div class="business-editor-heading">
+            <div>
+                <p class="business-eyebrow">BUILD YOUR PROFILE</p>
+                <h2 id="editor-title">Make it yours.</h2>
+                <p>Start with the essentials. You can update your details whenever you need.</p>
+            </div>
+
+            <div class="business-completion">
+                <div class="completion-label-row">
+                    <span>Profile progress</span>
+                    <strong id="completion-percentage">0%</strong>
+                </div>
+                <div class="completion-track">
+                    <span id="completion-bar"></span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="business-section-nav" aria-label="Profile sections">
+            <a href="#business-details" class="section-nav-item active" data-section-link="business-details">
+                <span>01</span> Details
+            </a>
+            <a href="#business-contact" class="section-nav-item" data-section-link="business-contact">
+                <span>02</span> Contact
+            </a>
+            <a href="#business-presence" class="section-nav-item" data-section-link="business-presence">
+                <span>03</span> Online presence
+            </a>
+            <a href="#business-goals" class="section-nav-item" data-section-link="business-goals">
+                <span>04</span> Growth goals
+            </a>
+        </nav>
+
+        <form id="business-form" class="business-form">
+
+            <section class="business-card" id="business-details" aria-labelledby="details-heading">
+                <div class="business-section-heading">
+                    <span class="business-step">01</span>
+                    <div>
+                        <h2 id="details-heading">Tell your story</h2>
+                        <p>Introduce your business and help customers understand what makes it yours.</p>
+                    </div>
+                </div>
+
+                <div class="business-grid">
+                    <div class="business-field">
+                        <label for="business-name">Business name <span>*</span></label>
+                        <input
+                            id="business-name"
+                            name="name"
+                            type="text"
+                            maxlength="120"
+                            autocomplete="organization"
+                            placeholder="e.g. Sharma General Store"
+                            required
+                        >
+                    </div>
+
+                    <div class="business-field">
+                        <label for="business-category">Business category <span>*</span></label>
+                        <select id="business-category" name="category" required>
+                            <option value="">Choose your category</option>
+                            <option value="Retail">Retail shop</option>
+                            <option value="Grocery">Grocery and general store</option>
+                            <option value="Food">Food and beverages</option>
+                            <option value="Clothing">Clothing and fashion</option>
+                            <option value="Beauty">Beauty and personal care</option>
+                            <option value="Electronics">Electronics and mobile</option>
+                            <option value="Home Services">Home services</option>
+                            <option value="Professional Services">Professional services</option>
+                            <option value="Handmade">Handmade products</option>
+                            <option value="Education">Education and tutoring</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="business-field full-width">
+                        <div class="business-label-row">
+                            <label for="business-description">About your business <span>*</span></label>
+                            <span class="field-hint">Tell customers what you do</span>
+                        </div>
+                        <textarea
+                            id="business-description"
+                            name="description"
+                            maxlength="1000"
+                            rows="4"
+                            placeholder="What do you offer? What should customers know about your business?"
+                            required
+                        ></textarea>
+                        <div class="field-footer">
+                            <span>A clear introduction helps customers understand your business.</span>
+                            <span id="description-count">0 / 1000</span>
                         </div>
                     </div>
 
-                    <div class="business-grid">
-                        <div class="business-field">
-                            <label for="business-name">Business name <span>*</span></label>
-                            <input
-                                id="business-name"
-                                name="name"
-                                type="text"
-                                maxlength="120"
-                                autocomplete="organization"
-                                placeholder="e.g. Sharma General Store"
-                                required
-                            >
-                        </div>
+                    <div class="business-field full-width">
+                        <label for="business-address">Business address or service area <span>*</span></label>
+                        <input
+                            id="business-address"
+                            name="address"
+                            type="text"
+                            maxlength="300"
+                            autocomplete="street-address"
+                            placeholder="Area, town or business address"
+                            required
+                        >
+                        <small>For service businesses, you can enter the areas you serve.</small>
+                    </div>
+                </div>
+            </section>
 
-                        <div class="business-field">
-                            <label for="business-category">Business category <span>*</span></label>
-                            <select id="business-category" name="category" required>
-                                <option value="">Choose your category</option>
-                                <option value="Retail">Retail shop</option>
-                                <option value="Grocery">Grocery and general store</option>
-                                <option value="Food">Food and beverages</option>
-                                <option value="Clothing">Clothing and fashion</option>
-                                <option value="Beauty">Beauty and personal care</option>
-                                <option value="Electronics">Electronics and mobile</option>
-                                <option value="Home Services">Home services</option>
-                                <option value="Professional Services">Professional services</option>
-                                <option value="Handmade">Handmade products</option>
-                                <option value="Education">Education and tutoring</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
+            <section class="business-card" id="business-contact" aria-labelledby="contact-heading">
+                <div class="business-section-heading">
+                    <span class="business-step">02</span>
+                    <div>
+                        <h2 id="contact-heading">Make it easy to reach you</h2>
+                        <p>Give customers a direct way to ask questions or contact your business.</p>
+                    </div>
+                </div>
 
-                        <div class="business-field full-width">
-                            <div class="business-label-row">
-                                <label for="business-description">About your business <span>*</span></label>
-                                <span class="field-hint">Tell customers what you do</span>
+                <div class="business-grid">
+                    <div class="business-field">
+                        <label for="contact-name">Contact person's name <span>*</span></label>
+                        <input
+                            id="contact-name"
+                            name="contact_name"
+                            type="text"
+                            maxlength="120"
+                            autocomplete="name"
+                            placeholder="Your name"
+                            required
+                        >
+                    </div>
+
+                    <div class="business-field">
+                        <label for="business-phone">Phone number <span>*</span></label>
+                        <input
+                            id="business-phone"
+                            name="phone"
+                            type="tel"
+                            maxlength="20"
+                            autocomplete="tel"
+                            placeholder="Your business contact number"
+                            required
+                        >
+                    </div>
+
+                    <div class="business-field full-width">
+                        <label for="business-whatsapp">WhatsApp number</label>
+                        <input
+                            id="business-whatsapp"
+                            name="whatsapp"
+                            type="tel"
+                            maxlength="20"
+                            autocomplete="tel"
+                            placeholder="Optional — include country code if needed"
+                        >
+                        <small>Leave blank if your phone number is also your WhatsApp number.</small>
+                    </div>
+                </div>
+            </section>
+
+            <section class="business-card" id="business-presence" aria-labelledby="online-heading">
+                <div class="business-section-heading">
+                    <span class="business-step">03</span>
+                    <div>
+                        <h2 id="online-heading">Add your online identity</h2>
+                        <p>Help customers recognise your business and discover your existing online pages.</p>
+                    </div>
+                </div>
+
+                <div class="business-grid">
+                    <div class="business-field full-width">
+                        <label for="business-logo">Business logo</label>
+
+                        <div class="logo-upload-area">
+                            <div class="logo-upload-preview">
+                                <img id="logo-upload-preview" alt="Selected business logo" hidden>
+                                <span id="logo-upload-fallback" aria-hidden="true">B</span>
                             </div>
-                            <textarea
-                                id="business-description"
-                                name="description"
-                                maxlength="1000"
-                                rows="4"
-                                placeholder="What do you offer? What should customers know about your business?"
-                                required
-                            ></textarea>
-                            <div class="field-footer">
-                                <span>A clear introduction helps customers understand your business.</span>
-                                <span id="description-count">0 / 1000</span>
+
+                            <div class="logo-upload-copy">
+                                <strong>Make your business recognisable</strong>
+                                <p>Choose a logo that represents your business.</p>
+                                <label for="business-logo" class="logo-upload-button">Choose image</label>
+                                <input
+                                    id="business-logo"
+                                    name="logo"
+                                    type="file"
+                                    accept="image/png,image/jpeg,image/webp"
+                                >
+                                <small>PNG, JPG or WebP · Maximum 2 MB</small>
                             </div>
                         </div>
-
-                        <div class="business-field full-width">
-                            <label for="business-address">Business address or service area <span>*</span></label>
-                            <input
-                                id="business-address"
-                                name="address"
-                                type="text"
-                                maxlength="300"
-                                autocomplete="street-address"
-                                placeholder="Area, town or business address"
-                                required
-                            >
-                            <small>For service businesses, you can enter the areas you serve.</small>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="business-card" id="business-contact" aria-labelledby="contact-heading">
-                    <div class="business-section-heading">
-                        <span class="business-step">02</span>
-                        <div>
-                            <h2 id="contact-heading">Make it easy to reach you</h2>
-                            <p>Give customers a direct way to ask questions or contact your business.</p>
-                        </div>
                     </div>
 
-                    <div class="business-grid">
-                        <div class="business-field">
-                            <label for="contact-name">Contact person's name <span>*</span></label>
-                            <input
-                                id="contact-name"
-                                name="contact_name"
-                                type="text"
-                                maxlength="120"
-                                autocomplete="name"
-                                placeholder="Your name"
-                                required
-                            >
-                        </div>
-
-                        <div class="business-field">
-                            <label for="business-phone">Phone number <span>*</span></label>
-                            <input
-                                id="business-phone"
-                                name="phone"
-                                type="tel"
-                                maxlength="20"
-                                autocomplete="tel"
-                                placeholder="Your business contact number"
-                                required
-                            >
-                        </div>
-
-                        <div class="business-field full-width">
-                            <label for="business-whatsapp">WhatsApp number</label>
-                            <input
-                                id="business-whatsapp"
-                                name="whatsapp"
-                                type="tel"
-                                maxlength="20"
-                                autocomplete="tel"
-                                placeholder="Optional — include country code if needed"
-                            >
-                            <small>Leave blank if your phone number is also your WhatsApp number.</small>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="business-card" id="business-presence" aria-labelledby="online-heading">
-                    <div class="business-section-heading">
-                        <span class="business-step">03</span>
-                        <div>
-                            <h2 id="online-heading">Add your online identity</h2>
-                            <p>Help customers recognise your business and discover your existing online pages.</p>
-                        </div>
+                    <div class="business-field">
+                        <label for="business-website">Website</label>
+                        <input
+                            id="business-website"
+                            name="website_url"
+                            type="url"
+                            maxlength="500"
+                            placeholder="https://example.com"
+                        >
                     </div>
 
-                    <div class="business-grid">
-                        <div class="business-field full-width">
-                            <label for="business-logo">Business logo</label>
-
-                            <div class="logo-upload-area">
-                                <div class="logo-upload-preview">
-                                    <img id="logo-upload-preview" alt="Selected business logo" hidden>
-                                    <span id="logo-upload-fallback" aria-hidden="true">B</span>
-                                </div>
-
-                                <div class="logo-upload-copy">
-                                    <strong>Make your business recognisable</strong>
-                                    <p>Choose a logo that represents your business.</p>
-                                    <label for="business-logo" class="logo-upload-button">Choose image</label>
-                                    <input
-                                        id="business-logo"
-                                        name="logo"
-                                        type="file"
-                                        accept="image/png,image/jpeg,image/webp"
-                                    >
-                                    <small>PNG, JPG or WebP · Maximum 2 MB</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="business-field">
-                            <label for="business-website">Website</label>
-                            <input
-                                id="business-website"
-                                name="website_url"
-                                type="url"
-                                maxlength="500"
-                                placeholder="https://example.com"
-                            >
-                        </div>
-
-                        <div class="business-field">
-                            <label for="business-instagram">Instagram profile</label>
-                            <input
-                                id="business-instagram"
-                                name="instagram_url"
-                                type="url"
-                                maxlength="500"
-                                placeholder="https://instagram.com/yourshop"
-                            >
-                        </div>
+                    <div class="business-field">
+                        <label for="business-instagram">Instagram profile</label>
+                        <input
+                            id="business-instagram"
+                            name="instagram_url"
+                            type="url"
+                            maxlength="500"
+                            placeholder="https://instagram.com/yourshop"
+                        >
                     </div>
-                </section>
+                </div>
+            </section>
 
-                <section class="business-card" id="business-goals" aria-labelledby="goals-heading">
-                    <div class="business-section-heading">
-                        <span class="business-step">04</span>
-                        <div>
-                            <h2 id="goals-heading">Where would you like to grow?</h2>
-                            <p>Choose what you'd like to learn or improve as your business moves online.</p>
-                        </div>
+            <section class="business-card" id="business-goals" aria-labelledby="goals-heading">
+                <div class="business-section-heading">
+                    <span class="business-step">04</span>
+                    <div>
+                        <h2 id="goals-heading">Where would you like to grow?</h2>
+                        <p>Choose what you'd like to learn or improve as your business moves online.</p>
                     </div>
+                </div>
 
-                    <fieldset class="business-field business-goals">
-                        <legend>Choose any that interest you</legend>
+                <fieldset class="business-field business-goals">
+                    <legend>Choose any that interest you</legend>
 
-                        <div class="goal-options">
-                            <label class="goal-option">
-                                <input type="checkbox" name="digital-goals" value="Online business profile">
-                                <span class="goal-option-copy">
-                                    <strong>Build my online presence</strong>
-                                    <small>Help customers find my business online.</small>
-                                </span>
-                                <span class="goal-check" aria-hidden="true">✓</span>
-                            </label>
+                    <div class="goal-options">
+                        <label class="goal-option">
+                            <input type="checkbox" name="digital-goals" value="Online business profile">
+                            <span class="goal-option-copy">
+                                <strong>Build my online presence</strong>
+                                <small>Help customers find my business online.</small>
+                            </span>
+                            <span class="goal-check" aria-hidden="true">✓</span>
+                        </label>
 
-                            <label class="goal-option">
-                                <input type="checkbox" name="digital-goals" value="Product and service showcase">
-                                <span class="goal-option-copy">
-                                    <strong>Show my products and services</strong>
-                                    <small>Present what I offer in one place.</small>
-                                </span>
-                                <span class="goal-check" aria-hidden="true">✓</span>
-                            </label>
+                        <label class="goal-option">
+                            <input type="checkbox" name="digital-goals" value="Product and service showcase">
+                            <span class="goal-option-copy">
+                                <strong>Show my products and services</strong>
+                                <small>Present what I offer in one place.</small>
+                            </span>
+                            <span class="goal-check" aria-hidden="true">✓</span>
+                        </label>
 
-                            <label class="goal-option">
-                                <input type="checkbox" name="digital-goals" value="Reach more customers">
-                                <span class="goal-option-copy">
-                                    <strong>Reach more customers</strong>
-                                    <small>Help more people discover my business.</small>
-                                </span>
-                                <span class="goal-check" aria-hidden="true">✓</span>
-                            </label>
+                        <label class="goal-option">
+                            <input type="checkbox" name="digital-goals" value="Reach more customers">
+                            <span class="goal-option-copy">
+                                <strong>Reach more customers</strong>
+                                <small>Help more people discover my business.</small>
+                            </span>
+                            <span class="goal-check" aria-hidden="true">✓</span>
+                        </label>
 
-                            <label class="goal-option">
-                                <input type="checkbox" name="digital-goals" value="WhatsApp and social media">
-                                <span class="goal-option-copy">
-                                    <strong>Use social media confidently</strong>
-                                    <small>Learn how to use WhatsApp and social platforms.</small>
-                                </span>
-                                <span class="goal-check" aria-hidden="true">✓</span>
-                            </label>
+                        <label class="goal-option">
+                            <input type="checkbox" name="digital-goals" value="WhatsApp and social media">
+                            <span class="goal-option-copy">
+                                <strong>Use social media confidently</strong>
+                                <small>Learn how to use WhatsApp and social platforms.</small>
+                            </span>
+                            <span class="goal-check" aria-hidden="true">✓</span>
+                        </label>
 
-                            <label class="goal-option">
-                                <input type="checkbox" name="digital-goals" value="Digital payment awareness">
-                                <span class="goal-option-copy">
-                                    <strong>Understand digital payments</strong>
-                                    <small>Learn about UPI and payment safety.</small>
-                                </span>
-                                <span class="goal-check" aria-hidden="true">✓</span>
-                            </label>
+                        <label class="goal-option">
+                            <input type="checkbox" name="digital-goals" value="Digital payment awareness">
+                            <span class="goal-option-copy">
+                                <strong>Understand digital payments</strong>
+                                <small>Learn about UPI and payment safety.</small>
+                            </span>
+                            <span class="goal-check" aria-hidden="true">✓</span>
+                        </label>
 
-                            <label class="goal-option">
-                                <input type="checkbox" name="digital-goals" value="Digital skills">
-                                <span class="goal-option-copy">
-                                    <strong>Improve my digital skills</strong>
-                                    <small>Build confidence using everyday digital tools.</small>
-                                </span>
-                                <span class="goal-check" aria-hidden="true">✓</span>
-                            </label>
-                        </div>
-                    </fieldset>
-                </section>
-
-                <div id="business-status" class="business-status" role="status" aria-live="polite" hidden></div>
-
-                <section class="business-publish-panel">
-                    <div class="publish-panel-copy">
-                        <span class="publish-panel-icon" aria-hidden="true">↗</span>
-                        <div>
-                            <h2>Your business, ready to be discovered.</h2>
-                            <p>Save your progress as a draft, or publish your profile when you're ready.</p>
-                        </div>
+                        <label class="goal-option">
+                            <input type="checkbox" name="digital-goals" value="Digital skills">
+                            <span class="goal-option-copy">
+                                <strong>Improve my digital skills</strong>
+                                <small>Build confidence using everyday digital tools.</small>
+                            </span>
+                            <span class="goal-check" aria-hidden="true">✓</span>
+                        </label>
                     </div>
+                </fieldset>
+            </section>
 
-                    <div class="business-actions">
-                        <button class="business-button secondary" id="preview-button" type="button">
-                            Preview profile
-                        </button>
-                        <button class="business-button secondary" id="save-button" type="submit" value="draft">
-                            Save draft
-                        </button>
-                        <button class="business-button primary" id="publish-button" type="submit" value="publish">
-                            Publish profile <span aria-hidden="true">→</span>
-                        </button>
+            <div id="business-status" class="business-status" role="status" aria-live="polite" hidden></div>
+
+            <section class="business-publish-panel">
+                <div class="publish-panel-copy">
+                    <span class="publish-panel-icon" aria-hidden="true">↗</span>
+                    <div>
+                        <h2>Your business, ready to be discovered.</h2>
+                        <p>Save your progress as a draft, or publish your profile when you're ready.</p>
                     </div>
-                </section>
+                </div>
 
-            </form>
-        </section>
-    </main>
+                <div class="business-actions">
+                    <button class="business-button secondary" id="preview-button" type="button">
+                        Preview profile
+                    </button>
+                    <button class="business-button secondary" id="save-button" type="submit" value="draft">
+                        Save draft
+                    </button>
+                    <button class="business-button primary" id="publish-button" type="submit" value="publish">
+                        Publish profile <span aria-hidden="true">→</span>
+                    </button>
+                </div>
+            </section>
 
-    <footer class="business-footer">
-        <a class="business-footer-brand" href="./index.html">bizora<span>.</span></a>
-        <p>Your business. Ready for more.</p>
-        <a href="./legal.html#privacy">Privacy</a>
-        <a href="./legal.html#terms">Terms</a>
-    </footer>
+        </form>
+    </section>
+</main>
+
+<footer class="business-footer">
+    <a class="business-footer-brand" href="./index.html">bizvero<span>.</span></a>
+    <p>Your business. Ready for more.</p>
+    <a href="./legal.html#privacy">Privacy</a>
+    <a href="./legal.html#terms">Terms</a>
+</footer>
 
 </body>
 </html>
-                 
