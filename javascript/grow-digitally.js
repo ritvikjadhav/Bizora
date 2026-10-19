@@ -1,14 +1,10 @@
 /* =========================================================
-   BIZORA — GROW DIGITALLY
-   Page interactions, progress tracking and safety learning
+   BIZVERO — GROW DIGITALLY
+   Lesson progress, payment safety, tools and navigation
    ========================================================= */
 
 (() => {
   "use strict";
-
-  /* -------------------------------------------------------
-     DOM HELPERS
-  ------------------------------------------------------- */
 
   const $ = (selector, parent = document) =>
     parent.querySelector(selector);
@@ -16,43 +12,17 @@
   const $$ = (selector, parent = document) =>
     Array.from(parent.querySelectorAll(selector));
 
-  const STORAGE_KEYS = {
-    lessons: "bizora_growth_completed_lessons",
-    checklist: "bizora_growth_weekly_checklist"
-  };
+  const STORAGE_KEY = "bizvero_growth_completed_lessons";
 
   let toastTimer;
-  let selectedSimulatorAnswer = null;
-  let simulatorAnswered = false;
+  let currentScenario = 0;
+  let score = 0;
+  let answered = false;
+  let selectedAnswer = null;
 
-  /* -------------------------------------------------------
-     SAFE LOCAL STORAGE
-  ------------------------------------------------------- */
-
-  function readStorage(key, fallback) {
-    try {
-      const value = localStorage.getItem(key);
-      return value ? JSON.parse(value) : fallback;
-    } catch (error) {
-      console.warn("Could not read saved Bizora progress:", error);
-      return fallback;
-    }
-  }
-
-  function writeStorage(key, value) {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch (error) {
-      console.warn("Could not save Bizora progress:", error);
-      showToast("Progress could not be saved on this device.");
-      return false;
-    }
-  }
-
-  /* -------------------------------------------------------
-     TOAST NOTIFICATIONS
-  ------------------------------------------------------- */
+  /* =======================================================
+     TOAST
+  ======================================================= */
 
   function showToast(message) {
     const toast = $("#growth-toast");
@@ -64,8 +34,6 @@
 
     toast.textContent = message;
     toast.classList.add("is-visible");
-    toast.setAttribute("role", "status");
-    toast.setAttribute("aria-live", "polite");
 
     clearTimeout(toastTimer);
 
@@ -74,82 +42,99 @@
     }, 3000);
   }
 
-  /* -------------------------------------------------------
+  /* =======================================================
+     SAFE LOCAL STORAGE
+  ======================================================= */
+
+  function readStorage(key, fallback) {
+    try {
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  function writeStorage(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch {
+      showToast("Progress could not be saved on this device.");
+      return false;
+    }
+  }
+
+  /* =======================================================
      LESSON COMPLETION
-  ------------------------------------------------------- */
+  ======================================================= */
 
   function getCompletedLessons() {
-    const saved = readStorage(STORAGE_KEYS.lessons, []);
+    const saved = readStorage(STORAGE_KEY, []);
 
     return Array.isArray(saved)
-      ? saved.filter((id) => typeof id === "string")
+      ? [...new Set(saved.filter((id) => typeof id === "string"))]
       : [];
   }
 
   function updateLessonProgress() {
+    const buttons = $$("[data-complete-module]");
+    const lessonIds = [
+      ...new Set(buttons.map((button) => button.dataset.completeModule))
+    ].filter(Boolean);
+
     const completed = getCompletedLessons();
+    const total = lessonIds.length;
 
-    const lessonCards = $$("[data-complete-module]");
-    const totalLessons = lessonCards.length;
+    const completedCount = lessonIds.filter((id) =>
+      completed.includes(id)
+    ).length;
 
-    lessonCards.forEach((button) => {
-      const card = button.closest(".growth-module-card");
+    const percentage = total
+      ? Math.round((completedCount / total) * 100)
+      : 0;
 
-      if (!card) return;
-
-      const lessonId = button.dataset.completeModule;
-      const isComplete = completed.includes(lessonId);
-
-      card.classList.toggle("is-complete", isComplete);
-
-      const status = $(".growth-module-status", card);
-
-      if (status) {
-        status.textContent = isComplete ? "Completed" : "Not started";
-      }
+    buttons.forEach((button) => {
+      const id = button.dataset.completeModule;
+      const isComplete = completed.includes(id);
+      const card = button.closest(".learning-module");
 
       button.textContent = isComplete
         ? "✓ Completed"
-        : "Mark as completed";
+        : "Mark as complete";
 
       button.setAttribute("aria-pressed", String(isComplete));
+
+      if (card) {
+        card.classList.toggle("is-complete", isComplete);
+      }
     });
 
-    const completedCount = lessonCards.filter((button) =>
-      completed.includes(button.dataset.completeModule)
-    ).length;
+    const count = $("#completed-lessons");
 
-    const percentage = totalLessons
-      ? Math.round((completedCount / totalLessons) * 100)
-      : 0;
-
-    const countElement = $("#completed-lessons");
-
-    if (countElement) {
-      countElement.textContent = `${completedCount} of ${totalLessons}`;
+    if (count) {
+      count.textContent = `${completedCount} of ${total}`;
     }
 
-    const progressTitle = $("#growth-progress-title");
+    const title = $("#growth-progress-title");
 
-    if (progressTitle) {
-      progressTitle.textContent =
-        percentage === 100
-          ? "Your learning path is complete!"
+    if (title) {
+      title.textContent =
+        total > 0 && completedCount === total
+          ? "You've completed every lesson!"
           : "Your digital growth progress";
     }
 
-    const progressDescription = $("#growth-progress-description");
+    const description = $("#growth-progress-description");
 
-    if (progressDescription) {
-      progressDescription.textContent =
-        percentage === 100
-          ? "Great work! Review the lessons whenever you need a refresher."
-          : "Complete the learning cards as you explore practical digital tools.";
+    if (description) {
+      description.textContent =
+        total > 0 && completedCount === total
+          ? "Great work! Return to these lessons whenever you need a refresher."
+          : "Explore practical lessons and mark each one complete as you learn.";
     }
 
-    const progressBar = $(
-      ".growth-progress-track > span"
-    );
+    const progressBar = $(".growth-progress-track > span");
 
     if (progressBar) {
       progressBar.style.width = `${percentage}%`;
@@ -157,35 +142,31 @@
       progressBar.setAttribute("aria-valuemin", "0");
       progressBar.setAttribute("aria-valuemax", "100");
       progressBar.setAttribute("aria-valuenow", String(percentage));
-      progressBar.setAttribute(
-        "aria-label",
-        "Digital learning completion"
-      );
     }
   }
 
   function setupLessonCompletion() {
     $$("[data-complete-module]").forEach((button) => {
       button.addEventListener("click", () => {
-        const lessonId = button.dataset.completeModule;
+        const id = button.dataset.completeModule;
 
-        if (!lessonId) return;
+        if (!id) return;
 
         const completed = getCompletedLessons();
-        const alreadyComplete = completed.includes(lessonId);
+        const isComplete = completed.includes(id);
 
-        const updated = alreadyComplete
-          ? completed.filter((id) => id !== lessonId)
-          : [...completed, lessonId];
+        const updated = isComplete
+          ? completed.filter((item) => item !== id)
+          : [...completed, id];
 
-        if (!writeStorage(STORAGE_KEYS.lessons, updated)) return;
+        if (!writeStorage(STORAGE_KEY, updated)) return;
 
         updateLessonProgress();
 
         showToast(
-          alreadyComplete
-            ? "Lesson marked as not completed."
-            : "Lesson completed. Keep growing your business!"
+          isComplete
+            ? "Lesson marked as incomplete."
+            : "Lesson completed. Keep growing!"
         );
       });
     });
@@ -193,9 +174,9 @@
     updateLessonProgress();
   }
 
-  /* -------------------------------------------------------
-     DIGITAL TOOL DIRECTORY FILTERS
-  ------------------------------------------------------- */
+  /* =======================================================
+     DIGITAL TOOL FILTERS
+  ======================================================= */
 
   function setupToolFilters() {
     const filters = $$("[data-tool-filter]");
@@ -203,291 +184,441 @@
 
     if (!filters.length || !cards.length) return;
 
+    function applyFilter(button) {
+      const category = button.dataset.toolFilter;
+
+      filters.forEach((filter) => {
+        const active = filter === button;
+
+        filter.classList.toggle("is-active", active);
+        filter.setAttribute("aria-pressed", String(active));
+      });
+
+      cards.forEach((card) => {
+        card.hidden =
+          category !== "all" &&
+          card.dataset.toolCategory !== category;
+      });
+    }
+
     filters.forEach((button) => {
-      button.addEventListener("click", () => {
-        const selectedCategory = button.dataset.toolFilter;
-
-        filters.forEach((filter) => {
-          const isActive = filter === button;
-
-          filter.classList.toggle("is-active", isActive);
-          filter.setAttribute("aria-pressed", String(isActive));
-        });
-
-        cards.forEach((card) => {
-          const category = card.dataset.toolCategory;
-          const shouldShow =
-            selectedCategory === "all" ||
-            category === selectedCategory;
-
-          card.hidden = !shouldShow;
-        });
-      });
+      button.addEventListener("click", () => applyFilter(button));
     });
 
-    const initialActive = filters.find((button) =>
-      button.classList.contains("is-active")
+    applyFilter(
+      filters.find((button) =>
+        button.classList.contains("is-active")
+      ) || filters[0]
     );
-
-    if (initialActive) {
-      initialActive.click();
-    } else {
-      filters[0].click();
-    }
   }
 
-  /* -------------------------------------------------------
-     WEEKLY DIGITAL-READINESS CHECKLIST
-  ------------------------------------------------------- */
+  /* =======================================================
+     PAYMENT SAFETY CHALLENGE — FIVE SCENARIOS
+  ======================================================= */
 
-  function getChecklistState() {
-    const saved = readStorage(STORAGE_KEYS.checklist, {});
-
-    return saved &&
-      typeof saved === "object" &&
-      !Array.isArray(saved)
-      ? saved
-      : {};
-  }
-
-  function updateChecklistProgress() {
-    const checkboxes = $$("[data-checklist-item]");
-    const state = getChecklistState();
-
-    checkboxes.forEach((checkbox) => {
-      checkbox.checked = Boolean(state[checkbox.dataset.checklistItem]);
-    });
-
-    const completedCount = checkboxes.filter(
-      (checkbox) => checkbox.checked
-    ).length;
-
-    const totalCount = checkboxes.length;
-
-    const countElement = $("#checklist-completed-count");
-
-    if (countElement) {
-      countElement.textContent = `${completedCount} of ${totalCount} completed`;
-    }
-
-    const progressBar = $("#checklist-progress-bar");
-
-    if (progressBar) {
-      const percentage = totalCount
-        ? Math.round((completedCount / totalCount) * 100)
-        : 0;
-
-      progressBar.style.width = `${percentage}%`;
-      progressBar.setAttribute("role", "progressbar");
-      progressBar.setAttribute("aria-valuemin", "0");
-      progressBar.setAttribute("aria-valuemax", "100");
-      progressBar.setAttribute("aria-valuenow", String(percentage));
-    }
-
-    const progressText = $("#checklist-progress");
-
-    if (progressText) {
-      progressText.textContent =
-        completedCount === totalCount && totalCount > 0
-          ? "Your weekly checklist is complete. Excellent work!"
-          : "Small steps this week can make your business easier to discover.";
-    }
-  }
-
-  function setupChecklist() {
-    const checkboxes = $$("[data-checklist-item]");
-
-    if (!checkboxes.length) return;
-
-    const saved = getChecklistState();
-
-    checkboxes.forEach((checkbox) => {
-      const itemId = checkbox.dataset.checklistItem;
-
-      checkbox.checked = Boolean(saved[itemId]);
-
-      checkbox.addEventListener("change", () => {
-        const state = getChecklistState();
-
-        state[itemId] = checkbox.checked;
-
-        if (!writeStorage(STORAGE_KEYS.checklist, state)) {
-          checkbox.checked = !checkbox.checked;
-          return;
+  const scenarios = [
+    {
+      title: "A customer shows you a payment screenshot.",
+      description:
+        "They say the money has been sent and ask you to hand over the goods.",
+      question: "What should you do?",
+      options: [
+        {
+          id: "trust-screenshot",
+          title: "Trust the screenshot",
+          detail: "It looks like a successful payment."
+        },
+        {
+          id: "verify-payment",
+          title: "Verify the transaction",
+          detail: "Check your own payment app or bank account."
+        },
+        {
+          id: "ask-for-pin",
+          title: "Ask for their UPI PIN",
+          detail: "Use it to confirm the payment."
         }
-
-        updateChecklistProgress();
-
-        showToast(
-          checkbox.checked
-            ? "Checklist item completed!"
-            : "Checklist item unchecked."
-        );
-      });
-    });
-
-    updateChecklistProgress();
-  }
-
-  /* -------------------------------------------------------
-     PAYMENT SAFETY SIMULATOR
-  ------------------------------------------------------- */
-
-  const simulatorAnswers = {
-    "trust-screenshot": {
-      correct: false,
-      message:
-        "Not quite. A screenshot can be edited or show an incomplete payment. Check your own bank or payment app for the actual transaction."
+      ],
+      correct: "verify-payment",
+      explanation:
+        "Correct practice: verify the transaction in your own payment app or bank account before handing over goods. Screenshots and sounds alone are not proof of payment."
     },
 
-    "verify-payment": {
-      correct: true,
-      message:
-        "Correct! Check your own bank account or payment app and confirm the transaction before handing over goods. Never rely only on a screenshot or sound."
+    {
+      title: "Someone asks for your UPI PIN to send you money.",
+      description:
+        "The person claims that entering your PIN will help them transfer money to your account.",
+      question: "What is the safest response?",
+      options: [
+        {
+          id: "enter-pin",
+          title: "Enter your UPI PIN",
+          detail: "Follow the person's instructions."
+        },
+        {
+          id: "share-otp",
+          title: "Share your OTP",
+          detail: "Help them complete the transfer."
+        },
+        {
+          id: "never-share",
+          title: "Never share your PIN or OTP",
+          detail: "Decline and verify the request independently."
+        }
+      ],
+      correct: "never-share",
+      explanation:
+        "Correct! Never share your UPI PIN or OTP. You do not need to disclose these secrets to receive money. Contact your bank through its official channel if you are concerned."
     },
 
-    "ask-for-pin": {
-      correct: false,
-      message:
-        "Never ask for or share a UPI PIN to receive money. A UPI PIN is used to authorise certain payments, not to prove that a customer paid you."
+    {
+      title: "You receive an unexpected UPI collect request.",
+      description:
+        "A stranger says you must approve the request to receive a refund or prize.",
+      question: "What should you do?",
+      options: [
+        {
+          id: "approve-request",
+          title: "Approve it immediately",
+          detail: "The stranger says it will send you money."
+        },
+        {
+          id: "check-request",
+          title: "Review and decline if unexpected",
+          detail: "Do not approve a payment you do not recognise."
+        },
+        {
+          id: "share-details",
+          title: "Send your bank details",
+          detail: "Ask the stranger to explain the request."
+        }
+      ],
+      correct: "check-request",
+      explanation:
+        "Correct! A collect request may ask you to authorise a payment from your account. Do not approve unexpected requests. Verify any refund through the business or provider's official channel."
+    },
+
+    {
+      title: "A customer says their payment is still pending.",
+      description:
+        "They show a pending transaction screen and ask you to release the goods now.",
+      question: "What is the safest action?",
+      options: [
+        {
+          id: "release-goods",
+          title: "Release the goods immediately",
+          detail: "The customer says the money will arrive soon."
+        },
+        {
+          id: "verify-status",
+          title: "Check the actual payment status",
+          detail: "Confirm the credit using your own payment app or bank."
+        },
+        {
+          id: "trust-message",
+          title: "Trust their message",
+          detail: "A payment notification is enough."
+        }
+      ],
+      correct: "verify-status",
+      explanation:
+        "Correct! A pending transaction is not confirmation that money has reached you. Check your own account and follow your payment provider's guidance if the status remains unclear."
+    },
+
+    {
+      title: "Someone asks you to scan a QR code for a refund.",
+      description:
+        "They tell you to scan it and enter your UPI PIN to receive money.",
+      question: "What should you do?",
+      options: [
+        {
+          id: "scan-enter-pin",
+          title: "Scan and enter your PIN",
+          detail: "Follow the instructions to get the refund."
+        },
+        {
+          id: "send-small-amount",
+          title: "Send a small amount first",
+          detail: "Test whether the refund works."
+        },
+        {
+          id: "refuse-verify",
+          title: "Stop and verify independently",
+          detail: "Do not authorise an unfamiliar payment."
+        }
+      ],
+      correct: "refuse-verify",
+      explanation:
+        "Correct! Do not follow unfamiliar QR-code or PIN instructions to receive a refund. A QR payment flow may initiate money leaving your account. Contact the business or provider using a trusted, official channel."
     }
-  };
+  ];
 
   function setupPaymentSimulator() {
-    const optionsContainer = $("#simulator-options");
+    const container = $("#simulator-options");
+    const panel = $(".simulator-panel");
 
-    if (!optionsContainer) return;
+    if (!container || !panel) return;
 
-    const options = $$(
-      "button, [data-simulator-answer]",
-      optionsContainer
-    );
-
+    const situation = $(".simulator-situation", panel);
     const feedback = $("#simulator-feedback");
-    const nextButton = $("#simulator-next");
+    const checkButton = $("#simulator-check");
     const retryButton = $("#simulator-retry");
 
-    function resetSimulator() {
-      selectedSimulatorAnswer = null;
-      simulatorAnswered = false;
+    if (!situation || !checkButton) return;
 
-      options.forEach((option) => {
-        option.classList.remove("is-selected");
-        option.setAttribute("aria-pressed", "false");
-        option.disabled = false;
+    let nextButton = $("#simulator-next");
+
+    // Create a Next button if the HTML does not already contain one.
+    if (!nextButton) {
+      nextButton = document.createElement("button");
+      nextButton.type = "button";
+      nextButton.id = "simulator-next";
+      nextButton.className = "module-primary-link";
+      nextButton.textContent = "Next scenario →";
+      nextButton.hidden = true;
+
+      const controls = $(".simulator-controls", panel);
+
+      if (controls) {
+        controls.appendChild(nextButton);
+      } else {
+        panel.appendChild(nextButton);
+      }
+    }
+
+    const heading = $("#simulator-title");
+    const sectionDescription = heading
+      ? heading.closest(".section-heading")?.querySelector("p")
+      : null;
+
+    if (sectionDescription) {
+      sectionDescription.textContent =
+        "Five everyday situations. Choose the safest action and learn why.";
+    }
+
+    let resultSummary = $("#simulator-result");
+
+    if (!resultSummary) {
+      resultSummary = document.createElement("div");
+      resultSummary.id = "simulator-result";
+      resultSummary.className = "simulator-result";
+      resultSummary.hidden = true;
+      resultSummary.setAttribute("role", "status");
+      panel.appendChild(resultSummary);
+    }
+
+    function renderScenario() {
+      const scenario = scenarios[currentScenario];
+
+      answered = false;
+      selectedAnswer = null;
+
+      const label = $(".simulator-label", situation);
+      const icon = $(".simulator-icon", situation);
+      const title = $("h3", situation);
+      const description = $("p", situation);
+      const question = $("strong", situation);
+
+      if (label) {
+        label.textContent =
+          `SCENARIO ${String(currentScenario + 1).padStart(2, "0")} OF ${scenarios.length}`;
+      }
+
+      let scoreLabel = $("#simulator-score");
+
+      if (!scoreLabel) {
+        scoreLabel = document.createElement("strong");
+        scoreLabel.id = "simulator-score";
+        scoreLabel.className = "simulator-score";
+        situation.insertBefore(scoreLabel, situation.firstChild);
+      }
+
+      scoreLabel.textContent = `Score: ${score}`;
+
+      if (icon) icon.textContent = "₹";
+      if (title) title.textContent = scenario.title;
+      if (description) description.textContent = scenario.description;
+      if (question) question.textContent = scenario.question;
+
+      container.replaceChildren();
+
+      scenario.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.simulatorAnswer = option.id;
+        button.setAttribute("aria-pressed", "false");
+
+        const letter = document.createElement("span");
+        letter.className = "simulator-choice-letter";
+        letter.textContent = String.fromCharCode(65 + index);
+
+        const content = document.createElement("span");
+
+        const title = document.createElement("strong");
+        title.textContent = option.title;
+
+        const detail = document.createElement("small");
+        detail.textContent = option.detail;
+
+        content.append(title, detail);
+        button.append(letter, content);
+
+        button.addEventListener("click", () => {
+          if (answered) return;
+
+          selectedAnswer = option.id;
+
+          $$("[data-simulator-answer]", container).forEach((item) => {
+            const selected = item === button;
+
+            item.classList.toggle("is-selected", selected);
+            item.setAttribute("aria-pressed", String(selected));
+          });
+
+          if (feedback) {
+            feedback.hidden = true;
+            feedback.textContent = "";
+          }
+        });
+
+        container.appendChild(button);
       });
 
       if (feedback) {
         feedback.hidden = true;
         feedback.textContent = "";
-        feedback.classList.remove("is-warning");
+        feedback.classList.remove("is-warning", "is-correct");
       }
 
-      if (nextButton) nextButton.hidden = true;
-      if (retryButton) retryButton.hidden = true;
+      checkButton.hidden = false;
+      checkButton.disabled = false;
+      checkButton.textContent = "Check answer →";
+
+      nextButton.hidden = true;
+      retryButton.hidden = true;
+      resultSummary.hidden = true;
     }
 
-    options.forEach((option) => {
-      option.addEventListener("click", () => {
-        if (simulatorAnswered) return;
+    function finishChallenge() {
+      container.hidden = true;
+      situation.hidden = true;
+      checkButton.hidden = true;
+      retryButton.hidden = true;
+      nextButton.hidden = true;
 
-        const answerId =
-          option.dataset.simulatorAnswer ||
-          option.dataset.answer ||
-          option.id;
+      if (feedback) {
+        feedback.hidden = true;
+      }
 
-        if (!simulatorAnswers[answerId]) return;
+      const message =
+        score === scenarios.length
+          ? "Excellent! You answered all five scenarios correctly."
+          : score >= 3
+            ? "Good work! Review the explanations to strengthen your payment safety."
+            : "Keep learning. Review the safety tips and practise again.";
 
-        selectedSimulatorAnswer = answerId;
+      resultSummary.replaceChildren();
 
-        options.forEach((otherOption) => {
-          const isSelected = otherOption === option;
+      const title = document.createElement("h3");
+      title.textContent = "Challenge complete";
 
-          otherOption.classList.toggle("is-selected", isSelected);
-          otherOption.setAttribute(
-            "aria-pressed",
-            String(isSelected)
-          );
-        });
+      const scoreText = document.createElement("p");
+      scoreText.textContent = `Your score: ${score} / ${scenarios.length}`;
 
-        if (feedback) {
-          feedback.hidden = true;
-          feedback.textContent = "";
-        }
+      const description = document.createElement("p");
+      description.textContent = message;
+
+      const restartButton = document.createElement("button");
+      restartButton.type = "button";
+      restartButton.className = "module-primary-link";
+      restartButton.textContent = "Try all scenarios again →";
+
+      restartButton.addEventListener("click", () => {
+        currentScenario = 0;
+        score = 0;
+        container.hidden = false;
+        situation.hidden = false;
+        renderScenario();
       });
-    });
 
-    function submitAnswer() {
-      if (!selectedSimulatorAnswer) {
+      resultSummary.append(title, scoreText, description, restartButton);
+      resultSummary.hidden = false;
+    }
+
+    checkButton.addEventListener("click", () => {
+      if (answered) return;
+
+      if (!selectedAnswer) {
         showToast("Choose an answer first.");
         return;
       }
 
-      const result = simulatorAnswers[selectedSimulatorAnswer];
+      const scenario = scenarios[currentScenario];
+      const correct = selectedAnswer === scenario.correct;
 
-      simulatorAnswered = true;
+      answered = true;
 
-      options.forEach((option) => {
-        option.disabled = true;
+      if (correct) score++;
+
+      $$("[data-simulator-answer]", container).forEach((button) => {
+        button.disabled = true;
+
+        if (button.dataset.simulatorAnswer === scenario.correct) {
+          button.classList.add("is-correct");
+        } else if (button.dataset.simulatorAnswer === selectedAnswer) {
+          button.classList.add("is-incorrect");
+        }
       });
 
       if (feedback) {
         feedback.hidden = false;
-        feedback.textContent = result.message;
-        feedback.classList.toggle("is-warning", !result.correct);
+        feedback.textContent =
+          `${correct ? "Correct!" : "Not quite."} ${scenario.explanation}`;
+
+        feedback.classList.toggle("is-warning", !correct);
+        feedback.classList.toggle("is-correct", correct);
       }
 
-      if (nextButton) nextButton.hidden = true;
-      if (retryButton) retryButton.hidden = false;
+      const scoreLabel = $("#simulator-score");
 
-      showToast(
-        result.correct
-          ? "Correct answer!"
-          : "Review the safety tip and try again."
-      );
-    }
+      if (scoreLabel) {
+        scoreLabel.textContent = `Score: ${score}`;
+      }
 
-    /*
-      The HTML may provide a separate check-answer button.
-      If present, use it. Otherwise, selecting an answer
-      reveals the explanation immediately.
-    */
+      checkButton.hidden = true;
 
-    const checkButton = $("#simulator-check");
+      if (currentScenario < scenarios.length - 1) {
+        nextButton.hidden = false;
+        nextButton.textContent = "Next scenario →";
+      } else {
+        nextButton.hidden = false;
+        nextButton.textContent = "See final score →";
+      }
+    });
 
-    if (checkButton) {
-      checkButton.addEventListener("click", submitAnswer);
-    } else {
-      options.forEach((option) => {
-        option.addEventListener("click", () => {
-          if (simulatorAnswered) return;
+    nextButton.addEventListener("click", () => {
+      if (!answered) return;
 
-          const answerId =
-            option.dataset.simulatorAnswer ||
-            option.dataset.answer ||
-            option.id;
+      if (currentScenario < scenarios.length - 1) {
+        currentScenario++;
+        renderScenario();
+      } else {
+        finishChallenge();
+      }
+    });
 
-          if (!simulatorAnswers[answerId]) return;
-
-          submitAnswer();
-        });
+    if (retryButton) {
+      retryButton.addEventListener("click", () => {
+        renderScenario();
       });
     }
 
-    if (nextButton) {
-      nextButton.addEventListener("click", resetSimulator);
-    }
-
-    if (retryButton) {
-      retryButton.addEventListener("click", resetSimulator);
-    }
-
-    resetSimulator();
+    renderScenario();
   }
 
-  /* -------------------------------------------------------
+  /* =======================================================
      MOBILE SIDEBAR
-  ------------------------------------------------------- */
+  ======================================================= */
 
   function setupMobileSidebar() {
     const menuButton = $("#mobile-menu-button");
@@ -498,7 +629,10 @@
 
     function closeSidebar() {
       sidebar.classList.remove("is-open");
-      if (overlay) overlay.classList.remove("is-visible");
+
+      if (overlay) {
+        overlay.classList.remove("is-visible");
+      }
 
       menuButton.setAttribute("aria-expanded", "false");
       document.body.classList.remove("sidebar-open");
@@ -506,7 +640,10 @@
 
     function openSidebar() {
       sidebar.classList.add("is-open");
-      if (overlay) overlay.classList.add("is-visible");
+
+      if (overlay) {
+        overlay.classList.add("is-visible");
+      }
 
       menuButton.setAttribute("aria-expanded", "true");
       document.body.classList.add("sidebar-open");
@@ -515,18 +652,12 @@
     menuButton.setAttribute("aria-expanded", "false");
 
     menuButton.addEventListener("click", () => {
-      const isOpen = sidebar.classList.contains("is-open");
-
-      if (isOpen) {
-        closeSidebar();
-      } else {
-        openSidebar();
-      }
+      sidebar.classList.contains("is-open")
+        ? closeSidebar()
+        : openSidebar();
     });
 
-    if (overlay) {
-      overlay.addEventListener("click", closeSidebar);
-    }
+    overlay?.addEventListener("click", closeSidebar);
 
     $$("a", sidebar).forEach((link) => {
       link.addEventListener("click", closeSidebar);
@@ -541,75 +672,73 @@
     });
   }
 
-  /* -------------------------------------------------------
+ /* =======================================================
      LOGOUT
-  ------------------------------------------------------- */
+  ======================================================= */
 
-  async function setupLogout() {
-    const logoutButton = $("#logout-button");
+  function setupLogout() {
+    const button = $("#logout-button");
 
-    if (!logoutButton) return;
+    if (!button) return;
 
-    logoutButton.addEventListener("click", async () => {
-      const originalText = logoutButton.textContent;
+    button.addEventListener("click", async () => {
+      const originalText = button.textContent;
 
-      logoutButton.disabled = true;
-      logoutButton.textContent = "Signing out…";
+      button.disabled = true;
+      button.textContent = "Signing out…";
 
       try {
-        const client = window.bizoraSupabase;
+        const client = window.bizveroSupabase || window.bizoraSupabase;
 
-        if (client && client.auth) {
+        if (client?.auth) {
           const { error } = await client.auth.signOut();
-
           if (error) throw error;
         }
 
         window.location.href = "./auth.html";
       } catch (error) {
-        console.error("Logout failed:", error);
+        console.error("Sign out failed:", error);
 
         showToast("Could not sign out. Please try again.");
 
-        logoutButton.disabled = false;
-        logoutButton.textContent = originalText;
+        button.disabled = false;
+        button.textContent = originalText;
       }
     });
   }
 
-  /* -------------------------------------------------------
-     EXTERNAL LINKS
-  ------------------------------------------------------- */
+  /* =======================================================
+     EXTERNAL LINK SAFETY
+  ======================================================= */
 
   function setupExternalLinks() {
     $$('a[target="_blank"]').forEach((link) => {
-      const relValues = new Set(
+      const rel = new Set(
         (link.getAttribute("rel") || "")
           .split(/\s+/)
           .filter(Boolean)
       );
 
-      relValues.add("noopener");
-      relValues.add("noreferrer");
+      rel.add("noopener");
+      rel.add("noreferrer");
 
-      link.setAttribute("rel", [...relValues].join(" "));
+      link.setAttribute("rel", [...rel].join(" "));
     });
   }
 
-  /* -------------------------------------------------------
-     INITIALISE PAGE
-  ------------------------------------------------------- */
+  /* =======================================================
+     INITIALISE
+  ======================================================= */
 
   function init() {
     setupLessonCompletion();
     setupToolFilters();
-    setupChecklist();
     setupPaymentSimulator();
     setupMobileSidebar();
     setupLogout();
     setupExternalLinks();
 
-    console.info("Bizora Grow Digitally page initialised.");
+    console.info("Bizvero Grow Digitally initialised.");
   }
 
   if (document.readyState === "loading") {
