@@ -3,42 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#F5F7FB">
-    <meta name="description" content="Discover local businesses, explore their products and services, and connect directly with them.">
 
-    <title>Business Storefront | Bizora</title>
+    <meta name="theme-color" content="#F5F7FB">
+    <meta
+        name="description"
+        content="Discover local businesses, explore their products and services, and connect directly with them on Bizvero."
+    >
+    <meta name="robots" content="index, follow">
+
+    <title>Business Storefront | Bizvero</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
     <link rel="stylesheet" href="./css/storefront.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+        defer
+    ></script>
+
     <script src="./javascript/supabase.js" defer></script>
     <script src="./javascript/storefront.js" defer></script>
 </head>
 
 <body class="storefront-page">
 
-    <!-- Header -->
+    <!-- Minimal customer-facing header -->
     <header class="storefront-header">
-        <a href="./index.html" class="storefront-brand" aria-label="Bizora home">
+        <a
+            href="./index.html"
+            class="storefront-brand"
+            aria-label="Bizvero"
+        >
             <span class="storefront-brand-mark" aria-hidden="true">B</span>
-            <span>bizora<span class="brand-period">.</span></span>
+
+            <span>bizvero<span class="brand-period">.</span></span>
         </a>
 
-        <span class="storefront-header-label">BUSINESS PROFILE</span>
+        <span class="storefront-header-label">OFFICIAL STORE</span>
     </header>
 
     <main class="storefront-main">
 
         <!-- Business identity -->
-        <section class="storefront-identity" aria-labelledby="business-name">
+        <section
+            class="storefront-identity"
+            aria-labelledby="business-name"
+        >
 
             <div class="identity-topline">
                 <span class="identity-badge">
-                    <span class="identity-status-dot" aria-hidden="true"></span>
+                    <span
+                        class="identity-status-dot"
+                        aria-hidden="true"
+                    ></span>
+
                     <span id="business-category">Local business</span>
                 </span>
 
@@ -48,7 +73,15 @@
                     type="button"
                     aria-label="Share this business"
                 >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
                         <circle cx="18" cy="5" r="3"></circle>
                         <circle cx="6" cy="12" r="3"></circle>
                         <circle cx="18" cy="19" r="3"></circle>
@@ -61,7 +94,11 @@
 
             <div class="identity-content">
 
-                <div class="business-logo" id="business-logo-container">
+                <!-- Business logo -->
+                <div
+                    class="business-logo"
+                    id="business-logo-container"
+                >
                     <img
                         id="business-logo"
                         src=""
@@ -69,14 +106,32 @@
                         hidden
                     >
 
-                    <span id="business-logo-fallback" aria-hidden="true">B</span>
+                    <span
+                        id="business-logo-fallback"
+                        aria-hidden="true"
+                    >B</span>
                 </div>
 
+                <!-- Business name and location -->
                 <div class="business-heading">
-                    <h1 id="business-name">Discovering business...</h1>
+                    <h1 id="business-name">
+                        Discovering business...
+                    </h1>
 
-                    <p class="business-location" id="business-location" hidden>
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <p
+                        class="business-location"
+                        id="business-location"
+                        hidden
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                        >
                             <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
                             <circle cx="12" cy="10" r="2.5"></circle>
                         </svg>
@@ -87,13 +142,14 @@
 
             </div>
 
+            <!-- Business introduction -->
             <p
                 class="business-description"
                 id="business-description"
                 hidden
             ></p>
 
-            <!-- Contact actions appear only when real contact details exist -->
+            <!-- Contact actions appear only when contact details exist -->
             <div
                 class="business-contact-actions"
                 id="business-contact-actions"
@@ -107,12 +163,20 @@
                     rel="noopener noreferrer"
                     hidden
                 >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
                         <path d="M20.5 11.7a8.5 8.5 0 0 1-12.6 7.4L3 20l.9-4.7a8.5 8.5 0 1 1 16.6-3.6Z"></path>
                         <path d="M8.5 8.2c.3-.5.6-.5.9-.5h.4c.2 0 .4.1.5.4l.8 1.8c.1.2.1.4-.1.6l-.6.7c-.2.2-.2.4 0 .7.5.8 1.2 1.5 2 1.9.3.2.5.2.7-.1l.8-.9c.2-.2.4-.2.7-.1l1.7.8c.3.1.4.3.4.5 0 .4-.2 1-.6 1.4-.4.4-1.2.7-2 .5-1-.2-2.3-.8-3.5-1.9-1-.9-1.8-2.1-2.1-3.1-.3-1 .1-1.9.4-2.3Z"></path>
                     </svg>
 
-                    <span>WhatsApp</span>
+                    <span>Chat on WhatsApp</span>
                 </a>
 
                 <a
@@ -121,11 +185,19 @@
                     href="#"
                     hidden
                 >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
                         <path d="M21 16.5v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 3.7 2 2 0 0 1 3.1 1.5h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7 9.4a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.8 2.2Z"></path>
                     </svg>
 
-                    <span>Call</span>
+                    <span>Call business</span>
                 </a>
 
                 <a
@@ -136,26 +208,41 @@
                     rel="noopener noreferrer"
                     hidden
                 >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
                         <circle cx="12" cy="12" r="9.5"></circle>
                         <path d="M2.5 12h19M12 2.5a15 15 0 0 1 0 19M12 2.5a15 15 0 0 0 0 19"></path>
                     </svg>
 
-                    <span>Website</span>
+                    <span>Visit website</span>
                 </a>
             </div>
 
         </section>
 
-        <!-- Products and services -->
+        <!-- Product and service catalogue -->
         <section
             class="catalogue-section"
             aria-labelledby="catalogue-title"
         >
             <div class="catalogue-heading">
                 <div>
-                    <p class="section-eyebrow">THE COLLECTION</p>
-                    <h2 id="catalogue-title">Products &amp; Services</h2>
+                    <p class="section-eyebrow">MADE FOR YOU</p>
+
+                    <h2 id="catalogue-title">
+                        Explore the collection
+                    </h2>
+
+                    <p class="catalogue-subtitle">
+                        Discover products and services from this business.
+                    </p>
                 </div>
 
                 <span
@@ -171,26 +258,53 @@
                 aria-live="polite"
                 aria-busy="true"
             >
-                <div class="catalogue-loading" id="catalogue-loading">
-                    <span class="loading-indicator" aria-hidden="true"></span>
-                    <p>Loading the collection...</p>
+                <div
+                    class="catalogue-loading"
+                    id="catalogue-loading"
+                >
+                    <span
+                        class="loading-indicator"
+                        aria-hidden="true"
+                    ></span>
+
+                    <p>Preparing the collection...</p>
                 </div>
             </div>
 
-            <div class="catalogue-empty" id="catalogue-empty" hidden>
+            <!-- Empty catalogue -->
+            <div
+                class="catalogue-empty"
+                id="catalogue-empty"
+                hidden
+            >
                 <div class="empty-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                        <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <rect
+                            x="3"
+                            y="3"
+                            width="18"
+                            height="18"
+                            rx="3"
+                        ></rect>
+
                         <path d="M7 9h10M7 13h6"></path>
                     </svg>
                 </div>
 
-                <h3>Something new is on the way</h3>
+                <h3>The collection is growing</h3>
 
                 <p>
-                    This business hasn't added any products or services yet.
+                    Products and services will appear here when available.
                 </p>
             </div>
+
         </section>
 
         <!-- About the business -->
@@ -200,11 +314,16 @@
             aria-labelledby="business-about-title"
             hidden
         >
-            <p class="section-eyebrow">GET TO KNOW US</p>
+            <p class="section-eyebrow">OUR STORY</p>
 
-            <h2 id="business-about-title">About this business</h2>
+            <h2 id="business-about-title">
+                Get to know this business
+            </h2>
 
-            <p id="business-about-description"></p>
+            <p
+                class="business-about-description"
+                id="business-about-description"
+            ></p>
 
             <a
                 class="about-instagram-link"
@@ -219,7 +338,7 @@
             </a>
         </section>
 
-        <!-- Unavailable business -->
+        <!-- Business unavailable -->
         <section
             class="storefront-error"
             id="storefront-error"
@@ -228,31 +347,39 @@
         >
             <div class="error-mark" aria-hidden="true">!</div>
 
-            <h1 id="error-title">Business unavailable</h1>
+            <h1 id="error-title">
+                Business unavailable
+            </h1>
 
             <p id="error-description">
-                This business profile may be unavailable or the link may be incorrect.
+                This business profile may be unavailable, or the link may be incorrect.
             </p>
 
-            <a href="./index.html" class="error-home-link">
-                Visit Bizora
+            <a
+                href="./index.html"
+                class="error-home-link"
+            >
+                Visit Bizvero
             </a>
         </section>
 
     </main>
 
-    <!-- Footer -->
+    <!-- Customer-facing footer: no registration or account CTA -->
     <footer class="storefront-footer">
-        <a href="./index.html" class="footer-brand" aria-label="Bizora home">
-            bizora<span>.</span>
+        <a
+            href="./index.html"
+            class="footer-brand"
+            aria-label="Bizvero"
+        >
+            bizvero<span>.</span>
         </a>
 
         <p>Your business. Ready for more.</p>
 
-        <a href="./index.html" class="footer-cta">
-            Create your business profile
-            <span aria-hidden="true">→</span>
-        </a>
+        <span class="footer-note">
+            Discover local. Connect directly.
+        </span>
     </footer>
 
     <!-- Share and action feedback -->
