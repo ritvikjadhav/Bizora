@@ -366,11 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function saveBusiness(isPublished) {
         const businessName = fields.name.value.trim();
 
-        let slug = existingBusiness?.slug || "";
-
-        if (!slug) {
-            slug = await getUniqueSlug(businessName);
-        }
+        const slug = existingBusiness?.slug || await getUniqueSlug(businessName);
 
         const logoUrl = await uploadLogo();
         const businessData = getFormData(isPublished, slug, logoUrl);
