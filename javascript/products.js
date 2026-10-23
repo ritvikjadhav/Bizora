@@ -332,85 +332,48 @@
     // ---------- Product loading and rendering ----------
 
     async function loadProducts() {
-        if (isLoading) return;
+    if (isLoading) return;
 
+    setLoading(true);
+
+    elements.error.hidden = true;
+    elements.noResults.hidden = true;
+
+    try {
         if (!currentBusiness) {
             await getAuthenticatedBusiness();
-            if (!currentBusiness) return;
         }
 
-        setLoading(true);
+        if (!currentBusiness) return;
 
-        if (elements.error) elements.error.hidden = true;
-        if (elements.noResults) elements.noResults.hidden = true;
+        const { data, error } = await supabase
+            .from(CONFIG.productsTable)
+            .select(
+                "id, business_id, name, description, price, image_url, item_type, is_available, created_at"
+            )
+            .eq("business_id", currentBusiness.id)
+            .order("created_at", { ascending: false });
 
-        try {
-            const { data, error } = await supabase
-                .from(CONFIG.productsTable)
-                .select(
-                    "id, business_id, name, description, price, image_url, item_type, is_available, created_at"
-                )
-                .eq("business_id", currentBusiness.id)
-                .order("created_at", { ascending: false });
+        if (error) throw error;
 
-            if (error) throw error;
+        products = data || [];
 
-            products = data || [];
+        updateSummary();
+        renderProducts();
+    } catch (error) {
+        console.error("Could not load products:", error);
 
-            updateSummary();
-            renderProducts();
-        } catch (error) {
-            console.error("Could not load products:", error);
+        elements.errorMessage.textContent =
+            error.message || "Please check your connection and try again.";
 
-            elements.errorMessage.textContent = getErrorMessage(
-                error,
-                "Please check your connection and try again."
-            );
-
-            elements.error.hidden = false;
-            elements.grid.replaceChildren();
-            elements.empty.hidden = true;
-            elements.noResults.hidden = true;
-        } finally {
-            setLoading(false);
-        }
+        elements.error.hidden = false;
+        elements.grid.replaceChildren();
+        elements.empty.hidden = true;
+        elements.noResults.hidden = true;
+    } finally {
+        setLoading(false);
     }
-
-    function updateSummary() {
-        elements.totalItems.textContent = products.length;
-
-        elements.availableItems.textContent = products.filter(
-            (product) => product.is_available
-        ).length;
-
-        elements.unavailableItems.textContent = products.filter(
-            (product) => !product.is_available
-        ).length;
-    }
-
-    function getFilteredProducts() {
-        const filter = elements.filter.value;
-
-        return products.filter((product) => {
-            switch (filter) {
-                case "product":
-                    return product.item_type === "product";
-
-                case "service":
-                    return product.item_type === "service";
-
-                case "available":
-                    return product.is_available;
-
-                case "unavailable":
-                    return !product.is_available;
-
-                default:
-                    return true;
-            }
-        });
-    }
-
+}
     function createImagePlaceholder() {
         const placeholder = document.createElement("div");
         placeholder.className = "catalogue-card-placeholder";
@@ -1002,46 +965,45 @@
     // ---------- Initialization ----------
 
     async function initialize() {
-        supabase = window.bizoraSupabase;
+    supabase = window.bizoraSupabase;
 
-        if (!supabase) {
-            console.error("Bizvero: Supabase client was not initialized.");
+    if (!supabase) {
+        console.error("Bizvero: Supabase client was not initialized.");
 
-            elements.errorMessage.textContent =
-                "Supabase could not be initialized. Check the Supabase script loading order.";
+        elements.errorMessage.textContent =
+            "Supabase could not be initialized. Check the Supabase script loading order.";
 
-            elements.error.hidden = false;
+        elements.error.hidden = false;
+        setLoading(false);
+        return;
+    }
+
+    setupEventListeners();
+    updateDescriptionCount();
+
+    try {
+        const business = await getAuthenticatedBusiness();
+
+        if (!business) {
             setLoading(false);
             return;
         }
 
-        setupEventListeners();
-        updateDescriptionCount();
-        setLoading(true);
+        await loadProducts();
+    } catch (error) {
+        console.error("Could not initialize products page:", error);
 
-        try {
-            const business = await getAuthenticatedBusiness();
+        elements.errorMessage.textContent = getErrorMessage(
+            error,
+            "Unable to load your business. Please try again."
+        );
 
-            if (!business) {
-                setLoading(false);
-                return;
-            }
-
-            await loadProducts();
-        } catch (error) {
-            console.error("Could not initialize products page:", error);
-
-            elements.errorMessage.textContent = getErrorMessage(
-                error,
-                "Unable to load your business. Please try again."
-            );
-
-            elements.error.hidden = false;
-            setLoading(false);
-        }
+        elements.error.hidden = false;
+        setLoading(false);
     }
+}
 
-    document.addEventListener("DOMContentLoaded", initialize, { once: true });
+document.addEventListener("DOMContentLoaded", initialize, { once: true });
 
-    window.addEventListener("beforeunload", revokePreviewObjectUrl);
+window.addEventListener("beforeunload", revokePreviewObjectUrl);
 })();
