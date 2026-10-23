@@ -58,7 +58,7 @@
         logoutButton: $("logout-button")
     };
 
-    let supabase;
+    let supabase = null;
     let currentUser = null;
     let currentBusiness = null;
     let products = [];
@@ -71,7 +71,7 @@
     let toastTimer = null;
     let previewObjectUrl = null;
 
-    // ---------- General UI helpers ----------
+    // ---------- UI helpers ----------
 
     function showToast(message, type = "success") {
         if (!elements.toast) return;
@@ -96,6 +96,10 @@
 
     function setFieldError(element, message = "") {
         if (element) element.textContent = message;
+    }
+
+    function getErrorMessage(error, fallback) {
+        return error?.message || fallback;
     }
 
     function setLoading(loading) {
@@ -136,10 +140,6 @@
         }).format(Number(price));
     }
 
-    function getErrorMessage(error, fallback) {
-        return error?.message || fallback;
-    }
-
     // ---------- Image helpers ----------
 
     function getImagePath(imageUrl) {
@@ -149,7 +149,6 @@
             const url = new URL(imageUrl);
             const prefix =
                 `/storage/v1/object/public/${CONFIG.storageBucket}/`;
-
             const index = url.pathname.indexOf(prefix);
 
             if (index === -1) return null;
@@ -163,11 +162,11 @@
     }
 
     function getProductImageUrl(imageUrl) {
-        if (!imageUrl) return "";
+        if (!imageUrl || !supabase) return imageUrl || "";
 
         const path = getImagePath(imageUrl);
 
-        if (!path || !supabase) return imageUrl;
+        if (!path) return imageUrl;
 
         const { data } = supabase.storage
             .from(CONFIG.storageBucket)
@@ -179,7 +178,7 @@
     async function removeStoredImage(imageUrl) {
         const path = getImagePath(imageUrl);
 
-        if (!path || !supabase) return;
+        if (!path) return;
 
         const { error } = await supabase.storage
             .from(CONFIG.storageBucket)
@@ -221,11 +220,7 @@
         selectedImage = null;
         originalImageUrl = "";
         imageRemoved = false;
-
-        if (elements.image) {
-            elements.image.value = "";
-        }
-
+        elements.image.value = "";
         showImagePreview("");
     }
 
@@ -248,13 +243,13 @@
             );
         }
 
-        const extensionByType = {
+        const extensions = {
             "image/jpeg": "jpg",
             "image/png": "png",
             "image/webp": "webp"
         };
 
-        const extension = extensionByType[file.type];
+        const extension = extensions[file.type];
 
         if (!extension) {
             throw new Error("Unsupported image format.");
@@ -277,10 +272,7 @@
             .getPublicUrl(path);
 
         if (!data?.publicUrl) {
-            await removeStoredImage(
-                `${supabase.storageUrl}/object/public/${CONFIG.storageBucket}/${path}`
-            );
-
+            console.error("Could not generate public URL for:", path);
             throw new Error("Could not generate the image URL.");
         }
 
@@ -329,51 +321,86 @@
         return data;
     }
 
-    // ---------- Product loading and rendering ----------
+    // ---------- Product loading ----------
 
     async function loadProducts() {
-    if (isLoading) return;
+        if (isLoading) return;
 
-    setLoading(true);
+        setLoading(true);
 
-    elements.error.hidden = true;
-    elements.noResults.hidden = true;
-
-    try {
-        if (!currentBusiness) {
-            await getAuthenticatedBusiness();
-        }
-
-        if (!currentBusiness) return;
-
-        const { data, error } = await supabase
-            .from(CONFIG.productsTable)
-            .select(
-                "id, business_id, name, description, price, image_url, item_type, is_available, created_at"
-            )
-            .eq("business_id", currentBusiness.id)
-            .order("created_at", { ascending: false });
-
-        if (error) throw error;
-
-        products = data || [];
-
-        updateSummary();
-        renderProducts();
-    } catch (error) {
-        console.error("Could not load products:", error);
-
-        elements.errorMessage.textContent =
-            error.message || "Please check your connection and try again.";
-
-        elements.error.hidden = false;
-        elements.grid.replaceChildren();
-        elements.empty.hidden = true;
+        elements.error.hidden = true;
         elements.noResults.hidden = true;
-    } finally {
-        setLoading(false);
+
+        try {
+            if (!currentBusiness) {
+                const business = await getAuthenticatedBusiness();
+                if (!business) return;
+            }
+
+            const { data, error } = await supabase
+                .from(CONFIG.productsTable)
+                .select(
+                    "id, business_id, name, description, price, image_url, item_type, is_available, created_at"
+                )
+                .eq("business_id", currentBusiness.id)
+                .order("created_at", { ascending: false });
+
+            if (error) throw error;
+
+            products = data || [];
+
+            updateSummary();
+            renderProducts();
+        } catch (error) {
+            console.error("Could not load products:", error);
+
+            elements.errorMessage.textContent = getErrorMessage(
+                error,
+                "Please check your connection and try again."
+            );
+
+            elements.error.hidden = false;
+            elements.grid.replaceChildren();
+            elements.empty.hidden = true;
+            elements.noResults.hidden = true;
+        } finally {
+            setLoading(false);
+        }
     }
-}
+
+    function updateSummary() {
+        elements.totalItems.textContent = products.length;
+
+        elements.availableItems.textContent = products.filter(
+            (product) => product.is_available
+        ).length;
+
+        elements.unavailableItems.textContent = products.filter(
+            (product) => !product.is_available
+        ).length;
+    }
+
+    function getFilteredProducts() {
+        const filter = elements.filter.value;
+
+        return products.filter((product) => {
+            switch (filter) {
+                case "product":
+                    return product.item_type === "product";
+                case "service":
+                    return product.item_type === "service";
+                case "available":
+                    return product.is_available;
+                case "unavailable":
+                    return !product.is_available;
+                default:
+                    return true;
+            }
+        });
+    }
+
+    // ---------- Product rendering ----------
+
     function createImagePlaceholder() {
         const placeholder = document.createElement("div");
         placeholder.className = "catalogue-card-placeholder";
@@ -397,7 +424,6 @@
 
         if (imageUrl) {
             const image = document.createElement("img");
-
             image.src = imageUrl;
             image.alt = product.name || "Product image";
             image.loading = "lazy";
@@ -484,8 +510,6 @@
         elements.noResults.hidden =
             products.length === 0 || filteredProducts.length !== 0;
 
-        if (filteredProducts.length === 0) return;
-
         const fragment = document.createDocumentFragment();
 
         filteredProducts.forEach((product) => {
@@ -521,6 +545,7 @@
         let valid = true;
 
         const name = elements.name.value.trim();
+        const description = elements.description.value.trim();
         const priceValue = elements.price.value.trim();
 
         if (!name) {
@@ -532,7 +557,6 @@
                 elements.nameError,
                 `The name cannot exceed ${CONFIG.maxNameLength} characters.`
             );
-
             elements.name.setAttribute("aria-invalid", "true");
             valid = false;
         }
@@ -543,15 +567,11 @@
             valid = false;
         }
 
-        const description = elements.description.value.trim();
-
         if (description.length > CONFIG.maxDescriptionLength) {
             setStatus(
                 `Description cannot exceed ${CONFIG.maxDescriptionLength} characters.`,
                 "error"
             );
-
-            elements.description.focus();
             valid = false;
         }
 
@@ -568,7 +588,6 @@
                     elements.priceError,
                     "Enter a valid price with up to two decimal places."
                 );
-
                 elements.price.setAttribute("aria-invalid", "true");
                 valid = false;
             }
@@ -584,10 +603,7 @@
         }
 
         if (!valid) {
-            setStatus(
-                "Please correct the highlighted fields.",
-                "error"
-            );
+            setStatus("Please correct the highlighted fields.", "error");
         }
 
         return valid;
@@ -611,19 +627,16 @@
 
         try {
             if (!currentUser || !currentBusiness) {
-                await getAuthenticatedBusiness();
+                const business = await getAuthenticatedBusiness();
+
+                if (!business) {
+                    throw new Error("Please sign in to manage your items.");
+                }
             }
 
-            if (!currentUser || !currentBusiness) {
-                throw new Error(
-                    "Please sign in and create your business profile."
-                );
-            }
-
-            const name = elements.name.value.trim();
+            const productId = elements.productId.value;
             const description = elements.description.value.trim();
             const priceValue = elements.price.value.trim();
-            const productId = elements.productId.value;
 
             let imageUrl = originalImageUrl || null;
 
@@ -636,7 +649,7 @@
 
             const productData = {
                 business_id: currentBusiness.id,
-                name,
+                name: elements.name.value.trim(),
                 description: description || null,
                 price: priceValue === "" ? null : Number(priceValue),
                 image_url: imageUrl,
@@ -646,7 +659,7 @@
 
             const query = productId
                 ? supabase
-              .from(CONFIG.productsTable)
+                    .from(CONFIG.productsTable)
                     .update(productData)
                     .eq("id", productId)
                     .eq("business_id", currentBusiness.id)
@@ -654,32 +667,29 @@
                     .from(CONFIG.productsTable)
                     .insert(productData);
 
-            const { error } = await query;
+            const { data, error } = await query
+                .select("id")
+                .maybeSingle();
 
             if (error) throw error;
 
-            if (
-                originalImageUrl &&
-                originalImageUrl !== imageUrl
-            ) {
+            if (productId && !data) {
+                throw new Error(
+                    "The item was not updated. Check your database permissions."
+                );
+            }
+
+            if (originalImageUrl && originalImageUrl !== imageUrl) {
                 await removeStoredImage(originalImageUrl);
             }
 
             resetForm();
-
             await loadProducts();
 
             showToast(
                 productId
                     ? "Your item has been updated."
                     : "Your item has been added to the catalogue."
-            );
-
-            setStatus(
-                productId
-                    ? "Changes saved successfully."
-                    : "Item added successfully.",
-                "success"
             );
         } catch (error) {
             console.error("Could not save product:", error);
@@ -715,7 +725,7 @@
         elements.price.value = product.price ?? "";
         elements.available.checked = Boolean(product.is_available);
 
-        // Category is not stored in the current database schema.
+        // Category is not a column in the current products table.
         if (elements.category) elements.category.value = "";
 
         originalImageUrl = product.image_url || "";
@@ -741,24 +751,33 @@
     }
 
     async function deleteProduct(productId) {
+        if (isSaving || isLoading || !currentBusiness) return;
+
         const product = products.find((item) => item.id === productId);
 
-        if (!product || isSaving) return;
+        if (!product) return;
 
-        const confirmed = window.confirm(
+        if (!window.confirm(
             `Delete "${product.name}" from your catalogue? This action cannot be undone.`
-        );
-
-        if (!confirmed) return;
+        )) {
+            return;
+        }
 
         try {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from(CONFIG.productsTable)
                 .delete()
                 .eq("id", productId)
-                .eq("business_id", currentBusiness.id);
+                .eq("business_id", currentBusiness.id)
+                .select("id");
 
             if (error) throw error;
+
+            if (!data?.length) {
+                throw new Error(
+                    "The item was not deleted. Check your database permissions."
+                );
+            }
 
             if (product.image_url) {
                 await removeStoredImage(product.image_url);
@@ -783,8 +802,6 @@
     // ---------- Form reset and image input ----------
 
     function updateDescriptionCount() {
-        if (!elements.descriptionCount) return;
-
         elements.descriptionCount.textContent =
             `${elements.description.value.length}/${CONFIG.maxDescriptionLength}`;
     }
@@ -847,7 +864,7 @@
     // ---------- Mobile navigation ----------
 
     function setupMobileNavigation() {
-        const setSidebarOpen = (open) => {
+        function setSidebarOpen(open) {
             elements.sidebar.classList.toggle("is-open", open);
             elements.sidebarOverlay.hidden = !open;
 
@@ -862,7 +879,7 @@
             );
 
             document.body.style.overflow = open ? "hidden" : "";
-        };
+        }
 
         elements.menuButton.addEventListener("click", () => {
             setSidebarOpen(
@@ -892,11 +909,9 @@
     async function logout() {
         if (elements.logoutButton.disabled) return;
 
-        const confirmed = window.confirm(
-            "Are you sure you want to log out?"
-        );
-
-        if (!confirmed) return;
+        if (!window.confirm("Are you sure you want to log out?")) {
+            return;
+        }
 
         elements.logoutButton.disabled = true;
 
@@ -922,7 +937,6 @@
 
     function setupEventListeners() {
         elements.form.addEventListener("submit", saveProduct);
-
         elements.resetForm.addEventListener("click", resetForm);
 
         elements.cancelEdit.addEventListener("click", () => {
@@ -965,45 +979,44 @@
     // ---------- Initialization ----------
 
     async function initialize() {
-    supabase = window.bizoraSupabase;
+        supabase = window.bizoraSupabase;
 
-    if (!supabase) {
-        console.error("Bizvero: Supabase client was not initialized.");
+        if (!supabase) {
+            console.error("Bizvero: Supabase client was not initialized.");
 
-        elements.errorMessage.textContent =
-            "Supabase could not be initialized. Check the Supabase script loading order.";
+            elements.errorMessage.textContent =
+                "Supabase could not be initialized. Check the script loading order.";
 
-        elements.error.hidden = false;
-        setLoading(false);
-        return;
-    }
-
-    setupEventListeners();
-    updateDescriptionCount();
-
-    try {
-        const business = await getAuthenticatedBusiness();
-
-        if (!business) {
+            elements.error.hidden = false;
             setLoading(false);
             return;
         }
 
-        await loadProducts();
-    } catch (error) {
-        console.error("Could not initialize products page:", error);
+        setupEventListeners();
+        updateDescriptionCount();
 
-        elements.errorMessage.textContent = getErrorMessage(
-            error,
-            "Unable to load your business. Please try again."
-        );
+        try {
+            const business = await getAuthenticatedBusiness();
 
-        elements.error.hidden = false;
-        setLoading(false);
+            if (!business) {
+                setLoading(false);
+                return;
+            }
+
+            await loadProducts();
+        } catch (error) {
+            console.error("Could not initialize products page:", error);
+
+            elements.errorMessage.textContent = getErrorMessage(
+                error,
+                "Unable to load your business. Please try again."
+            );
+
+            elements.error.hidden = false;
+            setLoading(false);
+        }
     }
-}
 
-document.addEventListener("DOMContentLoaded", initialize, { once: true });
-
-window.addEventListener("beforeunload", revokePreviewObjectUrl);
+    document.addEventListener("DOMContentLoaded", initialize, { once: true });
+    window.addEventListener("beforeunload", revokePreviewObjectUrl);
 })();
