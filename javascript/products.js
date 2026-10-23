@@ -1,13 +1,14 @@
 (() => {
     "use strict";
 
-    const supabase = window.bizoraSupabase;
-
     const CONFIG = {
-        table: "products",
+        productsTable: "products",
         businessesTable: "businesses",
         storageBucket: "product-images",
         maxImageSize: 5 * 1024 * 1024,
+        maxNameLength: 100,
+        maxDescriptionLength: 500,
+        maxPrice: 99999999,
         allowedImageTypes: ["image/jpeg", "image/png", "image/webp"]
     };
 
@@ -26,7 +27,6 @@
         imagePreview: $("image-preview-img"),
         imagePlaceholder: $("image-placeholder"),
         removeImage: $("remove-image"),
-        uploadArea: $("image-upload-area"),
         nameError: $("name-error"),
         typeError: $("type-error"),
         priceError: $("price-error"),
@@ -58,22 +58,25 @@
         logoutButton: $("logout-button")
     };
 
+    let supabase;
     let currentUser = null;
     let currentBusiness = null;
     let products = [];
-    let originalImageUrl = "";
     let selectedImage = null;
+    let originalImageUrl = "";
     let imageRemoved = false;
     let isEditing = false;
     let isSaving = false;
+    let isLoading = false;
     let toastTimer = null;
-    let imagePreviewUrl = null;
+    let previewObjectUrl = null;
+
+    // ---------- General UI helpers ----------
 
     function showToast(message, type = "success") {
         if (!elements.toast) return;
 
         clearTimeout(toastTimer);
-
         elements.toast.textContent = message;
         elements.toast.className = `toast ${type}`;
         elements.toast.hidden = false;
@@ -87,26 +90,38 @@
         if (!elements.formStatus) return;
 
         elements.formStatus.textContent = message;
-        elements.formStatus.className = `form-status${type ? ` ${type}` : ""}`;
+        elements.formStatus.className =
+            `form-status${type ? ` ${type}` : ""}`;
     }
 
     function setFieldError(element, message = "") {
-        if (element) {
-            element.textContent = message;
+        if (element) element.textContent = message;
+    }
+
+    function setLoading(loading) {
+        isLoading = loading;
+
+        if (elements.loading) {
+            elements.loading.hidden = !loading;
+        }
+
+        if (elements.retry) {
+            elements.retry.disabled = loading;
         }
     }
 
-    function setLoading(isLoading) {
-        elements.loading.hidden = !isLoading;
-    }
+    function setSaveButtonLoading(loading) {
+        if (elements.saveButton) {
+            elements.saveButton.disabled = loading;
+        }
 
-    function setButtonLoading(loading) {
-        elements.saveButton.disabled = loading;
-        elements.saveButtonText.textContent = loading
-            ? "Saving..."
-            : isEditing
-                ? "Save changes"
-                : "Add to catalogue";
+        if (elements.saveButtonText) {
+            elements.saveButtonText.textContent = loading
+                ? "Saving..."
+                : isEditing
+                    ? "Save changes"
+                    : "Add to catalogue";
+        }
     }
 
     function formatPrice(price) {
@@ -121,31 +136,30 @@
         }).format(Number(price));
     }
 
-    function escapeHTML(value) {
-        return String(value ?? "").replace(/[&<>"']/g, (character) => {
-            const entities = {
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#39;"
-            };
-
-            return entities[character];
-        });
+    function getErrorMessage(error, fallback) {
+        return error?.message || fallback;
     }
+
+    // ---------- Image helpers ----------
 
     function getImagePath(imageUrl) {
         if (!imageUrl) return null;
 
-        const marker = `/storage/v1/object/public/${CONFIG.storageBucket}/`;
-        const index = imageUrl.indexOf(marker);
+        try {
+            const url = new URL(imageUrl);
+            const prefix =
+                `/storage/v1/object/public/${CONFIG.storageBucket}/`;
 
-        if (index !== -1) {
-            return imageUrl.slice(index + marker.length).split("?")[0];
+            const index = url.pathname.indexOf(prefix);
+
+            if (index === -1) return null;
+
+            return decodeURIComponent(
+                url.pathname.slice(index + prefix.length)
+            );
+        } catch {
+            return null;
         }
-
-        return null;
     }
 
     function getProductImageUrl(imageUrl) {
@@ -153,135 +167,127 @@
 
         const path = getImagePath(imageUrl);
 
-        if (!path) {
-            return imageUrl;
-        }
+        if (!path || !supabase) return imageUrl;
 
         const { data } = supabase.storage
             .from(CONFIG.storageBucket)
             .getPublicUrl(path);
 
-        return data.publicUrl;
+        return data?.publicUrl || imageUrl;
     }
 
-    function revokeImagePreview() {
-        if (imagePreviewUrl) {
-            URL.revokeObjectURL(imagePreviewUrl);
-            imagePreviewUrl = null;
+    async function removeStoredImage(imageUrl) {
+        const path = getImagePath(imageUrl);
+
+        if (!path || !supabase) return;
+
+        const { error } = await supabase.storage
+            .from(CONFIG.storageBucket)
+            .remove([path]);
+
+        if (error) {
+            console.error("Could not remove stored image:", error);
         }
     }
 
-    function showImagePreview(file) {
-        revokeImagePreview();
+    function revokePreviewObjectUrl() {
+        if (!previewObjectUrl) return;
 
-        if (file) {
-            imagePreviewUrl = URL.createObjectURL(file);
-            elements.imagePreview.src = imagePreviewUrl;
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+    }
+
+    function showImagePreview(source, isObjectUrl = false) {
+        revokePreviewObjectUrl();
+
+        if (isObjectUrl && source) {
+            previewObjectUrl = source;
+        }
+
+        if (source) {
+            elements.imagePreview.src = source;
             elements.imagePreview.hidden = false;
             elements.imagePlaceholder.hidden = true;
             elements.removeImage.hidden = false;
-            return;
+        } else {
+            elements.imagePreview.removeAttribute("src");
+            elements.imagePreview.hidden = true;
+            elements.imagePlaceholder.hidden = false;
+            elements.removeImage.hidden = true;
         }
-
-        elements.imagePreview.removeAttribute("src");
-        elements.imagePreview.hidden = true;
-        elements.imagePlaceholder.hidden = false;
-        elements.removeImage.hidden = true;
     }
 
     function resetImageState() {
         selectedImage = null;
-        imageRemoved = false;
         originalImageUrl = "";
+        imageRemoved = false;
 
         if (elements.image) {
             elements.image.value = "";
         }
 
-        showImagePreview(null);
+        showImagePreview("");
     }
 
-    function clearValidation() {
-        setFieldError(elements.nameError);
-        setFieldError(elements.typeError);
-        setFieldError(elements.priceError);
-        setFieldError(elements.imageError);
+    function validateImage(file) {
+        if (!CONFIG.allowedImageTypes.includes(file.type)) {
+            return "Choose a JPG, PNG, or WebP image.";
+        }
 
-        [
-            elements.name,
-            elements.type,
-            elements.price,
-            elements.image
-        ].forEach((element) => {
-            if (element) {
-                element.removeAttribute("aria-invalid");
-            }
-        });
+        if (file.size > CONFIG.maxImageSize) {
+            return "The image must be 5 MB or smaller.";
+        }
+
+        return "";
     }
 
-    function validateForm() {
-        clearValidation();
-
-        let valid = true;
-
-        const name = elements.name.value.trim();
-        const priceValue = elements.price.value.trim();
-
-        if (!name) {
-            setFieldError(elements.nameError, "Please enter an item name.");
-            elements.name.setAttribute("aria-invalid", "true");
-            valid = false;
-        } else if (name.length > 100) {
-            setFieldError(elements.nameError, "The name cannot exceed 100 characters.");
-            elements.name.setAttribute("aria-invalid", "true");
-            valid = false;
+    async function uploadImage(file) {
+        if (!currentUser || !currentBusiness) {
+            throw new Error(
+                "Your session has expired. Please sign in again."
+            );
         }
 
-        if (!["product", "service"].includes(elements.type.value)) {
-            setFieldError(elements.typeError, "Choose a valid item type.");
-            elements.type.setAttribute("aria-invalid", "true");
-            valid = false;
+        const extensionByType = {
+            "image/jpeg": "jpg",
+            "image/png": "png",
+            "image/webp": "webp"
+        };
+
+        const extension = extensionByType[file.type];
+
+        if (!extension) {
+            throw new Error("Unsupported image format.");
         }
 
-        if (priceValue !== "") {
-            const price = Number(priceValue);
+        const path =
+            `${currentUser.id}/${currentBusiness.id}/${crypto.randomUUID()}.${extension}`;
 
-            if (
-                !Number.isFinite(price) ||
-                price < 0 ||
-                price > 99999999 ||
-                !/^\d+(\.\d{1,2})?$/.test(priceValue)
-            ) {
-                setFieldError(
-                    elements.priceError,
-                    "Enter a valid price with up to two decimal places."
-                );
+        const { error } = await supabase.storage
+            .from(CONFIG.storageBucket)
+            .upload(path, file, {
+                contentType: file.type,
+                upsert: false
+            });
 
-                elements.price.setAttribute("aria-invalid", "true");
-                valid = false;
-            }
+        if (error) throw error;
+
+        const { data } = supabase.storage
+            .from(CONFIG.storageBucket)
+            .getPublicUrl(path);
+
+        if (!data?.publicUrl) {
+            await removeStoredImage(
+                `${supabase.storageUrl}/object/public/${CONFIG.storageBucket}/${path}`
+            );
+
+            throw new Error("Could not generate the image URL.");
         }
 
-        if (selectedImage) {
-            if (!CONFIG.allowedImageTypes.includes(selectedImage.type)) {
-                setFieldError(
-                    elements.imageError,
-                    "Choose a JPG, PNG, or WebP image."
-                );
-
-                valid = false;
-            } else if (selectedImage.size > CONFIG.maxImageSize) {
-                setFieldError(
-                    elements.imageError,
-                    "The image must be 5 MB or smaller."
-                );
-
-                valid = false;
-            }
-        }
-
-        return valid;
+        return data.publicUrl;
     }
+
+    // ---------- Authentication and business ----------
 
     async function getAuthenticatedBusiness() {
         const {
@@ -307,35 +313,40 @@
         if (error) throw error;
 
         if (!data) {
-            showToast("Create your business profile before adding items.", "error");
+            showToast(
+                "Create your business profile before adding items.",
+                "error"
+            );
 
             setTimeout(() => {
-                window.location.href = "./create-business.html";
+                window.location.replace("./create-business.html");
             }, 1200);
 
             return null;
         }
 
         currentBusiness = data;
-
         return data;
     }
 
+    // ---------- Product loading and rendering ----------
+
     async function loadProducts() {
-        elements.error.hidden = true;
-        elements.noResults.hidden = true;
+        if (isLoading) return;
+
+        if (!currentBusiness) {
+            await getAuthenticatedBusiness();
+            if (!currentBusiness) return;
+        }
 
         setLoading(true);
 
+        if (elements.error) elements.error.hidden = true;
+        if (elements.noResults) elements.noResults.hidden = true;
+
         try {
-            if (!currentBusiness) {
-                await getAuthenticatedBusiness();
-            }
-
-            if (!currentBusiness) return;
-
             const { data, error } = await supabase
-                .from(CONFIG.table)
+                .from(CONFIG.productsTable)
                 .select(
                     "id, business_id, name, description, price, image_url, item_type, is_available, created_at"
                 )
@@ -351,12 +362,15 @@
         } catch (error) {
             console.error("Could not load products:", error);
 
-            elements.errorMessage.textContent =
-                error.message || "Please check your connection and try again.";
+            elements.errorMessage.textContent = getErrorMessage(
+                error,
+                "Please check your connection and try again."
+            );
 
             elements.error.hidden = false;
             elements.grid.replaceChildren();
             elements.empty.hidden = true;
+            elements.noResults.hidden = true;
         } finally {
             setLoading(false);
         }
@@ -397,6 +411,18 @@
         });
     }
 
+    function createImagePlaceholder() {
+        const placeholder = document.createElement("div");
+        placeholder.className = "catalogue-card-placeholder";
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = "▧";
+
+        placeholder.append(icon);
+        return placeholder;
+    }
+
     function createProductCard(product) {
         const card = document.createElement("article");
         card.className = "catalogue-card";
@@ -410,41 +436,23 @@
             const image = document.createElement("img");
 
             image.src = imageUrl;
-            image.alt = product.name;
+            image.alt = product.name || "Product image";
             image.loading = "lazy";
             image.decoding = "async";
 
             image.addEventListener("error", () => {
-                image.remove();
-
-                const placeholder = document.createElement("div");
-                placeholder.className = "catalogue-card-placeholder";
-                placeholder.setAttribute("aria-label", "Image unavailable");
-
-                const icon = document.createElement("span");
-                icon.setAttribute("aria-hidden", "true");
-                icon.textContent = "▧";
-
-                placeholder.append(icon);
-                imageContainer.prepend(placeholder);
+                image.replaceWith(createImagePlaceholder());
             }, { once: true });
 
             imageContainer.append(image);
         } else {
-            const placeholder = document.createElement("div");
-            placeholder.className = "catalogue-card-placeholder";
-
-            const icon = document.createElement("span");
-            icon.setAttribute("aria-hidden", "true");
-            icon.textContent = "▧";
-
-            placeholder.append(icon);
-            imageContainer.append(placeholder);
+            imageContainer.append(createImagePlaceholder());
         }
 
         const type = document.createElement("span");
         type.className = "catalogue-card-type";
-        type.textContent = product.item_type === "service" ? "Service" : "Product";
+        type.textContent =
+            product.item_type === "service" ? "Service" : "Product";
 
         imageContainer.append(type);
 
@@ -457,7 +465,8 @@
 
         const description = document.createElement("p");
         description.className = "catalogue-card-description";
-        description.textContent = product.description || "No description added yet.";
+        description.textContent =
+            product.description || "No description added yet.";
 
         const footer = document.createElement("div");
         footer.className = "catalogue-card-footer";
@@ -468,7 +477,8 @@
 
         const availability = document.createElement("span");
         availability.className = "catalogue-card-availability";
-        availability.textContent = product.is_available ? "Available" : "Unavailable";
+        availability.textContent =
+            product.is_available ? "Available" : "Unavailable";
 
         if (!product.is_available) {
             availability.classList.add("unavailable");
@@ -483,13 +493,17 @@
         editButton.type = "button";
         editButton.className = "catalogue-card-edit";
         editButton.textContent = "Edit";
-        editButton.addEventListener("click", () => editProduct(product.id));
+        editButton.addEventListener("click", () => {
+            editProduct(product.id);
+        });
 
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
         deleteButton.className = "catalogue-card-delete";
         deleteButton.textContent = "Delete";
-        deleteButton.addEventListener("click", () => deleteProduct(product.id));
+        deleteButton.addEventListener("click", () => {
+            deleteProduct(product.id);
+        });
 
         actions.append(editButton, deleteButton);
         content.append(title, description, footer, actions);
@@ -507,65 +521,116 @@
         elements.noResults.hidden =
             products.length === 0 || filteredProducts.length !== 0;
 
-        if (products.length === 0) {
-            return;
-        }
+        if (filteredProducts.length === 0) return;
+
+        const fragment = document.createDocumentFragment();
 
         filteredProducts.forEach((product) => {
-            elements.grid.append(createProductCard(product));
+            fragment.append(createProductCard(product));
+        });
+
+        elements.grid.append(fragment);
+    }
+
+    // ---------- Form validation ----------
+
+    function clearValidation() {
+        [
+            elements.nameError,
+            elements.typeError,
+            elements.priceError,
+            elements.imageError
+        ].forEach((element) => setFieldError(element));
+
+        [
+            elements.name,
+            elements.type,
+            elements.price,
+            elements.image
+        ].forEach((element) => {
+            if (element) element.removeAttribute("aria-invalid");
         });
     }
 
-    async function uploadImage(file) {
-        if (!file) return null;
+    function validateForm() {
+        clearValidation();
 
-        if (!currentUser || !currentBusiness) {
-            throw new Error("Your business session has expired. Please sign in again.");
+        let valid = true;
+
+        const name = elements.name.value.trim();
+        const priceValue = elements.price.value.trim();
+
+        if (!name) {
+            setFieldError(elements.nameError, "Please enter an item name.");
+            elements.name.setAttribute("aria-invalid", "true");
+            valid = false;
+        } else if (name.length > CONFIG.maxNameLength) {
+            setFieldError(
+                elements.nameError,
+                `The name cannot exceed ${CONFIG.maxNameLength} characters.`
+            );
+
+            elements.name.setAttribute("aria-invalid", "true");
+            valid = false;
         }
 
-        const extensionByType = {
-            "image/jpeg": "jpg",
-            "image/png": "png",
-            "image/webp": "webp"
-        };
-
-        const extension = extensionByType[file.type];
-
-        if (!extension) {
-            throw new Error("Unsupported image format.");
+        if (!["product", "service"].includes(elements.type.value)) {
+            setFieldError(elements.typeError, "Choose a valid item type.");
+            elements.type.setAttribute("aria-invalid", "true");
+            valid = false;
         }
 
-        const path = `${currentUser.id}/${currentBusiness.id}/${crypto.randomUUID()}.${extension}`;
+        const description = elements.description.value.trim();
 
-        const { error } = await supabase.storage
-            .from(CONFIG.storageBucket)
-            .upload(path, file, {
-                contentType: file.type,
-                upsert: false
-            });
+        if (description.length > CONFIG.maxDescriptionLength) {
+            setStatus(
+                `Description cannot exceed ${CONFIG.maxDescriptionLength} characters.`,
+                "error"
+            );
 
-        if (error) throw error;
+            elements.description.focus();
+            valid = false;
+        }
 
-        const { data } = supabase.storage
-            .from(CONFIG.storageBucket)
-            .getPublicUrl(path);
+        if (priceValue !== "") {
+            const price = Number(priceValue);
 
-        return data.publicUrl;
+            if (
+                !Number.isFinite(price) ||
+                price < 0 ||
+                price > CONFIG.maxPrice ||
+                !/^\d+(\.\d{1,2})?$/.test(priceValue)
+            ) {
+                setFieldError(
+                    elements.priceError,
+                    "Enter a valid price with up to two decimal places."
+                );
+
+                elements.price.setAttribute("aria-invalid", "true");
+                valid = false;
+            }
+        }
+
+        if (selectedImage) {
+            const imageError = validateImage(selectedImage);
+
+            if (imageError) {
+                setFieldError(elements.imageError, imageError);
+                valid = false;
+            }
+        }
+
+        if (!valid) {
+            setStatus(
+                "Please correct the highlighted fields.",
+                "error"
+            );
+        }
+
+        return valid;
     }
 
-    async function removeStoredImage(imageUrl) {
-        const path = getImagePath(imageUrl);
-
-        if (!path) return;
-
-        const { error } = await supabase.storage
-            .from(CONFIG.storageBucket)
-            .remove([path]);
-
-        if (error) {
-            console.error("Could not remove stored image:", error);
-        }
-    }
+    // ---------- Add and edit products ----------
 
     async function saveProduct(event) {
         event.preventDefault();
@@ -574,30 +639,30 @@
 
         setStatus("");
 
-        if (!validateForm()) {
-            setStatus("Please correct the highlighted fields.", "error");
-            return;
-        }
+        if (!validateForm()) return;
 
         isSaving = true;
-        setButtonLoading(true);
+        setSaveButtonLoading(true);
 
         let newlyUploadedImage = null;
 
         try {
-            if (!currentBusiness) {
+            if (!currentUser || !currentBusiness) {
                 await getAuthenticatedBusiness();
             }
 
-            if (!currentBusiness || !currentUser) {
-                throw new Error("Please sign in and create your business profile.");
+            if (!currentUser || !currentBusiness) {
+                throw new Error(
+                    "Please sign in and create your business profile."
+                );
             }
 
             const name = elements.name.value.trim();
             const description = elements.description.value.trim();
             const priceValue = elements.price.value.trim();
+            const productId = elements.productId.value;
 
-            let imageUrl = originalImageUrl;
+            let imageUrl = originalImageUrl || null;
 
             if (selectedImage) {
                 newlyUploadedImage = await uploadImage(selectedImage);
@@ -616,43 +681,29 @@
                 is_available: elements.available.checked
             };
 
-            const productId = elements.productId.value;
-
-            let query;
-
-            if (productId) {
-                query = supabase
-                    .from(CONFIG.table)
+            const query = productId
+                ? supabase
+              .from(CONFIG.productsTable)
                     .update(productData)
                     .eq("id", productId)
                     .eq("business_id", currentBusiness.id)
-                    .select("id")
-                    .single();
-            } else {
-                query = supabase
-                    .from(CONFIG.table)
-                    .insert(productData)
-                    .select("id")
-                    .single();
-            }
+                : supabase
+                    .from(CONFIG.productsTable)
+                    .insert(productData);
 
             const { error } = await query;
 
             if (error) throw error;
 
             if (
-                selectedImage &&
                 originalImageUrl &&
                 originalImageUrl !== imageUrl
             ) {
                 await removeStoredImage(originalImageUrl);
             }
 
-            if (imageRemoved && originalImageUrl) {
-                await removeStoredImage(originalImageUrl);
-            }
-
             resetForm();
+
             await loadProducts();
 
             showToast(
@@ -662,7 +713,9 @@
             );
 
             setStatus(
-                productId ? "Changes saved successfully." : "Item added successfully.",
+                productId
+                    ? "Changes saved successfully."
+                    : "Item added successfully.",
                 "success"
             );
         } catch (error) {
@@ -672,13 +725,16 @@
                 await removeStoredImage(newlyUploadedImage);
             }
 
-            const message = error.message || "Something went wrong while saving.";
+            const message = getErrorMessage(
+                error,
+                "Something went wrong while saving."
+            );
 
             setStatus(message, "error");
             showToast(message, "error");
         } finally {
             isSaving = false;
-            setButtonLoading(false);
+            setSaveButtonLoading(false);
         }
     }
 
@@ -696,27 +752,16 @@
         elements.price.value = product.price ?? "";
         elements.available.checked = Boolean(product.is_available);
 
-        /*
-         * Category is not currently stored in the supplied products schema.
-         * Keep the field blank rather than pretending the value is persisted.
-         */
-        elements.category.value = "";
+        // Category is not stored in the current database schema.
+        if (elements.category) elements.category.value = "";
 
         originalImageUrl = product.image_url || "";
         selectedImage = null;
         imageRemoved = false;
 
-        if (originalImageUrl) {
-            elements.imagePreview.src = getProductImageUrl(originalImageUrl);
-            elements.imagePreview.hidden = false;
-            elements.imagePlaceholder.hidden = true;
-            elements.removeImage.hidden = false;
-        } else {
-            showImagePreview(null);
-        }
+        showImagePreview(getProductImageUrl(originalImageUrl));
 
         elements.formTitle.textContent = "Edit item";
-        elements.saveButtonText.textContent = "Save changes";
         elements.cancelEdit.hidden = false;
         elements.resetForm.textContent = "Clear form";
 
@@ -735,7 +780,7 @@
     async function deleteProduct(productId) {
         const product = products.find((item) => item.id === productId);
 
-        if (!product) return;
+        if (!product || isSaving) return;
 
         const confirmed = window.confirm(
             `Delete "${product.name}" from your catalogue? This action cannot be undone.`
@@ -745,7 +790,7 @@
 
         try {
             const { error } = await supabase
-                .from(CONFIG.table)
+                .from(CONFIG.productsTable)
                 .delete()
                 .eq("id", productId)
                 .eq("business_id", currentBusiness.id);
@@ -764,18 +809,25 @@
             showToast("Item deleted successfully.");
         } catch (error) {
             console.error("Could not delete product:", error);
-            showToast(error.message || "Could not delete this item.", "error");
+
+            showToast(
+                getErrorMessage(error, "Could not delete this item."),
+                "error"
+            );
         }
     }
 
+    // ---------- Form reset and image input ----------
+
     function updateDescriptionCount() {
+        if (!elements.descriptionCount) return;
+
         elements.descriptionCount.textContent =
-            `${elements.description.value.length}/500`;
+            `${elements.description.value.length}/${CONFIG.maxDescriptionLength}`;
     }
 
     function resetForm() {
         elements.form.reset();
-
         elements.productId.value = "";
         elements.available.checked = true;
 
@@ -786,10 +838,10 @@
         setStatus("");
 
         elements.formTitle.textContent = "Add a new item";
-        elements.saveButtonText.textContent = "Add to catalogue";
         elements.cancelEdit.hidden = true;
         elements.resetForm.textContent = "Clear form";
 
+        setSaveButtonLoading(false);
         updateDescriptionCount();
     }
 
@@ -799,24 +851,23 @@
 
             if (!file) return;
 
-            if (!CONFIG.allowedImageTypes.includes(file.type)) {
-                setFieldError(elements.imageError, "Choose a JPG, PNG, or WebP image.");
-                elements.image.value = "";
-                return;
-            }
+            const error = validateImage(file);
 
-            if (file.size > CONFIG.maxImageSize) {
-                setFieldError(elements.imageError, "The image must be 5 MB or smaller.");
+            if (error) {
+                setFieldError(elements.imageError, error);
+                elements.image.setAttribute("aria-invalid", "true");
                 elements.image.value = "";
+                selectedImage = null;
                 return;
             }
 
             setFieldError(elements.imageError);
+            elements.image.removeAttribute("aria-invalid");
 
             selectedImage = file;
             imageRemoved = false;
 
-            showImagePreview(file);
+            showImagePreview(URL.createObjectURL(file), true);
         });
 
         elements.removeImage.addEventListener("click", () => {
@@ -824,26 +875,36 @@
             imageRemoved = true;
             elements.image.value = "";
 
-            showImagePreview(null);
+            showImagePreview("");
             setFieldError(elements.imageError);
+            elements.image.removeAttribute("aria-invalid");
         });
     }
 
+    // ---------- Mobile navigation ----------
+
     function setupMobileNavigation() {
-        function setSidebarOpen(open) {
+        const setSidebarOpen = (open) => {
             elements.sidebar.classList.toggle("is-open", open);
             elements.sidebarOverlay.hidden = !open;
-            elements.menuButton.setAttribute("aria-expanded", String(open));
+
+            elements.menuButton.setAttribute(
+                "aria-expanded",
+                String(open)
+            );
+
             elements.menuButton.setAttribute(
                 "aria-label",
                 open ? "Close navigation" : "Open navigation"
             );
 
             document.body.style.overflow = open ? "hidden" : "";
-        }
+        };
 
         elements.menuButton.addEventListener("click", () => {
-            setSidebarOpen(!elements.sidebar.classList.contains("is-open"));
+            setSidebarOpen(
+                !elements.sidebar.classList.contains("is-open")
+            );
         });
 
         elements.sidebarOverlay.addEventListener("click", () => {
@@ -855,20 +916,22 @@
         });
 
         document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape") {
-                setSidebarOpen(false);
-            }
+            if (event.key === "Escape") setSidebarOpen(false);
         });
 
         window.addEventListener("resize", () => {
-            if (window.innerWidth > 950) {
-                setSidebarOpen(false);
-            }
+            if (window.innerWidth > 950) setSidebarOpen(false);
         });
     }
 
+    // ---------- Logout ----------
+
     async function logout() {
-        const confirmed = window.confirm("Are you sure you want to log out?");
+        if (elements.logoutButton.disabled) return;
+
+        const confirmed = window.confirm(
+            "Are you sure you want to log out?"
+        );
 
         if (!confirmed) return;
 
@@ -882,20 +945,26 @@
             window.location.replace("./auth.html");
         } catch (error) {
             console.error("Logout failed:", error);
-            showToast("Could not log out. Please try again.", "error");
+
+            showToast(
+                getErrorMessage(error, "Could not log out. Please try again."),
+                "error"
+            );
+
             elements.logoutButton.disabled = false;
         }
     }
 
+    // ---------- Event listeners ----------
+
     function setupEventListeners() {
         elements.form.addEventListener("submit", saveProduct);
 
-        elements.resetForm.addEventListener("click", () => {
-            resetForm();
-        });
+        elements.resetForm.addEventListener("click", resetForm);
 
         elements.cancelEdit.addEventListener("click", () => {
             resetForm();
+
             $("add-item-section").scrollIntoView({
                 behavior: "smooth",
                 block: "start"
@@ -903,7 +972,6 @@
         });
 
         elements.filter.addEventListener("change", renderProducts);
-
         elements.retry.addEventListener("click", loadProducts);
 
         elements.clearFilter.addEventListener("click", () => {
@@ -920,7 +988,10 @@
             elements.name.focus({ preventScroll: true });
         });
 
-        elements.description.addEventListener("input", updateDescriptionCount);
+        elements.description.addEventListener(
+            "input",
+            updateDescriptionCount
+        );
 
         elements.logoutButton.addEventListener("click", logout);
 
@@ -928,20 +999,25 @@
         setupMobileNavigation();
     }
 
+    // ---------- Initialization ----------
+
     async function initialize() {
+        supabase = window.bizoraSupabase;
+
         if (!supabase) {
-            console.error("Bizora Supabase client was not initialized.");
+            console.error("Bizvero: Supabase client was not initialized.");
 
             elements.errorMessage.textContent =
-                "Supabase could not be initialized. Check javascript/supabase.js and the script loading order.";
+                "Supabase could not be initialized. Check the Supabase script loading order.";
 
             elements.error.hidden = false;
-            elements.loading.hidden = true;
+            setLoading(false);
             return;
         }
 
         setupEventListeners();
         updateDescriptionCount();
+        setLoading(true);
 
         try {
             const business = await getAuthenticatedBusiness();
@@ -955,13 +1031,17 @@
         } catch (error) {
             console.error("Could not initialize products page:", error);
 
-            elements.errorMessage.textContent =
-                error.message || "Unable to load your business. Please try again.";
+            elements.errorMessage.textContent = getErrorMessage(
+                error,
+                "Unable to load your business. Please try again."
+            );
 
             elements.error.hidden = false;
             setLoading(false);
         }
     }
 
-    document.addEventListener("DOMContentLoaded", initialize);
+    document.addEventListener("DOMContentLoaded", initialize, { once: true });
+
+    window.addEventListener("beforeunload", revokePreviewObjectUrl);
 })();
