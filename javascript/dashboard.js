@@ -176,78 +176,84 @@
     // AUTHENTICATION
     // --------------------------------------------------
 
-    async function verifySession() {
-        const { data, error } =
-            await state.client.auth.getSession();
+async function verifySession() {
+const { data, error } =
+await state.client.auth.getSession();
 
-        if (error) throw error;
+if (error) {
+    throw error;
+}
 
-        if (!data?.session?.user) {
-            window.location.replace(CONFIG.authPage);
-            return false;
-        }
+let session = data?.session;
 
-        state.user = data.session.user;
+// If a session wasn't immediately available, allow Supabase
+// a short period to restore it before redirecting.
+if (!session) {
+    session = await new Promise((resolve, reject) => {
+        let finished = false;
 
-        return true;
-    }
+        const timeout = window.setTimeout(() => {
+            if (finished) return;
 
-    function getDisplayName() {
-        const metadata = state.user?.user_metadata || {};
+            finished = true;
+            subscription?.unsubscribe();
+            resolve(null);
+        }, 3000);
 
-        return (
-            metadata.full_name ||
-            metadata.fullName ||
-            metadata.name ||
-            metadata.username ||
-            state.user?.email?.split("@")[0] ||
-            "Business owner"
-        );
-    }
-
-    function renderUserDetails() {
-        if (!state.user) return;
-
-        const name = getDisplayName();
-        const email = state.user.email || "";
-        const avatar = initials(name);
-
-        setText("#welcome-name", name);
-        setText("#profile-name", name);
-        setText("#profile-email", email);
-        setText("#settings-name", name);
-        setText("#settings-email", email);
-        setText("#profile-avatar", avatar);
-        setText("#settings-avatar", avatar);
-    }
-
-    function setupAuthListener() {
-        if (state.authSubscription) return;
+        let subscription;
 
         const result = state.client.auth.onAuthStateChange(
-            (event, session) => {
-                if (
-                    event === "SIGNED_OUT" &&
-                    !state.isLoggingOut
-                ) {
-                    window.location.replace(CONFIG.authPage);
-                    return;
-                }
+            (event, updatedSession) => {
+                if (finished) return;
 
                 if (
-                    (event === "USER_UPDATED" ||
-                     event === "TOKEN_REFRESHED") &&
-                    session?.user
+                    updatedSession?.user &&
+                    (
+                        event === "INITIAL_SESSION" ||
+                        event === "SIGNED_IN" ||
+                        event === "TOKEN_REFRESHED"
+                    )
                 ) {
-                    state.user = session.user;
-                    renderUserDetails();
+                    finished = true;
+                    window.clearTimeout(timeout);
+                    subscription?.unsubscribe();
+                    resolve(updatedSession);
                 }
             }
         );
 
-        state.authSubscription =
-            result?.data?.subscription || null;
-    }
+        subscription = result?.data?.subscription;
+
+        // Check again in case session restoration completed
+        // while the listener was being registered.
+        state.client.auth.getSession().then(({ data: latest }) => {
+            if (finished || !latest?.session?.user) return;
+
+            finished = true;
+            window.clearTimeout(timeout);
+            subscription?.unsubscribe();
+            resolve(latest.session);
+        }).catch(error => {
+            if (finished) return;
+
+            finished = true;
+            window.clearTimeout(timeout);
+            subscription?.unsubscribe();
+            reject(error);
+        });
+    });
+}
+
+if (!session?.user) {
+    window.location.replace(CONFIG.authPage);
+    return false;
+}
+
+state.user = session.user;
+
+return true;
+
+}
 
     // --------------------------------------------------
     // BUSINESS DATA
