@@ -159,7 +159,7 @@
                 if (Date.now() - startedAt >= timeout) {
                     reject(
                         new Error(
-                            "Supabase client unavailable. Check javascript/supabase.js and script loading order."
+                            "Supabase client unavailable. Check the script loading order."
                         )
                     );
                     return;
@@ -176,84 +176,118 @@
     // AUTHENTICATION
     // --------------------------------------------------
 
-async function verifySession() {
-const { data, error } =
-await state.client.auth.getSession();
+    async function verifySession() {
+        const { data, error } =
+            await state.client.auth.getSession();
 
-if (error) {
-    throw error;
-}
+        if (error) {
+            throw error;
+        }
 
-let session = data?.session;
+        const session = data?.session;
 
-// If a session wasn't immediately available, allow Supabase
-// a short period to restore it before redirecting.
-if (!session) {
-    session = await new Promise((resolve, reject) => {
-        let finished = false;
+        if (!session?.user) {
+            window.location.replace(CONFIG.authPage);
+            return false;
+        }
 
-        const timeout = window.setTimeout(() => {
-            if (finished) return;
+        state.user = session.user;
+        return true;
+    }
 
-            finished = true;
-            subscription?.unsubscribe();
-            resolve(null);
-        }, 3000);
+    function setupAuthListener() {
+        if (state.authSubscription) return;
 
-        let subscription;
+        const { data, error } =
+            state.client.auth.onAuthStateChange(
+                (event, session) => {
+                    if (event === "SIGNED_OUT") {
+                        state.user = null;
 
-        const result = state.client.auth.onAuthStateChange(
-            (event, updatedSession) => {
-                if (finished) return;
+                        if (!state.isLoggingOut) {
+                            window.location.replace(
+                                CONFIG.authPage
+                            );
+                        }
 
-                if (
-                    updatedSession?.user &&
-                    (
-                        event === "INITIAL_SESSION" ||
-                        event === "SIGNED_IN" ||
-                        event === "TOKEN_REFRESHED"
-                    )
-                ) {
-                    finished = true;
-                    window.clearTimeout(timeout);
-                    subscription?.unsubscribe();
-                    resolve(updatedSession);
+                        return;
+                    }
+
+                    if (
+                        session?.user &&
+                        (
+                            event === "SIGNED_IN" ||
+                            event === "USER_UPDATED" ||
+                            event === "TOKEN_REFRESHED"
+                        )
+                    ) {
+                        state.user = session.user;
+                        renderUserDetails();
+                    }
                 }
+            );
+
+        if (error) {
+            console.error(
+                "Auth listener error:",
+                error
+            );
+            return;
+        }
+
+        state.authSubscription = data?.subscription || null;
+    }
+
+    // --------------------------------------------------
+    // ACCOUNT DETAILS
+    // --------------------------------------------------
+
+    function renderUserDetails() {
+        const user = state.user;
+
+        if (!user) return;
+
+        const metadata = user.user_metadata || {};
+
+        const displayName =
+            metadata.full_name ||
+            metadata.name ||
+            user.email?.split("@")[0] ||
+            "Bizvero user";
+
+        const email = user.email || "";
+
+        // Update these elements if they exist in your HTML.
+        setText("#account-name", displayName);
+        setText("#account-email", email);
+        setText("#user-name", displayName);
+        setText("#user-email", email);
+        setText("#profile-name", displayName);
+        setText("#profile-email", email);
+
+        const avatar = initials(displayName);
+
+        setText("#account-avatar", avatar);
+        setText("#profile-avatar", avatar);
+        setText("#user-avatar", avatar);
+
+        // Update the account card if it has a dedicated container.
+        const accountCard = $("#account-settings");
+
+        if (accountCard) {
+            const loadingText = $$(
+                "*",
+                accountCard
+            ).find(element =>
+                element.children.length === 0 &&
+                element.textContent.trim() === "Loading account..."
+            );
+
+            if (loadingText) {
+                loadingText.textContent = email || displayName;
             }
-        );
-
-        subscription = result?.data?.subscription;
-
-        // Check again in case session restoration completed
-        // while the listener was being registered.
-        state.client.auth.getSession().then(({ data: latest }) => {
-            if (finished || !latest?.session?.user) return;
-
-            finished = true;
-            window.clearTimeout(timeout);
-            subscription?.unsubscribe();
-            resolve(latest.session);
-        }).catch(error => {
-            if (finished) return;
-
-            finished = true;
-            window.clearTimeout(timeout);
-            subscription?.unsubscribe();
-            reject(error);
-        });
-    });
-}
-
-if (!session?.user) {
-    window.location.replace(CONFIG.authPage);
-    return false;
-}
-
-state.user = session.user;
-
-return true;
-
-}
+        }
+    }
 
     // --------------------------------------------------
     // BUSINESS DATA
@@ -269,7 +303,6 @@ return true;
         if (error) throw error;
 
         state.business = data || null;
-
         return state.business;
     }
 
@@ -290,7 +323,6 @@ return true;
         if (error) throw error;
 
         state.products = data || [];
-
         return state.products;
     }
 
@@ -320,6 +352,7 @@ return true;
                 "is-published",
                 published
             );
+
             indicator.classList.remove("is-error");
         }
 
@@ -427,6 +460,7 @@ return true;
 
     function renderOverview() {
         const business = state.business;
+
         const requiredFields =
             getRequiredBusinessFields(business);
 
@@ -860,7 +894,6 @@ return true;
     async function loadDashboard() {
         hideMessage();
 
-        // Load business information first.
         try {
             await loadBusiness();
         } catch (error) {
@@ -874,7 +907,6 @@ return true;
             return;
         }
 
-        // Render the business information even if products fail.
         renderUserDetails();
         renderBusinessStatus();
 
@@ -894,7 +926,8 @@ return true;
         renderOverview();
         renderNextSteps();
     }
-// --------------------------------------------------
+
+    // --------------------------------------------------
     // INITIALIZATION
     // --------------------------------------------------
 
