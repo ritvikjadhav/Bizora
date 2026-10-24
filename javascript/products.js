@@ -1,3 +1,4 @@
+
 (() => {
     "use strict";
 
@@ -9,7 +10,11 @@
         maxNameLength: 100,
         maxDescriptionLength: 500,
         maxPrice: 99999999,
-        allowedImageTypes: ["image/jpeg", "image/png", "image/webp"]
+        allowedImageTypes: [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ]
     };
 
     const $ = (id) => document.getElementById(id);
@@ -27,14 +32,17 @@
         imagePreview: $("image-preview-img"),
         imagePlaceholder: $("image-placeholder"),
         removeImage: $("remove-image"),
+
         nameError: $("name-error"),
         typeError: $("type-error"),
         priceError: $("price-error"),
         imageError: $("image-error"),
         descriptionCount: $("description-count"),
+
         totalItems: $("total-items"),
         availableItems: $("available-items"),
         unavailableItems: $("unavailable-items"),
+
         filter: $("item-filter"),
         grid: $("catalogue-grid"),
         loading: $("catalogue-loading"),
@@ -45,6 +53,7 @@
         noResults: $("no-results"),
         clearFilter: $("clear-filter"),
         emptyAddButton: $("empty-add-button"),
+
         formTitle: $("form-title"),
         saveButton: $("save-item"),
         saveButtonText: $("save-button-text"),
@@ -52,6 +61,7 @@
         resetForm: $("reset-form"),
         formStatus: $("form-status"),
         toast: $("products-toast"),
+
         sidebar: $("sidebar"),
         menuButton: $("mobile-menu-button"),
         sidebarOverlay: $("sidebar-overlay"),
@@ -62,14 +72,78 @@
     let currentUser = null;
     let currentBusiness = null;
     let products = [];
+
     let selectedImage = null;
     let originalImageUrl = "";
     let imageRemoved = false;
+
     let isEditing = false;
     let isSaving = false;
     let isLoading = false;
+    let isLoggingOut = false;
+
     let toastTimer = null;
     let previewObjectUrl = null;
+
+    // ---------- DOM safety ----------
+
+    function validateRequiredElements() {
+        const required = [
+            "form",
+            "productId",
+            "name",
+            "type",
+            "description",
+            "price",
+            "available",
+            "image",
+            "imagePreview",
+            "imagePlaceholder",
+            "removeImage",
+            "nameError",
+            "typeError",
+            "priceError",
+            "imageError",
+            "descriptionCount",
+            "totalItems",
+            "availableItems",
+            "unavailableItems",
+            "filter",
+            "grid",
+            "loading",
+            "empty",
+            "error",
+            "errorMessage",
+            "retry",
+            "noResults",
+            "clearFilter",
+            "emptyAddButton",
+            "formTitle",
+            "saveButton",
+            "saveButtonText",
+            "cancelEdit",
+            "resetForm",
+            "formStatus",
+            "toast",
+            "sidebar",
+            "menuButton",
+            "sidebarOverlay",
+            "logoutButton"
+        ];
+
+        const missing = required.filter((key) => !elements[key]);
+
+        if (missing.length) {
+            console.error(
+                "Bizvero products page is missing required HTML elements:",
+                missing
+            );
+
+            return false;
+        }
+
+        return true;
+    }
 
     // ---------- UI helpers ----------
 
@@ -77,6 +151,7 @@
         if (!elements.toast) return;
 
         clearTimeout(toastTimer);
+
         elements.toast.textContent = message;
         elements.toast.className = `toast ${type}`;
         elements.toast.hidden = false;
@@ -95,7 +170,9 @@
     }
 
     function setFieldError(element, message = "") {
-        if (element) element.textContent = message;
+        if (element) {
+            element.textContent = message;
+        }
     }
 
     function getErrorMessage(error, fallback) {
@@ -133,11 +210,17 @@
             return "Price on enquiry";
         }
 
+        const numericPrice = Number(price);
+
+        if (!Number.isFinite(numericPrice)) {
+            return "Price on enquiry";
+        }
+
         return new Intl.NumberFormat("en-IN", {
             style: "currency",
             currency: "INR",
             maximumFractionDigits: 2
-        }).format(Number(price));
+        }).format(numericPrice);
     }
 
     // ---------- Image helpers ----------
@@ -147,22 +230,28 @@
 
         try {
             const url = new URL(imageUrl);
+
             const prefix =
                 `/storage/v1/object/public/${CONFIG.storageBucket}/`;
+
             const index = url.pathname.indexOf(prefix);
 
             if (index === -1) return null;
 
-            return decodeURIComponent(
-                url.pathname.slice(index + prefix.length)
+            const encodedPath = url.pathname.slice(
+                index + prefix.length
             );
+
+            return decodeURIComponent(encodedPath);
         } catch {
             return null;
         }
     }
 
     function getProductImageUrl(imageUrl) {
-        if (!imageUrl || !supabase) return imageUrl || "";
+        if (!imageUrl || !supabase) {
+            return imageUrl || "";
+        }
 
         const path = getImagePath(imageUrl);
 
@@ -178,14 +267,17 @@
     async function removeStoredImage(imageUrl) {
         const path = getImagePath(imageUrl);
 
-        if (!path) return;
+        if (!path || !supabase) return;
 
         const { error } = await supabase.storage
             .from(CONFIG.storageBucket)
             .remove([path]);
 
         if (error) {
-            console.error("Could not remove stored image:", error);
+            console.error(
+                "Bizvero could not remove stored image:",
+                error
+            );
         }
     }
 
@@ -220,7 +312,9 @@
         selectedImage = null;
         originalImageUrl = "";
         imageRemoved = false;
+
         elements.image.value = "";
+
         showImagePreview("");
     }
 
@@ -231,6 +325,10 @@
 
         if (file.size > CONFIG.maxImageSize) {
             return "The image must be 5 MB or smaller.";
+        }
+
+        if (file.size === 0) {
+            return "The selected image is empty. Choose another image.";
         }
 
         return "";
@@ -255,24 +353,35 @@
             throw new Error("Unsupported image format.");
         }
 
+        if (!crypto.randomUUID) {
+            throw new Error(
+                "Your browser does not support secure image uploads. Update your browser and try again."
+            );
+        }
+
         const path =
             `${currentUser.id}/${currentBusiness.id}/${crypto.randomUUID()}.${extension}`;
 
-        const { error } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
             .from(CONFIG.storageBucket)
             .upload(path, file, {
                 contentType: file.type,
                 upsert: false
             });
 
-        if (error) throw error;
+        if (uploadError) {
+            throw uploadError;
+        }
 
         const { data } = supabase.storage
             .from(CONFIG.storageBucket)
             .getPublicUrl(path);
 
         if (!data?.publicUrl) {
-            console.error("Could not generate public URL for:", path);
+            await supabase.storage
+                .from(CONFIG.storageBucket)
+                .remove([path]);
+
             throw new Error("Could not generate the image URL.");
         }
 
@@ -318,6 +427,7 @@
         }
 
         currentBusiness = data;
+
         return data;
     }
 
@@ -334,6 +444,7 @@
         try {
             if (!currentBusiness) {
                 const business = await getAuthenticatedBusiness();
+
                 if (!business) return;
             }
 
@@ -352,7 +463,10 @@
             updateSummary();
             renderProducts();
         } catch (error) {
-            console.error("Could not load products:", error);
+            console.error(
+                "Bizvero could not load products:",
+                error
+            );
 
             elements.errorMessage.textContent = getErrorMessage(
                 error,
@@ -387,12 +501,16 @@
             switch (filter) {
                 case "product":
                     return product.item_type === "product";
+
                 case "service":
                     return product.item_type === "service";
+
                 case "available":
-                    return product.is_available;
+                    return Boolean(product.is_available);
+
                 case "unavailable":
                     return !product.is_available;
+
                 default:
                     return true;
             }
@@ -403,27 +521,33 @@
 
     function createImagePlaceholder() {
         const placeholder = document.createElement("div");
+
         placeholder.className = "catalogue-card-placeholder";
 
         const icon = document.createElement("span");
+
         icon.setAttribute("aria-hidden", "true");
         icon.textContent = "▧";
 
         placeholder.append(icon);
+
         return placeholder;
     }
 
     function createProductCard(product) {
         const card = document.createElement("article");
+
         card.className = "catalogue-card";
 
         const imageContainer = document.createElement("div");
+
         imageContainer.className = "catalogue-card-image";
 
         const imageUrl = getProductImageUrl(product.image_url);
 
         if (imageUrl) {
             const image = document.createElement("img");
+
             image.src = imageUrl;
             image.alt = product.name || "Product image";
             image.loading = "lazy";
@@ -439,6 +563,7 @@
         }
 
         const type = document.createElement("span");
+
         type.className = "catalogue-card-type";
         type.textContent =
             product.item_type === "service" ? "Service" : "Product";
@@ -446,25 +571,31 @@
         imageContainer.append(type);
 
         const content = document.createElement("div");
+
         content.className = "catalogue-card-content";
 
         const title = document.createElement("h3");
+
         title.className = "catalogue-card-title";
-        title.textContent = product.name;
+        title.textContent = product.name || "Untitled item";
 
         const description = document.createElement("p");
+
         description.className = "catalogue-card-description";
         description.textContent =
             product.description || "No description added yet.";
 
         const footer = document.createElement("div");
+
         footer.className = "catalogue-card-footer";
 
         const price = document.createElement("span");
+
         price.className = "catalogue-card-price";
         price.textContent = formatPrice(product.price);
 
         const availability = document.createElement("span");
+
         availability.className = "catalogue-card-availability";
         availability.textContent =
             product.is_available ? "Available" : "Unavailable";
@@ -476,26 +607,38 @@
         footer.append(price, availability);
 
         const actions = document.createElement("div");
+
         actions.className = "catalogue-card-actions";
 
         const editButton = document.createElement("button");
+
         editButton.type = "button";
         editButton.className = "catalogue-card-edit";
         editButton.textContent = "Edit";
+
         editButton.addEventListener("click", () => {
             editProduct(product.id);
         });
 
         const deleteButton = document.createElement("button");
+
         deleteButton.type = "button";
         deleteButton.className = "catalogue-card-delete";
         deleteButton.textContent = "Delete";
+
         deleteButton.addEventListener("click", () => {
             deleteProduct(product.id);
         });
 
         actions.append(editButton, deleteButton);
-        content.append(title, description, footer, actions);
+
+        content.append(
+            title,
+            description,
+            footer,
+            actions
+        );
+
         card.append(imageContainer, content);
 
         return card;
@@ -507,8 +650,10 @@
         const filteredProducts = getFilteredProducts();
 
         elements.empty.hidden = products.length !== 0;
+
         elements.noResults.hidden =
-            products.length === 0 || filteredProducts.length !== 0;
+            products.length === 0 ||
+            filteredProducts.length !== 0;
 
         const fragment = document.createDocumentFragment();
 
@@ -527,7 +672,9 @@
             elements.typeError,
             elements.priceError,
             elements.imageError
-        ].forEach((element) => setFieldError(element));
+        ].forEach((element) => {
+            setFieldError(element);
+        });
 
         [
             elements.name,
@@ -535,7 +682,9 @@
             elements.price,
             elements.image
         ].forEach((element) => {
-            if (element) element.removeAttribute("aria-invalid");
+            if (element) {
+                element.removeAttribute("aria-invalid");
+            }
         });
     }
 
@@ -549,7 +698,11 @@
         const priceValue = elements.price.value.trim();
 
         if (!name) {
-            setFieldError(elements.nameError, "Please enter an item name.");
+            setFieldError(
+                elements.nameError,
+                "Please enter an item name."
+            );
+
             elements.name.setAttribute("aria-invalid", "true");
             valid = false;
         } else if (name.length > CONFIG.maxNameLength) {
@@ -557,12 +710,17 @@
                 elements.nameError,
                 `The name cannot exceed ${CONFIG.maxNameLength} characters.`
             );
+
             elements.name.setAttribute("aria-invalid", "true");
             valid = false;
         }
 
         if (!["product", "service"].includes(elements.type.value)) {
-            setFieldError(elements.typeError, "Choose a valid item type.");
+            setFieldError(
+                elements.typeError,
+                "Choose a valid item type."
+            );
+
             elements.type.setAttribute("aria-invalid", "true");
             valid = false;
         }
@@ -572,6 +730,7 @@
                 `Description cannot exceed ${CONFIG.maxDescriptionLength} characters.`,
                 "error"
             );
+
             valid = false;
         }
 
@@ -583,11 +742,12 @@
                 price < 0 ||
                 price > CONFIG.maxPrice ||
                 !/^\d+(\.\d{1,2})?$/.test(priceValue)
-            ) {
+           ) {
                 setFieldError(
                     elements.priceError,
                     "Enter a valid price with up to two decimal places."
                 );
+
                 elements.price.setAttribute("aria-invalid", "true");
                 valid = false;
             }
@@ -598,12 +758,16 @@
 
             if (imageError) {
                 setFieldError(elements.imageError, imageError);
+                elements.image.setAttribute("aria-invalid", "true");
                 valid = false;
             }
         }
 
         if (!valid) {
-            setStatus("Please correct the highlighted fields.", "error");
+            setStatus(
+                "Please correct the highlighted fields.",
+                "error"
+            );
         }
 
         return valid;
@@ -624,13 +788,16 @@
         setSaveButtonLoading(true);
 
         let newlyUploadedImage = null;
+        let saveCompleted = false;
 
         try {
             if (!currentUser || !currentBusiness) {
                 const business = await getAuthenticatedBusiness();
 
                 if (!business) {
-                    throw new Error("Please sign in to manage your items.");
+                    throw new Error(
+                        "Please sign in to manage your items."
+                    );
                 }
             }
 
@@ -679,11 +846,19 @@
                 );
             }
 
-            if (originalImageUrl && originalImageUrl !== imageUrl) {
+            saveCompleted = true;
+
+            // Clean up the previous image only after the database
+            // has successfully saved the new image URL.
+            if (
+                originalImageUrl &&
+                originalImageUrl !== imageUrl
+            ) {
                 await removeStoredImage(originalImageUrl);
             }
 
             resetForm();
+
             await loadProducts();
 
             showToast(
@@ -692,9 +867,13 @@
                     : "Your item has been added to the catalogue."
             );
         } catch (error) {
-            console.error("Could not save product:", error);
+            console.error(
+                "Bizvero could not save product:",
+                error
+            );
 
-            if (newlyUploadedImage) {
+            // Remove a newly uploaded image if saving failed.
+            if (newlyUploadedImage && !saveCompleted) {
                 await removeStoredImage(newlyUploadedImage);
             }
 
@@ -712,7 +891,9 @@
     }
 
     function editProduct(productId) {
-        const product = products.find((item) => item.id === productId);
+        const product = products.find(
+            (item) => item.id === productId
+        );
 
         if (!product) return;
 
@@ -726,13 +907,19 @@
         elements.available.checked = Boolean(product.is_available);
 
         // Category is not a column in the current products table.
-        if (elements.category) elements.category.value = "";
+        if (elements.category) {
+            elements.category.value = "";
+        }
 
         originalImageUrl = product.image_url || "";
         selectedImage = null;
         imageRemoved = false;
 
-        showImagePreview(getProductImageUrl(originalImageUrl));
+        elements.image.value = "";
+
+        showImagePreview(
+            getProductImageUrl(originalImageUrl)
+        );
 
         elements.formTitle.textContent = "Edit item";
         elements.cancelEdit.hidden = false;
@@ -740,9 +927,10 @@
 
         updateDescriptionCount();
         clearValidation();
+
         setStatus("Editing your selected item.");
 
-        $("add-item-section").scrollIntoView({
+        $("add-item-section")?.scrollIntoView({
             behavior: "smooth",
             block: "start"
         });
@@ -753,15 +941,17 @@
     async function deleteProduct(productId) {
         if (isSaving || isLoading || !currentBusiness) return;
 
-        const product = products.find((item) => item.id === productId);
+        const product = products.find(
+            (item) => item.id === productId
+        );
 
         if (!product) return;
 
-        if (!window.confirm(
+        const confirmed = window.confirm(
             `Delete "${product.name}" from your catalogue? This action cannot be undone.`
-        )) {
-            return;
-        }
+        );
+
+        if (!confirmed) return;
 
         try {
             const { data, error } = await supabase
@@ -779,6 +969,8 @@
                 );
             }
 
+            // The database record is already deleted. Image cleanup
+            // is best-effort and must not make deletion appear to fail.
             if (product.image_url) {
                 await removeStoredImage(product.image_url);
             }
@@ -788,12 +980,19 @@
             }
 
             await loadProducts();
+
             showToast("Item deleted successfully.");
         } catch (error) {
-            console.error("Could not delete product:", error);
+            console.error(
+                "Bizvero could not delete product:",
+                error
+            );
 
             showToast(
-                getErrorMessage(error, "Could not delete this item."),
+                getErrorMessage(
+                    error,
+                    "Could not delete this item."
+                ),
                 "error"
             );
         }
@@ -808,6 +1007,7 @@
 
     function resetForm() {
         elements.form.reset();
+
         elements.productId.value = "";
         elements.available.checked = true;
 
@@ -835,9 +1035,13 @@
 
             if (error) {
                 setFieldError(elements.imageError, error);
+
                 elements.image.setAttribute("aria-invalid", "true");
                 elements.image.value = "";
                 selectedImage = null;
+
+                // Keep the existing image preview when an invalid
+                // replacement image is selected.
                 return;
             }
 
@@ -847,15 +1051,20 @@
             selectedImage = file;
             imageRemoved = false;
 
-            showImagePreview(URL.createObjectURL(file), true);
+            showImagePreview(
+                URL.createObjectURL(file),
+                true
+            );
         });
 
         elements.removeImage.addEventListener("click", () => {
             selectedImage = null;
             imageRemoved = true;
+
             elements.image.value = "";
 
             showImagePreview("");
+
             setFieldError(elements.imageError);
             elements.image.removeAttribute("aria-invalid");
         });
@@ -882,9 +1091,10 @@
         }
 
         elements.menuButton.addEventListener("click", () => {
-            setSidebarOpen(
-                !elements.sidebar.classList.contains("is-open")
-            );
+            const currentlyOpen =
+                elements.sidebar.classList.contains("is-open");
+
+            setSidebarOpen(!currentlyOpen);
         });
 
         elements.sidebarOverlay.addEventListener("click", () => {
@@ -892,27 +1102,36 @@
         });
 
         elements.sidebar.querySelectorAll("a").forEach((link) => {
-            link.addEventListener("click", () => setSidebarOpen(false));
+            link.addEventListener("click", () => {
+                setSidebarOpen(false);
+            });
         });
 
         document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape") setSidebarOpen(false);
+            if (event.key === "Escape") {
+                setSidebarOpen(false);
+            }
         });
 
         window.addEventListener("resize", () => {
-            if (window.innerWidth > 950) setSidebarOpen(false);
+            if (window.innerWidth > 950) {
+                setSidebarOpen(false);
+            }
         });
     }
 
     // ---------- Logout ----------
 
     async function logout() {
-        if (elements.logoutButton.disabled) return;
+        if (isLoggingOut) return;
 
-        if (!window.confirm("Are you sure you want to log out?")) {
-            return;
-        }
+        const confirmed = window.confirm(
+            "Are you sure you want to log out?"
+        );
 
+        if (!confirmed) return;
+
+        isLoggingOut = true;
         elements.logoutButton.disabled = true;
 
         try {
@@ -922,33 +1141,38 @@
 
             window.location.replace("./auth.html");
         } catch (error) {
-            console.error("Logout failed:", error);
+            console.error("Bizvero logout failed:", error);
 
             showToast(
-                getErrorMessage(error, "Could not log out. Please try again."),
+                getErrorMessage(
+                    error,
+                    "Could not log out. Please try again."
+                ),
                 "error"
             );
 
+            isLoggingOut = false;
             elements.logoutButton.disabled = false;
         }
     }
-
-    // ---------- Event listeners ----------
+// ---------- Event listeners ----------
 
     function setupEventListeners() {
         elements.form.addEventListener("submit", saveProduct);
+
         elements.resetForm.addEventListener("click", resetForm);
 
         elements.cancelEdit.addEventListener("click", () => {
             resetForm();
 
-            $("add-item-section").scrollIntoView({
+            $("add-item-section")?.scrollIntoView({
                 behavior: "smooth",
                 block: "start"
             });
         });
 
         elements.filter.addEventListener("change", renderProducts);
+
         elements.retry.addEventListener("click", loadProducts);
 
         elements.clearFilter.addEventListener("click", () => {
@@ -957,7 +1181,7 @@
         });
 
         elements.emptyAddButton.addEventListener("click", () => {
-            $("add-item-section").scrollIntoView({
+            $("add-item-section")?.scrollIntoView({
                 behavior: "smooth",
                 block: "start"
             });
@@ -979,16 +1203,24 @@
     // ---------- Initialization ----------
 
     async function initialize() {
+        if (!validateRequiredElements()) {
+            return;
+        }
+
+        // Preserve compatibility with the existing Supabase setup.
         supabase = window.bizoraSupabase;
 
         if (!supabase) {
-            console.error("Bizvero: Supabase client was not initialized.");
+            console.error(
+                "Bizvero: Supabase client was not initialized."
+            );
 
             elements.errorMessage.textContent =
                 "Supabase could not be initialized. Check the script loading order.";
 
             elements.error.hidden = false;
             setLoading(false);
+
             return;
         }
 
@@ -1005,7 +1237,10 @@
 
             await loadProducts();
         } catch (error) {
-            console.error("Could not initialize products page:", error);
+            console.error(
+                "Bizvero could not initialize the products page:",
+                error
+            );
 
             elements.errorMessage.textContent = getErrorMessage(
                 error,
@@ -1017,6 +1252,14 @@
         }
     }
 
-    document.addEventListener("DOMContentLoaded", initialize, { once: true });
-    window.addEventListener("beforeunload", revokePreviewObjectUrl);
+    document.addEventListener(
+        "DOMContentLoaded",
+        initialize,
+        { once: true }
+    );
+
+    window.addEventListener(
+        "beforeunload",
+        revokePreviewObjectUrl
+    );
 })();
