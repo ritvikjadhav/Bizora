@@ -185,7 +185,7 @@ p {
     place-items: center;
     border-radius: 15px;
     color: #FFFFFF;
-    background: linear-gradient(145deg, #48B8F0 0%, #1688D4 48%, #1765B8 100%);
+    background: var(--sf-gradient-brand);
     font-family: "Manrope", sans-serif;
     font-size: 24px;
     font-weight: 800;
