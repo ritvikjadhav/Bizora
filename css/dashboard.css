@@ -808,3 +808,140 @@
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ===== A Simple Way Forward / Your Next Steps ===== */
+
+.next-steps-section {
+  width: 100%;
+  margin-top: 28px;
+}
+
+.next-steps-section h2,
+.next-steps-section h3 {
+  color: #102d46;
+  font-weight: 700;
+}
+
+.next-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.next-step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid #e4ebf0;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(16, 45, 70, 0.05);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.next-step:hover {
+  transform: translateY(-2px);
+  border-color: #63d1c2;
+  box-shadow: 0 8px 22px rgba(16, 45, 70, 0.09);
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #e8f7f5;
+  color: #174f78;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.step-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-content h3,
+.step-content h4 {
+  margin: 0 0 5px;
+  color: #102d46;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.step-content p {
+  margin: 0;
+  color: #687b8b;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.step-arrow {
+  flex: 0 0 auto;
+  color: #397f7c;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.next-step a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.next-step a:focus-visible {
+  outline: 3px solid #63d1c2;
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+  .next-steps-section {
+    margin-top: 22px;
+  }
+
+  .next-steps-list {
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .next-step {
+    gap: 12px;
+    padding: 15px 14px;
+    border-radius: 13px;
+  }
+
+  .step-number {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    font-size: 13px;
+  }
+
+  .step-content h3,
+  .step-content h4 {
+    font-size: 14px;
+  }
+
+  .step-content p {
+    font-size: 12px;
+  }
+
+  .step-arrow {
+    font-size: 19px;
+  }
+}
