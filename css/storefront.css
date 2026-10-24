@@ -2047,3 +2047,6 @@ gap: 8px;
 transition: none;
 }
 }
+.brand-period {
+    display: none !important;
+}
