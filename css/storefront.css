@@ -1807,246 +1807,343 @@ body.storefront-page [hidden] {
     }
 }
 
-/* =========================================
-BIZVERO STOREFRONT — FINAL DESIGN REFINEMENT
-Clean • Premium • Responsive • Orbity
-========================================= */
+
+/* =========================================================
+   21. FINAL DESIGN REFINEMENT
+   BIZVERO — CLEAN, PREMIUM, RESPONSIVE, ORBITY
+   ========================================================= */
 
 /* 1. PAGE BACKGROUND */
 
-.storefront-page {
-background: #F4F7FB;
-color: #102D46;
+body.storefront-page {
+    background: #F4F7FB;
+    color: #102D46;
 }
 
 .storefront-header {
-background: #FFFFFF;
-border-bottom: 1px solid #E4EBF1;
+    background: #FFFFFF;
+    border-bottom: 1px solid #E4EBF1;
 }
 
 .storefront-footer {
-background: #FFFFFF;
-border-top: 1px solid #E4EBF1;
+    background: #FFFFFF;
+    border-top: 1px solid #E4EBF1;
 }
+
 
 /* 2. BUSINESS INFORMATION CARD */
 
 .storefront-identity {
-position: relative;
-isolation: isolate;
-overflow: hidden;
-background: #FFFFFF;
-border: 1px solid #E4EBF1;
-border-radius: 28px;
-box-shadow:
-0 12px 36px rgba(16, 45, 70, 0.045),
-0 2px 8px rgba(16, 45, 70, 0.025);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    background: #FFFFFF;
+    border: 1px solid #E4EBF1;
+    border-radius: 28px;
+
+    box-shadow:
+        0 12px 36px rgba(16, 45, 70, 0.045),
+        0 2px 8px rgba(16, 45, 70, 0.025);
 }
 
 /* Outer orbit — muted teal */
 
 .storefront-identity::before {
-content: "";
-position: absolute;
-z-index: -1;
-top: -115px;
-right: -100px;
-width: 280px;
-height: 280px;
-border: 1px solid rgba(57, 127, 124, 0.20);
-border-radius: 50%;
-pointer-events: none;
+    content: "";
+
+    position: absolute;
+    z-index: -1;
+    top: -115px;
+    right: -100px;
+
+    width: 280px;
+    height: 280px;
+
+    border: 1px solid rgba(57, 127, 124, 0.20);
+    border-radius: 50%;
+
+    pointer-events: none;
 }
 
 /* Inner orbit — soft mint */
 
 .storefront-identity::after {
-content: "";
-position: absolute;
-z-index: -1;
-top: -78px;
-right: -63px;
-width: 205px;
-height: 205px;
-border: 1px solid rgba(99, 209, 194, 0.30);
-border-radius: 50%;
-pointer-events: none;
+    content: "";
+
+    position: absolute;
+    z-index: -1;
+    top: -78px;
+    right: -63px;
+
+    width: 205px;
+    height: 205px;
+
+    border: 1px solid rgba(99, 209, 194, 0.30);
+    border-radius: 50%;
+
+    pointer-events: none;
 }
 
-/* Keep card content above the decorative orbits */
+/* Keep the card content above the orbit decorations */
 
 .storefront-identity > * {
-position: relative;
-z-index: 1;
+    position: relative;
+    z-index: 1;
 }
+
 
 /* 3. BUSINESS LOGO */
 
 .business-logo {
-overflow: hidden;
-border: none !important;
-outline: none !important;
-box-shadow: none !important;
-background: linear-gradient(
-145deg,
-#174F78,
-#397F7C 72%,
-#63D1C2
-);
+    overflow: hidden;
+
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+
+    background: linear-gradient(
+        145deg,
+        #174F78 0%,
+        #397F7C 72%,
+        #63D1C2 100%
+    );
 }
 
-/* Remove decorative white inner border */
+/* Remove decorative overlays */
 
 .business-logo::after {
-content: none !important;
-display: none !important;
+    content: none !important;
+    display: none !important;
 }
+
+/* Uploaded business logo */
 
 .business-logo img {
-display: block;
-width: 100%;
-height: 100%;
-object-fit: cover;
-border: none !important;
-outline: none !important;
-box-shadow: none !important;
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
-/* 4. CONTACT BUTTONS — WHITE WITH BLACK TEXT */
+/* Match the fallback initial to the business logo gradient */
 
-.business-contact-actions {
-display: flex;
-flex-wrap: wrap;
-gap: 12px;
-margin-top: 28px;
+.business-logo > span {
+    width: 100%;
+    height: 100%;
+
+    display: grid;
+    place-items: center;
+
+    background: linear-gradient(
+        145deg,
+        #174F78 0%,
+        #397F7C 72%,
+        #63D1C2 100%
+    );
+
+    color: #FFFFFF;
 }
 
-.contact-button {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: 9px;
-min-height: 48px;
-padding: 12px 20px;
 
-background: #FFFFFF !important;
-color: #111827 !important;
-border: 1px solid #E5E7EB;
-border-radius: 14px;
-
-font-family: "DM Sans", sans-serif;
-font-size: 15px;
-font-weight: 600;
-line-height: 1.4;
-text-align: center;
-text-decoration: none;
-
-box-shadow: none !important;
-transform: none;
-
-transition: border-color 180ms ease;
-
-}
-
-.contact-button span,
-.contact-button svg {
-color: #111827 !important;
-}
-
-.contact-button svg {
-width: 19px;
-height: 19px;
-flex-shrink: 0;
-}
-
-/* Same appearance for all contact actions */
-
-.contact-button-primary,
-.contact-button-secondary {
-background: #FFFFFF !important;
-color: #111827 !important;
-border-color: #E5E7EB;
-box-shadow: none !important;
-}
-
-.contact-button-primary:hover,
-.contact-button-secondary:hover {
-background: #FFFFFF !important;
-color: #000000 !important;
-border-color: #9CA3AF;
-box-shadow: none !important;
-transform: none;
-}
-
-.contact-button-primary:hover span,
-.contact-button-secondary:hover span {
-color: #000000 !important;
-}
-
-/* Keyboard focus */
-
-.contact-button:focus-visible,
-.share-button:focus-visible {
-outline: 2px solid #397F7C;
-outline-offset: 3px;
-}
-
-/* Respect hidden contact links */
-
-.contact-button[hidden] {
-display: none !important;
-}
-
-/* 5. MOBILE RESPONSIVENESS */
-
-@media (max-width: 560px) {
-.storefront-identity {
-border-radius: 24px;
-}
+/* 4. CONTACT BUTTONS — PREMIUM WHITE STYLE */
 
 .business-contact-actions {
     display: flex;
+    align-items: stretch;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
+
+    margin-top: 28px;
 }
 
 .contact-button {
-    flex: 1 1 0;
-    min-width: 0;
+    /* Comfortable, consistent sizing */
     min-height: 48px;
-    padding: 12px 14px;
-    gap: 8px;
+    min-width: 145px;
+    padding: 12px 18px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    flex: 1 1 145px;
+
+    background: #FFFFFF !important;
+    color: #111827 !important;
+
+    border: 1px solid #E5E7EB;
     border-radius: 14px;
+
+    font-family: "DM Sans", sans-serif;
     font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+
+    box-shadow: none !important;
+    transform: none;
+
+    overflow-wrap: anywhere;
+
+    transition:
+        border-color 180ms ease,
+        background-color 180ms ease,
+        color 180ms ease;
+}
+
+/* Keep labels and icons readable */
+
+.contact-button span {
+    color: inherit !important;
+    min-width: 0;
 }
 
 .contact-button svg {
-    width: 18px;
-    height: 18px;
+    width: 19px;
+    height: 19px;
+
+    flex: 0 0 19px;
+
+    color: inherit !important;
 }
 
+/* All contact buttons have the same appearance */
+
+.contact-button-primary,
+.contact-button-secondary {
+    background: #FFFFFF !important;
+    color: #111827 !important;
+
+    border: 1px solid #E5E7EB;
+
+    box-shadow: none !important;
 }
+
+/* Subtle hover state */
+
+.contact-button:hover,
+.contact-button-primary:hover,
+.contact-button-secondary:hover {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+
+    border-color: #9CA3AF;
+
+    box-shadow: none !important;
+    transform: none;
+}
+
+.contact-button:hover span,
+.contact-button-primary:hover span,
+.contact-button-secondary:hover span {
+    color: #000000 !important;
+}
+
+/* Keyboard accessibility */
+
+.contact-button:focus-visible,
+.share-button:focus-visible {
+    outline: 2px solid #397F7C;
+    outline-offset: 3px;
+}
+
+/* Preserve hidden contact actions */
+
+.contact-button[hidden] {
+    display: none !important;
+}
+
+
+/* 5. MOBILE CONTACT BUTTON LAYOUT */
+
+/* Two balanced columns on mobile */
+
+@media (max-width: 600px) {
+    .storefront-identity {
+        border-radius: 24px;
+    }
+
+    .business-contact-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: stretch;
+        gap: 10px;
+
+        margin-top: 23px;
+    }
+
+    .contact-button {
+        width: 100%;
+        min-width: 0;
+        min-height: 46px;
+
+        padding: 11px 10px;
+        gap: 7px;
+
+        border-radius: 12px;
+
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .contact-button svg {
+        width: 17px;
+        height: 17px;
+
+        flex-basis: 17px;
+    }
+}
+
+
+/* 6. EXTRA-SMALL MOBILE DEVICES */
 
 @media (max-width: 360px) {
-.business-contact-actions {
-gap: 8px;
+    .business-contact-actions {
+        gap: 8px;
+    }
+
+    .contact-button {
+        min-height: 44px;
+        padding: 10px 7px;
+        gap: 5px;
+
+        border-radius: 11px;
+
+        font-size: 12px;
+    }
+
+    .contact-button svg {
+        width: 16px;
+        height: 16px;
+
+        flex-basis: 16px;
+    }
 }
 
-.contact-button {
-    padding: 11px 9px;
-    gap: 6px;
-    font-size: 13px;
-}
 
-}
+/* 7. BRAND PERIOD */
 
-/* 6. ACCESSIBILITY */
-
-@media (prefers-reduced-motion: reduce) {
-.contact-button {
-transition: none;
-}
-}
 .brand-period {
     display: none !important;
+}
+
+
+/* 8. ACCESSIBILITY — REDUCED MOTION */
+
+@media (prefers-reduced-motion: reduce) {
+    .contact-button,
+    .contact-button-primary,
+    .contact-button-secondary {
+        transition: none !important;
+    }
 }
