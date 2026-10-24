@@ -21,6 +21,13 @@
     --container: 1180px;
     --radius: 16px;
     --shadow: 0 18px 50px rgba(18, 48, 71, 0.09);
+/* Shared Bizvero brand gradient */
+--sf-gradient-brand: linear-gradient(
+    145deg,
+    #102d46 0%,
+    #174f78 52%,
+    #397f7c 100%
+);
 }
 
 /* RESET */
@@ -695,12 +702,12 @@ p {
     place-items: center;
     border-radius: 15px;
     color: #FFFFFF;
-    background: linear-gradient(145deg, #48B8F0 0%, #1688D4 48%, #1765B8 100%);
+    background: var(--sf-gradient-brand);
+box-shadow: 0 5px 14px rgba(22, 136, 212, 0.20);
     font-family: "Manrope", sans-serif;
     font-size: 26px;
     font-weight: 800;
     line-height: 1;
-    box-shadow: 0 5px 14px rgba(22, 136, 212, 0.20);
     flex-shrink: 0;
     overflow: hidden;
 }
