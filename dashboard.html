@@ -1,12 +1,19 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#102D46">
-    <meta name="description" content="Your Bizvero workspace to build your business profile, showcase products and discover practical digital growth guides.">
 
-    <title>Workspace | Bizvero</title>
+    <meta
+        name="description"
+        content="Manage your Bizvero business profile, showcase products and services, and discover practical ways to grow online."
+    >
+
+    <meta name="color-scheme" content="light">
+
+    <title>Dashboard | Bizvero</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,23 +38,32 @@
 
     <div class="workspace-shell">
 
+        <!-- =========================================
+             SIDEBAR
+        ========================================== -->
+
         <aside
             class="workspace-sidebar"
             id="dashboard-sidebar"
             aria-label="Workspace sidebar"
         >
+
             <a
-    class="workspace-brand"
-    href="./index.html"
-    aria-label="Bizvero home"
->
-    <span class="brand-mark" aria-hidden="true">B</span>
-    <span>Bizvero<span class="brand-period"></span></span>
-</a>
+                class="workspace-brand"
+                href="./index.html"
+                aria-label="Bizvero home"
+            >
+                <span class="brand-mark" aria-hidden="true">B</span>
+
+                <span class="workspace-brand-name">
+                    Bizvero<span class="brand-period"></span>
+                </span>
+            </a>
 
             <div class="sidebar-caption">WORKSPACE</div>
 
             <nav class="workspace-nav" aria-label="Main navigation">
+
                 <a
                     class="workspace-nav-link is-active"
                     href="./dashboard.html"
@@ -81,12 +97,36 @@
                     <span class="nav-icon" aria-hidden="true">✳</span>
                     <span>Grow Digitally</span>
                 </a>
+
             </nav>
 
             <div class="sidebar-bottom">
 
+                <div class="sidebar-guide">
+
+                    <span class="guide-kicker">
+                        YOUR NEXT OPPORTUNITY
+                    </span>
+
+                    <div class="sidebar-guide-icon" aria-hidden="true">
+                        ✦
+                    </div>
+
+                    <strong>Small steps. Real progress.</strong>
+
+                    <p>
+                        Build your online presence one useful step at a time.
+                    </p>
+
+                    <a href="./grow-digitally.html">
+                        Explore growth guides
+                        <span aria-hidden="true">→</span>
+                    </a>
+
+                </div>
+
                 <a
-                    class="workspace-nav-link"
+                    class="workspace-nav-link settings-nav-link"
                     href="#account-settings"
                     data-settings-link
                 >
@@ -94,51 +134,47 @@
                     <span>Account settings</span>
                 </a>
 
-                <div class="sidebar-guide">
-                    <span class="guide-kicker">A LITTLE GUIDANCE</span>
+                <div class="sidebar-account">
 
-                    <strong>Make digital feel simple.</strong>
+                    <button
+                        class="account-trigger"
+                        id="profile-menu-button"
+                        type="button"
+                        aria-expanded="false"
+                        aria-controls="profile-menu"
+                    >
+                        <span
+                            class="account-avatar"
+                            id="profile-avatar"
+                        >B</span>
 
-                    <p>
-                        Explore practical ideas to help more customers
-                        find your business.
-                    </p>
+                        <span class="account-copy">
+                            <strong id="profile-name">Your account</strong>
+                            <small id="profile-email">Loading account…</small>
+                        </span>
 
-                    <a href="./grow-digitally.html">
-                        Explore guides
-                        <span aria-hidden="true">→</span>
-                    </a>
-                </div>
-
-                <button
-                    class="account-trigger"
-                    id="profile-menu-button"
-                    type="button"
-                    aria-expanded="false"
-                    aria-controls="profile-menu"
-                >
-                    <span class="account-avatar" id="profile-avatar">B</span>
-
-                    <span class="account-copy">
-                        <strong id="profile-name">Your account</strong>
-                        <small id="profile-email">Loading account…</small>
-                    </span>
-
-                    <span class="account-more" aria-hidden="true">···</span>
-                </button>
-
-                <div class="account-menu" id="profile-menu" hidden>
-                    <a href="#account-settings" data-settings-link>
-                        Account settings
-                    </a>
-
-                    <button type="button" id="logout-button">
-                        Log out
+                        <span class="account-more" aria-hidden="true">···</span>
                     </button>
+
+                    <div class="account-menu" id="profile-menu" hidden>
+
+                        <a href="#account-settings" data-settings-link>
+                            Account settings
+                        </a>
+
+                        <button type="button" id="logout-button">
+                            Log out
+                        </button>
+
+                    </div>
+
                 </div>
 
             </div>
+
         </aside>
+
+        <!-- Mobile sidebar backdrop -->
 
         <button
             class="sidebar-scrim"
@@ -148,26 +184,37 @@
             hidden
         ></button>
 
+
+        <!-- =========================================
+             MAIN WORKSPACE
+        ========================================== -->
+
         <div class="workspace-main">
+
+            <!-- TOP BAR -->
 
             <header class="workspace-topbar">
 
-                <button
-                    class="mobile-menu-button"
-                    id="mobile-menu-button"
-                    type="button"
-                    aria-label="Open navigation"
-                    aria-controls="dashboard-sidebar"
-                    aria-expanded="false"
-                >
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+                <div class="topbar-leading">
 
-                <div class="topbar-title">
-                    <span>YOUR WORKSPACE</span>
-                    <strong>Overview</strong>
+                    <button
+                        class="mobile-menu-button"
+                        id="mobile-menu-button"
+                        type="button"
+                        aria-label="Open navigation"
+                        aria-controls="dashboard-sidebar"
+                        aria-expanded="false"
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                    <div class="topbar-title">
+                        <span>YOUR WORKSPACE</span>
+                        <strong>Overview</strong>
+                    </div>
+
                 </div>
 
                 <div class="topbar-right">
@@ -189,14 +236,25 @@
 
             </header>
 
+
+            <!-- =========================================
+                 DASHBOARD CONTENT
+            ========================================== -->
+
             <main class="workspace-content">
+
+                <!-- WELCOME -->
 
                 <section
                     class="welcome-block"
                     aria-labelledby="welcome-title"
                 >
-                    <div>
-                        <p class="eyebrow">A FRESH START, EVERY DAY</p>
+
+                    <div class="welcome-copy-wrap">
+
+                        <p class="eyebrow">
+                            A FRESH START, EVERY DAY
+                        </p>
 
                         <h1 id="welcome-title">
                             Good to see you<span
@@ -206,33 +264,56 @@
                         </h1>
 
                         <p class="welcome-copy">
-                            One simple step at a time. Let’s make it easier
-                            for customers to discover your business.
+                            Your business journey starts here.
+                            Keep things simple, take the next step,
+                            and make it easier for customers to find you.
                         </p>
+
                     </div>
+
+                    <div class="welcome-date" aria-label="Workspace">
+                        <span class="welcome-date-icon" aria-hidden="true">
+                            ✦
+                        </span>
+
+                        <span>
+                            <strong>Made for your next step</strong>
+                            <small>Your business workspace</small>
+                        </span>
+                    </div>
+
                 </section>
+
+
+                <!-- =====================================
+                     FEATURED BUSINESS LAUNCH CARD
+                ====================================== -->
 
                 <section
                     class="launch-card"
                     aria-labelledby="launch-title"
                 >
+
                     <div class="launch-copy">
 
                         <span class="launch-label">
                             <i aria-hidden="true"></i>
+
                             <span id="business-status-label">
                                 YOUR NEXT STEP
                             </span>
                         </span>
 
                         <h2 id="launch-title">
-                            Give your business<br class="desktop-break">
+                            Give your business
+                            <br class="desktop-break">
                             a place online.
                         </h2>
 
                         <p id="business-status-description">
-                            Create a business profile to tell people
-                            who you are, what you offer and how to reach you.
+                            Create a business profile to introduce your
+                            business, showcase what you offer, and help
+                            customers understand how to reach you.
                         </p>
 
                         <div class="launch-actions">
@@ -245,6 +326,7 @@
                                 <span id="business-primary-label">
                                     Set up my business
                                 </span>
+
                                 <span aria-hidden="true">→</span>
                             </a>
 
@@ -260,10 +342,14 @@
 
                         <p class="launch-footnote">
                             <span aria-hidden="true">✓</span>
+
                             Start simple. Update your details whenever you need.
                         </p>
 
                     </div>
+
+
+                    <!-- Decorative CSS illustration -->
 
                     <div class="launch-art" aria-hidden="true">
 
@@ -273,6 +359,7 @@
                         <div class="art-window">
 
                             <div class="art-window-top">
+
                                 <span class="art-logo">B</span>
 
                                 <span class="art-window-dots">
@@ -280,6 +367,7 @@
                                     <i></i>
                                     <i></i>
                                 </span>
+
                             </div>
 
                             <div class="art-image"></div>
@@ -296,24 +384,33 @@
                         </div>
 
                         <div class="art-badge">
+
                             <span>✓</span>
 
                             <div>
                                 <strong>Made discoverable</strong>
                                 <small>Your business, online</small>
                             </div>
+
                         </div>
 
                         <span class="art-spark spark-one">✦</span>
                         <span class="art-spark spark-two">✧</span>
 
                     </div>
+
                 </section>
+
+
+                <!-- =====================================
+                     BUSINESS SNAPSHOT
+                ====================================== -->
 
                 <section
                     class="snapshot-section"
                     aria-labelledby="snapshot-title"
                 >
+
                     <div class="section-heading">
 
                         <div>
@@ -327,26 +424,38 @@
 
                     </div>
 
+
                     <div class="snapshot-grid">
 
-                        <article class="snapshot-card">
+                        <!-- PROFILE CARD -->
+
+                        <article class="snapshot-card snapshot-profile">
+
                             <div class="snapshot-card-top">
+
                                 <span
                                     class="snapshot-icon icon-teal"
                                     aria-hidden="true"
                                 >▤</span>
 
-                                <span class="card-overline">YOUR PROFILE</span>
+                                <span class="card-overline">
+                                    YOUR PROFILE
+                                </span>
+
                             </div>
 
-                            <strong
-                                class="snapshot-value"
-                                id="profile-completion"
-                            >Not started</strong>
+                            <div class="snapshot-card-content">
 
-                            <p id="profile-completion-description">
-                                Add your business details to get started.
-                            </p>
+                                <strong
+                                    class="snapshot-value"
+                                    id="profile-completion"
+                                >Not started</strong>
+
+                                <p id="profile-completion-description">
+                                    Add your business details to get started.
+                                </p>
+
+                            </div>
 
                             <a
                                 href="./create-business.html"
@@ -355,26 +464,39 @@
                                 Manage profile
                                 <span aria-hidden="true">→</span>
                             </a>
+
                         </article>
 
-                        <article class="snapshot-card">
+
+                        <!-- PRODUCTS CARD -->
+
+                        <article class="snapshot-card snapshot-products">
+
                             <div class="snapshot-card-top">
+
                                 <span
                                     class="snapshot-icon icon-blue"
                                     aria-hidden="true"
                                 >▦</span>
 
-                                <span class="card-overline">YOUR SHOWCASE</span>
+                                <span class="card-overline">
+                                    YOUR SHOWCASE
+                                </span>
+
                             </div>
 
-                            <strong
-                                class="snapshot-value"
-                                id="product-count"
-                            >—</strong>
+                            <div class="snapshot-card-content">
 
-                            <p id="product-count-description">
-                                Products and services you choose to share.
-                            </p>
+                                <strong
+                                    class="snapshot-value"
+                                    id="product-count"
+                                >—</strong>
+
+                                <p id="product-count-description">
+                                    Products and services you choose to share.
+                                </p>
+
+                            </div>
 
                             <a
                                 href="./products.html"
@@ -383,26 +505,39 @@
                                 Manage showcase
                                 <span aria-hidden="true">→</span>
                             </a>
+
                         </article>
 
-                        <article class="snapshot-card">
+
+                        <!-- VISIBILITY CARD -->
+
+                        <article class="snapshot-card snapshot-visibility">
+
                             <div class="snapshot-card-top">
+
                                 <span
                                     class="snapshot-icon icon-amber"
                                     aria-hidden="true"
                                 >◎</span>
 
-                                <span class="card-overline">YOUR VISIBILITY</span>
+                                <span class="card-overline">
+                                    YOUR VISIBILITY
+                                </span>
+
                             </div>
 
-                            <strong
-                                class="snapshot-value"
-                                id="publication-status"
-                            >Not published</strong>
+                            <div class="snapshot-card-content">
 
-                            <p id="publication-description">
-                                Publish your profile when it is ready to share.
-                            </p>
+                                <strong
+                                    class="snapshot-value"
+                                    id="publication-status"
+                                >Not published</strong>
+
+                                <p id="publication-description">
+                                    Publish your profile when it is ready to share.
+                                </p>
+
+                            </div>
 
                             <a
                                 href="./create-business.html"
@@ -411,16 +546,25 @@
                                 Publishing options
                                 <span aria-hidden="true">→</span>
                             </a>
+
                         </article>
 
                     </div>
+
                 </section>
+
+
+                <!-- =====================================
+                     NEXT STEPS
+                ====================================== -->
 
                 <section
                     class="path-section"
                     aria-labelledby="path-title"
                 >
+
                     <div class="section-heading">
+
                         <div>
                             <p class="eyebrow">A SIMPLE WAY FORWARD</p>
                             <h2 id="path-title">Your next steps</h2>
@@ -429,7 +573,9 @@
                                 Build a useful online presence at your own pace.
                             </p>
                         </div>
+
                     </div>
+
 
                     <div class="path-list" id="next-steps-list">
 
@@ -437,64 +583,85 @@
                             class="path-item"
                             href="./create-business.html"
                         >
+
                             <span class="path-number">01</span>
 
                             <span class="path-text">
                                 <strong>Introduce your business</strong>
+
                                 <small>
                                     Add the details customers need to know about you.
                                 </small>
                             </span>
 
                             <span class="path-arrow" aria-hidden="true">↗</span>
+
                         </a>
+
 
                         <a
                             class="path-item"
                             href="./products.html"
                         >
+
                             <span class="path-number">02</span>
 
                             <span class="path-text">
                                 <strong>Show what you offer</strong>
+
                                 <small>
                                     Add products or services customers can explore.
                                 </small>
                             </span>
 
                             <span class="path-arrow" aria-hidden="true">↗</span>
+
                         </a>
+
 
                         <a
                             class="path-item"
                             href="./grow-digitally.html"
                         >
+
                             <span class="path-number">03</span>
 
                             <span class="path-text">
                                 <strong>Learn a useful digital skill</strong>
+
                                 <small>
                                     Find approachable guides for reaching customers online.
                                 </small>
                             </span>
 
                             <span class="path-arrow" aria-hidden="true">↗</span>
+
                         </a>
 
                     </div>
+
                 </section>
+
+
+                <!-- =====================================
+                     ACCOUNT DETAILS
+                ====================================== -->
 
                 <section
                     class="account-section"
                     id="account-settings"
                     aria-labelledby="account-title"
                 >
+
                     <div class="section-heading">
+
                         <div>
                             <p class="eyebrow">YOUR DETAILS</p>
                             <h2 id="account-title">Account</h2>
                         </div>
+
                     </div>
+
 
                     <div class="account-card">
 
@@ -504,16 +671,28 @@
                         >B</span>
 
                         <div class="account-information">
-                            <strong id="settings-name">Your account</strong>
-                            <span id="settings-email">Loading account…</span>
+
+                            <strong id="settings-name">
+                                Your account
+                            </strong>
+
+                            <span id="settings-email">
+                                Loading account…
+                            </span>
 
                             <small>
-                                Your sign-in details are protected by Bizvero authentication.
+                                Your sign-in details are protected by
+                                Bizvero authentication.
                             </small>
+
                         </div>
 
                     </div>
+
                 </section>
+
+
+                <!-- LIVE STATUS / FEEDBACK -->
 
                 <div
                     class="dashboard-message"
@@ -523,22 +702,37 @@
                     hidden
                 ></div>
 
+
+                <!--=====================================
+                     FOOTER
+                ====================================== -->
+
                 <footer class="workspace-footer">
 
-                    <a class="footer-wordmark" href="./index.html">
+                    <a
+                        class="footer-wordmark"
+                        href="./index.html"
+                        aria-label="Bizvero home"
+                    >
                         Bizvero<span></span>
                     </a>
 
-                    <span>Your business. Ready for more.</span>
+                    <p class="footer-tagline">
+                        Your business. Ready for more.
+                    </p>
 
-                    <div>
+                    <nav class="footer-links" aria-label="Legal navigation">
                         <a href="./legal.html#privacy">Privacy</a>
                         <a href="./legal.html#terms">Terms</a>
-                    </div>
+                    </nav>
 
                 </footer>
+
             </main>
+
         </div>
+
     </div>
+
 </body>
 </html>
