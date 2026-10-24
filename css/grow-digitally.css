@@ -265,19 +265,17 @@
   }
 }
 
-/* =========================================
-   BIZVERO — DASHBOARD SIDEBAR FIX
-   ========================================= */
 
-/* Main page layout */
-.growth-page {
-  min-height: 100vh;
-}
+/* ==========================================
+   BIZVERO SIDEBAR — MOBILE DRAWER
+   Screenshot-matched layout
+   ========================================== */
 
+/* Desktop sidebar */
 .growth-page .sidebar {
   position: fixed;
   inset: 0 auto 0 0;
-  z-index: 100;
+  z-index: 1000;
   display: flex;
   width: 260px;
   height: 100vh;
@@ -285,36 +283,42 @@
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: auto;
-  background: #ffffff;
+  background: #fff;
   border-right: 1px solid #e6ebf1;
+}
+
+.growth-page .growth-main {
+  min-width: 0;
+  min-height: 100vh;
+  margin-left: 260px;
 }
 
 /* Brand */
 .growth-page .sidebar .brand {
   display: flex;
-  min-height: 76px;
   align-items: center;
-  gap: 11px;
-  padding: 20px 22px;
-  text-decoration: none;
+  gap: 12px;
+  min-height: 100px;
+  padding: 22px 26px;
 }
 
 .growth-page .sidebar .brand-mark {
   display: grid;
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
   place-items: center;
-  border-radius: 12px;
-  background: #102d46;
-  color: #65d3c5;
-  font-size: 19px;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #123b58, #176b78);
+  box-shadow: 0 5px 14px rgb(16 45 70 / 16%);
+  color: #fff;
+  font-size: 23px;
   font-weight: 800;
 }
 
 .growth-page .sidebar .brand-name {
   color: #102d46;
-  font-size: 22px;
+  font-size: 23px;
   font-weight: 800;
   letter-spacing: -0.7px;
 }
@@ -323,117 +327,139 @@
   color: #278e89;
 }
 
-/* Navigation sections */
+/* Workspace label */
 .growth-page .sidebar-section-label {
-  display: block;
-  margin: 22px 22px 10px;
-  color: #8a98a7;
-  font-size: 10px;
+  margin: 24px 26px 16px;
+  color: #9aa8b4;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
-.growth-page .sidebar-nav {
+/* Vertical navigation */
+.growth-page .sidebar-nav,
+.growth-page .sidebar-secondary {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 0 13px;
+  gap: 8px;
+  padding: 0 16px;
 }
 
 .growth-page .sidebar .nav-link {
   display: flex;
-  min-height: 45px;
+  min-height: 60px;
   align-items: center;
-  gap: 12px;
-  padding: 0 13px;
+  gap: 17px;
+  padding: 0 24px;
   border: 1px solid transparent;
-  border-radius: 11px;
-  color: #657589;
-  font-size: 13px;
-  font-weight: 600;
+  border-radius: 19px;
+  color: #697b8b;
+  font-size: 15px;
+  font-weight: 700;
   text-decoration: none;
   transition: background 180ms ease, color 180ms ease;
 }
 
 .growth-page .sidebar .nav-link:hover {
-  background: #f2f8f8;
-  color: #102d46;
+  background: #f4f9f8;
+  color: #276f6c;
 }
 
 .growth-page .sidebar .nav-link.active,
 .growth-page .sidebar .nav-link[aria-current="page"] {
-  border-color: #dcefeb;
-  background: #eaf7f4;
-  color: #176f6b;
-  font-weight: 800;
+  border-color: #e0f0ec;
+  background: linear-gradient(110deg, #e7f6f3, #f1f9f7);
+  color: #347c78;
 }
 
 .growth-page .sidebar .nav-icon {
   display: inline-grid;
-  width: 22px;
-  flex: 0 0 22px;
+  width: 24px;
+  flex: 0 0 24px;
   place-items: center;
   color: inherit;
-  font-size: 17px;
+  font-size: 21px;
 }
 
-/* Secondary navigation and guidance */
-.growth-page .sidebar-secondary {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 0 13px;
-}
-
+/* Growth guidance card */
 .growth-page .sidebar-guidance {
-  margin: 24px 15px 15px;
-  padding: 16px;
-  border: 1px solid #e0efeb;
-  border-radius: 15px;
-  background: #f3faf8;
+  position: relative;
+  overflow: hidden;
+  margin: auto 16px 22px;
+  padding: 27px 26px;
+  border: 1px solid #e1efec;
+  border-radius: 27px;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgb(101 211 197 / 15%),
+      transparent 32%
+    ),
+    linear-gradient(145deg, #f5fbf9, #eef8f6);
+}
+
+.growth-page .sidebar-guidance::after {
+  position: absolute;
+  top: -36px;
+  right: -34px;
+  width: 135px;
+  height: 135px;
+  border: 1px solid rgb(39 142 137 / 9%);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
 }
 
 .growth-page .guidance-eyebrow {
-  color: #278e89;
-  font-size: 10px;
+  color: #578b86;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 1.7px;
+}
+
+.growth-page .sidebar-guidance p {
+  color: #102d46;
+  font-size: 13px;
+  line-height: 1.8;
 }
 
 .growth-page .guidance-link {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  margin-top: 10px;
-  color: #176f6b;
-  font-size: 12px;
+  gap: 9px;
+  margin-top: 12px;
+  color: #478781;
+  font-size: 13px;
   font-weight: 800;
 }
 
-/* User area anchored at the bottom */
+/* Account settings */
+.growth-page .sidebar-secondary {
+  margin-bottom: 18px;
+}
+
 .growth-page .sidebar-user {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: auto;
-  padding: 17px 16px;
-  border-top: 1px solid #e6ebf1;
-  background: #ffffff;
+  gap: 13px;
+  margin: 0 16px 18px;
+  padding: 17px 15px;
+  border: 1px solid #e4e9ed;
+  border-radius: 23px;
+  background: #fff;
 }
 
 .growth-page .sidebar-user-avatar {
   display: grid;
-  width: 37px;
-  height: 37px;
-  flex: 0 0 37px;
+  width: 63px;
+  height: 63px;
+  flex: 0 0 63px;
   place-items: center;
-  overflow: hidden;
+  border: 1px solid #dcefeb;
   border-radius: 50%;
-  background: #e5f5f1;
-  color: #176f6b;
-  font-size: 13px;
-  font-weight: 800;
+  background: #e8f7f4;
+  color: #4b8984;
+  font-size: 22px;
 }
 
 .growth-page .sidebar-user-details {
@@ -451,85 +477,148 @@
 
 .growth-page .sidebar-user-name {
   color: #102d46;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
 }
 
 .growth-page .sidebar-user-email {
-  margin-top: 4px;
-  color: #8290a0;
-  font-size: 10px;
+  margin-top: 8px;
+  color: #8593a1;
+  font-size: 12px;
 }
 
 .growth-page .sidebar-user-menu {
   flex: 0 0 auto;
-  color: #718092;
+  color: #82909c;
 }
 
-/* Keep the main content beside the fixed sidebar */
-.growth-page .growth-main {
-  min-width: 0;
-  min-height: 100vh;
-  margin-left: 260px;
+/* Drawer backdrop */
+.growth-page .sidebar-overlay {
+  display: none;
 }
 
-/* Tablet and mobile layout */
-@media (max-width: 900px) {
-  .growth-page .sidebar {
-    width: 220px;
-  }
-
-  .growth-page .growth-main {
-    margin-left: 220px;
-  }
-}
-
+/* ==========================================
+   MOBILE DRAWER
+   ========================================== */
 @media (max-width: 700px) {
   .growth-page .sidebar {
-    position: relative;
-    inset: auto;
-    width: 100%;
-    height: auto;
-    max-height: none;
-    overflow: visible;
-    border-right: 0;
-    border-bottom: 1px solid #e6ebf1;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 2001;
+    display: flex;
+    width: min(75vw, 520px);
+    min-width: 280px;
+    max-width: 85vw;
+    height: 100vh;
+    height: 100dvh;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 0;
+    background: #fff;
+    box-shadow: 12px 0 40px rgb(8 27 50 / 8%);
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition:
+      transform 260ms ease,
+      visibility 260ms ease;
+    overscroll-behavior: contain;
   }
 
+  /* Add .is-open when the menu is open */
+  .growth-page .sidebar.is-open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  /* Darkened background behind the drawer */
+  .growth-page .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: block;
+    background: rgb(9 27 43 / 48%);
+    opacity: 0;
+    visibility: hidden;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    transition:
+      opacity 260ms ease,
+      visibility 260ms ease;
+  }
+
+  .growth-page .sidebar-overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Keep the original vertical navigation on mobile */
   .growth-page .sidebar .brand {
-    min-height: 64px;
-    padding: 12px 18px;
+    min-height: 125px;
+    flex: 0 0 auto;
+    padding: 25px 27px;
   }
 
-  .growth-page .sidebar-section-label,
-  .growth-page .sidebar-guidance,
-  .growth-page .sidebar-user {
-    display: none;
+  .growth-page .sidebar-section-label {
+    margin: 28px 27px 17px;
   }
 
   .growth-page .sidebar-nav,
   .growth-page .sidebar-secondary {
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 0 12px 12px;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 8px;
+    overflow: visible;
+    padding: 0 16px;
   }
 
   .growth-page .sidebar .nav-link {
-    min-height: 39px;
+    min-height: 60px;
     flex: 0 0 auto;
-    gap: 7px;
-    padding: 0 11px;
-    font-size: 11px;
+    gap: 17px;
+    padding: 0 24px;
+    border-radius: 19px;
+    font-size: 15px;
   }
 
   .growth-page .sidebar .nav-icon {
-    width: auto;
-    flex-basis: auto;
-    font-size: 14px;
+    width: 24px;
+    flex-basis: 24px;
+    font-size: 21px;
   }
 
+  .growth-page .sidebar-guidance {
+    flex: 0 0 auto;
+    margin: auto 27px 22px;
+    padding: 27px;
+  }
+
+  .growth-page .sidebar-secondary {
+    margin-bottom: 18px;
+  }
+
+  .growth-page .sidebar-user {
+    flex: 0 0 auto;
+    margin: 0 27px 28px;
+    padding: 17px 15px;
+  }
+
+  /* Main content fills the mobile screen */
   .growth-page .growth-main {
+    width: 100%;
+    min-height: 100vh;
     margin-left: 0;
+  }
+
+  /* Prevent background scrolling while the drawer is open */
+  .growth-page.sidebar-menu-open {
+    overflow: hidden;
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .growth-page .sidebar,
+  .growth-page .sidebar-overlay {
+    transition: none;
+  }
+}
