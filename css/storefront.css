@@ -1806,109 +1806,97 @@ body.storefront-page [hidden] {
         transform: none;
     }
 }
-/* =========================================
-BIZVERO — MINIMAL CONTACT BUTTONS
-========================================= */
-
-.business-contact-actions {
-display: flex;
-flex-wrap: wrap;
-gap: 12px;
-margin-top: 28px;
-}
-
-.contact-button {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: 9px;
-
-min-height: 48px;
-padding: 12px 20px;
-
-background: #ffffff !important;
-color: #111827 !important;
-border: 1px solid #e5e7eb;
-border-radius: 14px;
-
-font-family: "DM Sans", sans-serif;
-font-size: 15px;
-font-weight: 600;
-line-height: 1.4;
-text-align: center;
-text-decoration: none;
-
-box-shadow: none !important;
-transform: none;
-
-transition:
-    border-color 180ms ease,
-    color 180ms ease;
-
-}
-
-.contact-button span {
-color: #111827 !important;
-}
-
-.contact-button svg {
-width: 19px;
-height: 19px;
-flex-shrink: 0;
-color: #111827 !important;
-}
-
-/* Both buttons use the same clean appearance */
-.contact-button-primary,
-.contact-button-secondary {
-background: #ffffff !important;
-color: #111827 !important;
-border-color: #e5e7eb;
-box-shadow: none !important;
-}
-
-.contact-button-primary:hover,
-.contact-button-secondary:hover {
-background: #ffffff !important;
-color: #000000 !important;
-border-color: #9ca3af;
-box-shadow: none !important;
-transform: none;
-}
-
-.contact-button-primary:hover span,
-.contact-button-secondary:hover span {
-color: #000000 !important;
-}
-
-.contact-button:focus-visible,
-.share-button:focus-visible {
-outline: 2px solid #397f7c;
-outline-offset: 3px;
-}
-
-.contact-button[hidden] {
-display: none !important;
-}
 
 /* =========================================
-BUSINESS LOGO — REMOVE WHITE BORDER EFFECT
+BIZVERO STOREFRONT — FINAL DESIGN REFINEMENT
+Clean • Premium • Responsive • Orbity
 ========================================= */
+
+/* 1. PAGE BACKGROUND */
+
+.storefront-page {
+background: #F4F7FB;
+color: #102D46;
+}
+
+.storefront-header {
+background: #FFFFFF;
+border-bottom: 1px solid #E4EBF1;
+}
+
+.storefront-footer {
+background: #FFFFFF;
+border-top: 1px solid #E4EBF1;
+}
+
+/* 2. BUSINESS INFORMATION CARD */
+
+.storefront-identity {
+position: relative;
+isolation: isolate;
+overflow: hidden;
+background: #FFFFFF;
+border: 1px solid #E4EBF1;
+border-radius: 28px;
+box-shadow:
+0 12px 36px rgba(16, 45, 70, 0.045),
+0 2px 8px rgba(16, 45, 70, 0.025);
+}
+
+/* Outer orbit — muted teal */
+
+.storefront-identity::before {
+content: "";
+position: absolute;
+z-index: -1;
+top: -115px;
+right: -100px;
+width: 280px;
+height: 280px;
+border: 1px solid rgba(57, 127, 124, 0.20);
+border-radius: 50%;
+pointer-events: none;
+}
+
+/* Inner orbit — soft mint */
+
+.storefront-identity::after {
+content: "";
+position: absolute;
+z-index: -1;
+top: -78px;
+right: -63px;
+width: 205px;
+height: 205px;
+border: 1px solid rgba(99, 209, 194, 0.30);
+border-radius: 50%;
+pointer-events: none;
+}
+
+/* Keep card content above the decorative orbits */
+
+.storefront-identity > * {
+position: relative;
+z-index: 1;
+}
+
+/* 3. BUSINESS LOGO */
 
 .business-logo {
+overflow: hidden;
 border: none !important;
 outline: none !important;
 box-shadow: none !important;
 background: linear-gradient(
 145deg,
-#174f78,
-#397f7c 72%,
-#63d1c2
+#174F78,
+#397F7C 72%,
+#63D1C2
 );
-overflow: hidden;
 }
 
-/* Remove the decorative inner white border */
+/* Remove decorative white inner border */
+
 .business-logo::after {
 content: none !important;
 display: none !important;
@@ -1924,15 +1912,102 @@ outline: none !important;
 box-shadow: none !important;
 }
 
-/* =========================================
-MOBILE — RESTORE COMPACT BUTTON SIZING
-========================================= */
+/* 4. CONTACT BUTTONS — WHITE WITH BLACK TEXT */
 
-@media (max-width: 560px) {
 .business-contact-actions {
 display: flex;
 flex-wrap: wrap;
-gap: 10px;
+gap: 12px;
+margin-top: 28px;
+}
+
+.contact-button {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 9px;
+min-height: 48px;
+padding: 12px 20px;
+
+background: #FFFFFF !important;
+color: #111827 !important;
+border: 1px solid #E5E7EB;
+border-radius: 14px;
+
+font-family: "DM Sans", sans-serif;
+font-size: 15px;
+font-weight: 600;
+line-height: 1.4;
+text-align: center;
+text-decoration: none;
+
+box-shadow: none !important;
+transform: none;
+
+transition: border-color 180ms ease;
+
+}
+
+.contact-button span,
+.contact-button svg {
+color: #111827 !important;
+}
+
+.contact-button svg {
+width: 19px;
+height: 19px;
+flex-shrink: 0;
+}
+
+/* Same appearance for all contact actions */
+
+.contact-button-primary,
+.contact-button-secondary {
+background: #FFFFFF !important;
+color: #111827 !important;
+border-color: #E5E7EB;
+box-shadow: none !important;
+}
+
+.contact-button-primary:hover,
+.contact-button-secondary:hover {
+background: #FFFFFF !important;
+color: #000000 !important;
+border-color: #9CA3AF;
+box-shadow: none !important;
+transform: none;
+}
+
+.contact-button-primary:hover span,
+.contact-button-secondary:hover span {
+color: #000000 !important;
+}
+
+/* Keyboard focus */
+
+.contact-button:focus-visible,
+.share-button:focus-visible {
+outline: 2px solid #397F7C;
+outline-offset: 3px;
+}
+
+/* Respect hidden contact links */
+
+.contact-button[hidden] {
+display: none !important;
+}
+
+/* 5. MOBILE RESPONSIVENESS */
+
+@media (max-width: 560px) {
+.storefront-identity {
+border-radius: 24px;
+}
+
+.business-contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .contact-button {
@@ -1964,41 +2039,11 @@ gap: 8px;
 }
 
 }
-/* =========================================
-BIZVERO ORBITY — TEAL + MINT
-========================================= */
 
-.storefront-identity {
-position: relative;
-isolation: isolate;
-overflow: hidden;
-background: #ffffff;
+/* 6. ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+.contact-button {
+transition: none;
 }
-
-/* Outer orbit */
-.storefront-identity::before {
-content: "";
-position: absolute;
-z-index: -1;
-top: -105px;
-right: -85px;
-width: 260px;
-height: 260px;
-border: 1px solid rgba(57, 127, 124, 0.22);
-border-radius: 50%;
-pointer-events: none;
-}
-
-/* Inner orbit */
-.storefront-identity::after {
-content: "";
-position: absolute;
-z-index: -1;
-top: -70px;
-right: -50px;
-width: 190px;
-height: 190px;
-border: 1px solid rgba(99, 209, 194, 0.30);
-border-radius: 50%;
-pointer-events: none;
 }
