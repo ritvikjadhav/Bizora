@@ -1,1270 +1,1304 @@
+/* =========================================================
+   BIZVERO — PRODUCTS CATALOGUE
+   Corrected to match products.html dashboard IDs
+   Supabase client: window.bizoraSupabase
+   ========================================================= */
+
+"use strict";
 
 (() => {
-    "use strict";
+    /* -----------------------------------------------------
+       1. CONFIGURATION
+       ----------------------------------------------------- */
 
-    const CONFIG = {
-        productsTable: "products",
-        businessesTable: "businesses",
-        storageBucket: "product-images",
-        maxImageSize: 5 * 1024 * 1024,
-        maxNameLength: 100,
-        maxDescriptionLength: 500,
-        maxPrice: 99999999,
-        allowedImageTypes: [
-            "image/jpeg",
-            "image/png",
-            "image/webp"
-        ]
+    const SUPABASE = () => window.bizoraSupabase;
+    const STORAGE_BUCKET = "product-images";
+
+    const state = {
+        user: null,
+        business: null,
+        products: [],
+        editingProductId: null,
+        loading: false,
+        saving: false,
+        initialized: false
     };
 
-    const $ = (id) => document.getElementById(id);
+    const elements = {};
 
-    
-const elements = {
-    form: $("product-form"),
-    productId: $("product-id"),
-    name: $("item-name"),
-    type: $("item-type"),
-    category: $("item-category"),
-    description: $("item-description"),
-    price: $("item-price"),
-    available: $("item-available"),
-    image: $("item-image"),
-    imagePreview: $("image-preview-img"),
-    imagePlaceholder: $("image-placeholder"),
-    removeImage: $("remove-image"),
+    /* -----------------------------------------------------
+       2. DOM HELPERS
+       ----------------------------------------------------- */
 
-    nameError: $("name-error"),
-    typeError: $("type-error"),
-    priceError: $("price-error"),
-    imageError: $("image-error"),
-    descriptionCount: $("description-count"),
+    const byId = (id) => document.getElementById(id);
 
-    totalItems: $("total-products"),
-    availableItems: $("available-products"),
-    categoriesCount: $("product-categories-count"),
+    function cacheElements() {
+        const ids = {
+            sidebar: "dashboard-sidebar",
+            mobileMenuButton: "mobile-menu-button",
+            sidebarOverlay: "sidebar-overlay",
 
-    search: $("product-search"),
-    filterType: $("filter-type"),
-    filterCategory: $("filter-category"),
-    filterAvailability: $("filter-availability"),
+            totalProducts: "total-products",
+            availableProducts: "available-products",
+            categoryCount: "product-categories-count",
 
-    grid: $("catalogue-grid"),
-    loading: $("catalogue-loading"),
-    empty: $("catalogue-empty"),
-    error: $("catalogue-error"),
-    retry: $("retry-catalogue"),
-    noResults: $("catalogue-no-results"),
-    clearFilter: $("clear-product-filters"),
-    emptyAddButton: $("empty-add-product-button"),
+            search: "product-search",
+            filterType: "filter-type",
+            filterCategory: "filter-category",
+            filterAvailability: "filter-availability",
 
-    formTitle: $("editor-title"),
-    saveButton: $("save-item"),
-    saveButtonText: $("save-button-text"),
-    cancelEdit: $("cancel-edit"),
-    resetForm: $("reset-form"),
-    formStatus: $("form-status"),
-    toast: $("dashboard-message"),
+            loading: "catalogue-loading",
+            error: "catalogue-error",
+            retry: "retry-catalogue",
+            empty: "catalogue-empty",
+            noResults: "catalogue-no-results",
+            clearFilters: "clear-product-filters",
+            emptyAddButton: "empty-add-product-button",
 
-    sidebar: $("dashboard-sidebar"),
-    menuButton: $("mobile-menu-button"),
-    sidebarOverlay: $("sidebar-overlay"),
-    logoutButton: $("logout-button")
-};
+            grid: "catalogue-grid",
+            editor: "product-editor",
+            editorTitle: "editor-title",
 
+            message: "dashboard-message"
+        };
 
-    let supabase = null;
-    let currentUser = null;
-    let currentBusiness = null;
-    let products = [];
+        Object.entries(ids).forEach(([key, id]) => {
+            elements[key] = byId(id);
+        });
 
-    let selectedImage = null;
-    let originalImageUrl = "";
-    let imageRemoved = false;
+        /*
+         * Form elements are discovered using the IDs already
+         * present in the supplied HTML. Multiple common IDs are
+         * supported to avoid relying on a single naming style.
+         */
+        elements.form =
+            byId("product-form") ||
+            byId("item-form") ||
+            (elements.editor
+                ? elements.editor.querySelector("form")
+                : null);
 
-    let isEditing = false;
-    let isSaving = false;
-    let isLoading = false;
-    let isLoggingOut = false;
+        elements.name = findElement([
+            "item-name",
+            "product-name",
+            "name"
+        ]);
 
-    let toastTimer = null;
-    let previewObjectUrl = null;
+        elements.description = findElement([
+            "item-description",
+            "product-description",
+            "description"
+        ]);
 
-    // ---------- DOM safety ----------
+        elements.price = findElement([
+            "item-price",
+            "product-price",
+            "price"
+        ]);
 
-    function validateRequiredElements() {
-        const required = [
-            "form",
-            "productId",
-            "name",
-            "type",
-            "description",
-            "price",
-            "available",
-            "image",
-            "imagePreview",
-            "imagePlaceholder",
-            "removeImage",
-            "nameError",
-            "typeError",
-            "priceError",
-            "imageError",
-            "descriptionCount",
-            "totalItems",
-            "availableItems",
-            "unavailableItems",
-            "filter",
-            "grid",
-            "loading",
-            "empty",
-            "error",
-            "errorMessage",
-            "retry",
-            "noResults",
-            "clearFilter",
-            "emptyAddButton",
-            "formTitle",
-            "saveButton",
-            "saveButtonText",
-            "cancelEdit",
-            "resetForm",
-            "formStatus",
-            "toast",
-            "sidebar",
-            "menuButton",
-            "sidebarOverlay",
-            "logoutButton"
-        ];
+        elements.type = findElement([
+            "item-type",
+            "product-type",
+            "type"
+        ]);
 
-        const missing = required.filter((key) => !elements[key]);
+        elements.category = findElement([
+            "item-category",
+            "product-category",
+            "category"
+        ]);
 
-        if (missing.length) {
-            console.error(
-                "Bizvero products page is missing required HTML elements:",
-                missing
-            );
+        elements.availability = findElement([
+            "item-availability",
+            "product-availability",
+            "is-available"
+        ]);
 
-            return false;
-        }
+        elements.imageInput = findElement([
+            "item-image",
+            "product-image",
+            "image-file",
+            "product-image-input"
+        ]);
 
-        return true;
+        elements.imageUrl = findElement([
+            "item-image-url",
+            "product-image-url",
+            "image-url"
+        ]);
+
+        elements.imagePreview = findElement([
+            "image-preview",
+            "product-image-preview",
+            "item-image-preview"
+        ]);
+
+        elements.cancelButton = findElement([
+            "cancel-edit",
+            "cancel-product",
+            "cancel-button"
+        ]);
+
+        elements.submitButton = elements.form
+            ? elements.form.querySelector(
+                'button[type="submit"], input[type="submit"]'
+            )
+            : null;
     }
 
-    // ---------- UI helpers ----------
-
-    function showToast(message, type = "success") {
-        if (!elements.toast) return;
-
-        clearTimeout(toastTimer);
-
-        elements.toast.textContent = message;
-        elements.toast.className = `toast ${type}`;
-        elements.toast.hidden = false;
-
-        toastTimer = setTimeout(() => {
-            elements.toast.hidden = true;
-        }, 3500);
-    }
-
-    function setStatus(message = "", type = "") {
-        if (!elements.formStatus) return;
-
-        elements.formStatus.textContent = message;
-        elements.formStatus.className =
-            `form-status${type ? ` ${type}` : ""}`;
-    }
-
-    function setFieldError(element, message = "") {
-        if (element) {
-            element.textContent = message;
-        }
-    }
-
-    function getErrorMessage(error, fallback) {
-        return error?.message || fallback;
-    }
-
-    function setLoading(loading) {
-        isLoading = loading;
-
-        if (elements.loading) {
-            elements.loading.hidden = !loading;
+    function findElement(ids) {
+        for (const id of ids) {
+            const element = byId(id);
+            if (element) return element;
         }
 
-        if (elements.retry) {
-            elements.retry.disabled = loading;
-        }
+        return null;
     }
 
-    function setSaveButtonLoading(loading) {
-        if (elements.saveButton) {
-            elements.saveButton.disabled = loading;
-        }
+    function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (character) => {
+            const replacements = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            };
 
-        if (elements.saveButtonText) {
-            elements.saveButtonText.textContent = loading
-                ? "Saving..."
-                : isEditing
-                    ? "Save changes"
-                    : "Add to catalogue";
-        }
+            return replacements[character];
+        });
     }
 
-    function formatPrice(price) {
-        if (price === null || price === undefined || price === "") {
-            return "Price on enquiry";
-        }
+    function formatPrice(value) {
+        const number = Number(value);
 
-        const numericPrice = Number(price);
-
-        if (!Number.isFinite(numericPrice)) {
-            return "Price on enquiry";
+        if (!Number.isFinite(number)) {
+            return "Price unavailable";
         }
 
         return new Intl.NumberFormat("en-IN", {
             style: "currency",
             currency: "INR",
             maximumFractionDigits: 2
-        }).format(numericPrice);
+        }).format(number);
     }
 
-    // ---------- Image helpers ----------
+    function setHidden(element, hidden) {
+        if (element) {
+            element.hidden = hidden;
+        }
+    }
 
-    function getImagePath(imageUrl) {
-        if (!imageUrl) return null;
-
-        try {
-            const url = new URL(imageUrl);
-
-            const prefix =
-                `/storage/v1/object/public/${CONFIG.storageBucket}/`;
-
-            const index = url.pathname.indexOf(prefix);
-
-            if (index === -1) return null;
-
-            const encodedPath = url.pathname.slice(
-                index + prefix.length
+    function showMessage(message, type = "success") {
+        if (elements.message) {
+            elements.message.textContent = message;
+            elements.message.classList.toggle(
+                "error",
+                type === "error"
             );
+            elements.message.hidden = false;
+            elements.message.setAttribute("role", "status");
+            return;
+        }
 
-            return decodeURIComponent(encodedPath);
-        } catch {
+        console[type === "error" ? "error" : "log"](message);
+    }
+
+    function clearMessage() {
+        if (!elements.message) return;
+
+        elements.message.textContent = "";
+        elements.message.hidden = true;
+        elements.message.classList.remove("error");
+    }
+
+    function setLoading(isLoading) {
+        state.loading = isLoading;
+
+        setHidden(elements.loading, !isLoading);
+
+        if (elements.retry) {
+            elements.retry.disabled = isLoading;
+        }
+    }
+
+    function setSaving(isSaving) {
+        state.saving = isSaving;
+
+        if (elements.submitButton) {
+            elements.submitButton.disabled = isSaving;
+            elements.submitButton.textContent = isSaving
+                ? "Saving..."
+                : (
+                    state.editingProductId
+                        ? "Save Changes"
+                        : "Add Product"
+                );
+        }
+    }
+
+    /* -----------------------------------------------------
+       3. SUPABASE AUTHENTICATION
+       ----------------------------------------------------- */
+
+    async function getAuthenticatedUser() {
+        const supabase = SUPABASE();
+
+        if (!supabase) {
+            throw new Error(
+                "Supabase was not initialized. Check javascript/supabase.js."
+            );
+        }
+
+        const { data, error } = await supabase.auth.getUser();
+
+        if (error) throw error;
+
+        if (!data || !data.user) {
+            window.location.href = "./login.html";
             return null;
         }
+
+        state.user = data.user;
+        return data.user;
     }
-
-    function getProductImageUrl(imageUrl) {
-        if (!imageUrl || !supabase) {
-            return imageUrl || "";
-        }
-
-        const path = getImagePath(imageUrl);
-
-        if (!path) return imageUrl;
-
-        const { data } = supabase.storage
-            .from(CONFIG.storageBucket)
-            .getPublicUrl(path);
-
-        return data?.publicUrl || imageUrl;
-    }
-
-    async function removeStoredImage(imageUrl) {
-        const path = getImagePath(imageUrl);
-
-        if (!path || !supabase) return;
-
-        const { error } = await supabase.storage
-            .from(CONFIG.storageBucket)
-            .remove([path]);
-
-        if (error) {
-            console.error(
-                "Bizvero could not remove stored image:",
-                error
-            );
-        }
-    }
-
-    function revokePreviewObjectUrl() {
-        if (!previewObjectUrl) return;
-
-        URL.revokeObjectURL(previewObjectUrl);
-        previewObjectUrl = null;
-    }
-
-    function showImagePreview(source, isObjectUrl = false) {
-        revokePreviewObjectUrl();
-
-        if (isObjectUrl && source) {
-            previewObjectUrl = source;
-        }
-
-        if (source) {
-            elements.imagePreview.src = source;
-            elements.imagePreview.hidden = false;
-            elements.imagePlaceholder.hidden = true;
-            elements.removeImage.hidden = false;
-        } else {
-            elements.imagePreview.removeAttribute("src");
-            elements.imagePreview.hidden = true;
-            elements.imagePlaceholder.hidden = false;
-            elements.removeImage.hidden = true;
-        }
-    }
-
-    function resetImageState() {
-        selectedImage = null;
-        originalImageUrl = "";
-        imageRemoved = false;
-
-        elements.image.value = "";
-
-        showImagePreview("");
-    }
-
-    function validateImage(file) {
-        if (!CONFIG.allowedImageTypes.includes(file.type)) {
-            return "Choose a JPG, PNG, or WebP image.";
-        }
-
-        if (file.size > CONFIG.maxImageSize) {
-            return "The image must be 5 MB or smaller.";
-        }
-
-        if (file.size === 0) {
-            return "The selected image is empty. Choose another image.";
-        }
-
-        return "";
-    }
-
-    async function uploadImage(file) {
-        if (!currentUser || !currentBusiness) {
-            throw new Error(
-                "Your session has expired. Please sign in again."
-            );
-        }
-
-        const extensions = {
-            "image/jpeg": "jpg",
-            "image/png": "png",
-            "image/webp": "webp"
-        };
-
-        const extension = extensions[file.type];
-
-        if (!extension) {
-            throw new Error("Unsupported image format.");
-        }
-
-        if (!crypto.randomUUID) {
-            throw new Error(
-                "Your browser does not support secure image uploads. Update your browser and try again."
-            );
-        }
-
-        const path =
-            `${currentUser.id}/${currentBusiness.id}/${crypto.randomUUID()}.${extension}`;
-
-        const { error: uploadError } = await supabase.storage
-            .from(CONFIG.storageBucket)
-            .upload(path, file, {
-                contentType: file.type,
-                upsert: false
-            });
-
-        if (uploadError) {
-            throw uploadError;
-        }
-
-        const { data } = supabase.storage
-            .from(CONFIG.storageBucket)
-            .getPublicUrl(path);
-
-        if (!data?.publicUrl) {
-            await supabase.storage
-                .from(CONFIG.storageBucket)
-                .remove([path]);
-
-            throw new Error("Could not generate the image URL.");
-        }
-
-        return data.publicUrl;
-    }
-
-    // ---------- Authentication and business ----------
 
     async function getAuthenticatedBusiness() {
-        const {
-            data: { user },
-            error: authError
-        } = await supabase.auth.getUser();
+        const supabase = SUPABASE();
+        const user = state.user || await getAuthenticatedUser();
 
-        if (authError) throw authError;
-
-        if (!user) {
-            window.location.replace("./auth.html");
-            return null;
-        }
-
-        currentUser = user;
+        if (!user) return null;
 
         const { data, error } = await supabase
-            .from(CONFIG.businessesTable)
+            .from("businesses")
             .select("id, name, owner_id, is_published")
             .eq("owner_id", user.id)
             .maybeSingle();
 
-        if (error) throw error;
-
-        if (!data) {
-            showToast(
-                "Create your business profile before adding items.",
-                "error"
+        if (error) {
+            throw new Error(
+                `Unable to load your business: ${error.message}`
             );
-
-            setTimeout(() => {
-                window.location.replace("./create-business.html");
-            }, 1200);
-
-            return null;
         }
 
-        currentBusiness = data;
+        if (!data) {
+            state.business = null;
+            throw new Error(
+                "No business profile was found for this account."
+            );
+        }
 
+        state.business = data;
         return data;
     }
 
-    // ---------- Product loading ----------
+    /* -----------------------------------------------------
+       4. LOAD PRODUCTS
+       ----------------------------------------------------- */
 
     async function loadProducts() {
-        if (isLoading) return;
+        if (state.loading) return;
 
+        clearMessage();
         setLoading(true);
 
-        elements.error.hidden = true;
-        elements.noResults.hidden = true;
+        setHidden(elements.error, true);
+        setHidden(elements.empty, true);
+        setHidden(elements.noResults, true);
 
         try {
-            if (!currentBusiness) {
-                const business = await getAuthenticatedBusiness();
+            const supabase = SUPABASE();
 
-                if (!business) return;
+            if (!supabase) {
+                throw new Error(
+                    "Supabase client is missing. Check javascript/supabase.js."
+                );
             }
 
+            if (!state.user) {
+                await getAuthenticatedUser();
+            }
+
+            if (!state.user) return;
+
+            if (!state.business) {
+                await getAuthenticatedBusiness();
+            }
+
+            if (!state.business) return;
+
+            /*
+             * This query intentionally uses only the columns
+             * already present in the previously supplied code.
+             *
+             * Do not add "category" here unless that column
+             * exists in the Supabase products table.
+             */
             const { data, error } = await supabase
-                .from(CONFIG.productsTable)
+                .from("products")
                 .select(
                     "id, business_id, name, description, price, image_url, item_type, is_available, created_at"
                 )
-                .eq("business_id", currentBusiness.id)
+                .eq("business_id", state.business.id)
                 .order("created_at", { ascending: false });
 
             if (error) throw error;
 
-            products = data || [];
+            state.products = Array.isArray(data) ? data : [];
 
             updateSummary();
+            populateCategoryFilter();
             renderProducts();
         } catch (error) {
-            console.error(
-                "Bizvero could not load products:",
-                error
-            );
+            console.error("Catalogue loading failed:", error);
 
-            elements.errorMessage.textContent = getErrorMessage(
-                error,
-                "Please check your connection and try again."
-            );
+            setHidden(elements.error, false);
+            setHidden(elements.empty, true);
+            setHidden(elements.noResults, true);
 
-            elements.error.hidden = false;
-            elements.grid.replaceChildren();
-            elements.empty.hidden = true;
-            elements.noResults.hidden = true;
+            showMessage(
+                error.message || "Unable to load your catalogue.",
+                "error"
+            );
         } finally {
             setLoading(false);
         }
     }
 
+    /* -----------------------------------------------------
+       5. SUMMARY CARDS
+       ----------------------------------------------------- */
+
     function updateSummary() {
-        elements.totalItems.textContent = products.length;
+        const products = state.products;
 
-        elements.availableItems.textContent = products.filter(
-            (product) => product.is_available
+        const availableCount = products.filter(
+            (product) => product.is_available === true
         ).length;
 
-        elements.unavailableItems.textContent = products.filter(
-            (product) => !product.is_available
-        ).length;
-    }
-
-    function getFilteredProducts() {
-        const filter = elements.filter.value;
-
-        return products.filter((product) => {
-            switch (filter) {
-                case "product":
-                    return product.item_type === "product";
-
-                case "service":
-                    return product.item_type === "service";
-
-                case "available":
-                    return Boolean(product.is_available);
-
-                case "unavailable":
-                    return !product.is_available;
-
-                default:
-                    return true;
-            }
-        });
-    }
-
-    // ---------- Product rendering ----------
-
-    function createImagePlaceholder() {
-        const placeholder = document.createElement("div");
-
-        placeholder.className = "catalogue-card-placeholder";
-
-        const icon = document.createElement("span");
-
-        icon.setAttribute("aria-hidden", "true");
-        icon.textContent = "▧";
-
-        placeholder.append(icon);
-
-        return placeholder;
-    }
-
-    function createProductCard(product) {
-        const card = document.createElement("article");
-
-        card.className = "catalogue-card";
-
-        const imageContainer = document.createElement("div");
-
-        imageContainer.className = "catalogue-card-image";
-
-        const imageUrl = getProductImageUrl(product.image_url);
-
-        if (imageUrl) {
-            const image = document.createElement("img");
-
-            image.src = imageUrl;
-            image.alt = product.name || "Product image";
-            image.loading = "lazy";
-            image.decoding = "async";
-
-            image.addEventListener("error", () => {
-                image.replaceWith(createImagePlaceholder());
-            }, { once: true });
-
-            imageContainer.append(image);
-        } else {
-            imageContainer.append(createImagePlaceholder());
-        }
-
-        const type = document.createElement("span");
-
-        type.className = "catalogue-card-type";
-        type.textContent =
-            product.item_type === "service" ? "Service" : "Product";
-
-        imageContainer.append(type);
-
-        const content = document.createElement("div");
-
-        content.className = "catalogue-card-content";
-
-        const title = document.createElement("h3");
-
-        title.className = "catalogue-card-title";
-        title.textContent = product.name || "Untitled item";
-
-        const description = document.createElement("p");
-
-        description.className = "catalogue-card-description";
-        description.textContent =
-            product.description || "No description added yet.";
-
-        const footer = document.createElement("div");
-
-        footer.className = "catalogue-card-footer";
-
-        const price = document.createElement("span");
-
-        price.className = "catalogue-card-price";
-        price.textContent = formatPrice(product.price);
-
-        const availability = document.createElement("span");
-
-        availability.className = "catalogue-card-availability";
-        availability.textContent =
-            product.is_available ? "Available" : "Unavailable";
-
-        if (!product.is_available) {
-            availability.classList.add("unavailable");
-        }
-
-        footer.append(price, availability);
-
-        const actions = document.createElement("div");
-
-        actions.className = "catalogue-card-actions";
-
-        const editButton = document.createElement("button");
-
-        editButton.type = "button";
-        editButton.className = "catalogue-card-edit";
-        editButton.textContent = "Edit";
-
-        editButton.addEventListener("click", () => {
-            editProduct(product.id);
-        });
-
-        const deleteButton = document.createElement("button");
-
-        deleteButton.type = "button";
-        deleteButton.className = "catalogue-card-delete";
-        deleteButton.textContent = "Delete";
-
-        deleteButton.addEventListener("click", () => {
-            deleteProduct(product.id);
-        });
-
-        actions.append(editButton, deleteButton);
-
-        content.append(
-            title,
-            description,
-            footer,
-            actions
+        /*
+         * The supplied query does not include a category column.
+         * Count distinct item_type values for this summary until
+         * a real category column is confirmed in your database.
+         */
+        const categories = new Set(
+            products
+                .map((product) => product.item_type)
+                .filter(Boolean)
         );
 
-        card.append(imageContainer, content);
+        if (elements.totalProducts) {
+            elements.totalProducts.textContent = products.length;
+        }
 
-        return card;
+        if (elements.availableProducts) {
+            elements.availableProducts.textContent = availableCount;
+        }
+
+        if (elements.categoryCount) {
+            elements.categoryCount.textContent = categories.size;
+        }
     }
 
+    /* -----------------------------------------------------
+       6. FILTER OPTIONS
+       ----------------------------------------------------- */
+
+    function populateCategoryFilter() {
+        const select = elements.filterCategory;
+
+        if (!select) return;
+
+        const previousValue = select.value;
+
+        const values = [
+            ...new Set(
+                state.products
+                    .map((product) => product.item_type)
+                    .filter(Boolean)
+            )
+        ].sort((a, b) => String(a).localeCompare(String(b)));
+
+        select.replaceChildren();
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "All categories";
+        select.appendChild(defaultOption);
+
+        values.forEach((value) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            select.appendChild(option);
+        });
+
+        if (values.includes(previousValue)) {
+            select.value = previousValue;
+        }
+    }
+
+    /* -----------------------------------------------------
+       7. FILTERING
+       ----------------------------------------------------- */
+
+    function getFilteredProducts() {
+        const searchTerm = (elements.search?.value || "")
+            .trim()
+            .toLowerCase();
+
+        const selectedType = elements.filterType?.value || "";
+        const selectedCategory = elements.filterCategory?.value || "";
+        const selectedAvailability =
+            elements.filterAvailability?.value || "";
+
+        return state.products.filter((product) => {
+            const name = String(product.name || "").toLowerCase();
+            const description = String(
+                product.description || ""
+            ).toLowerCase();
+
+            const matchesSearch =
+                !searchTerm ||
+                name.includes(searchTerm) ||
+                description.includes(searchTerm);
+
+            const matchesType =
+                !selectedType ||
+                String(product.item_type || "") === selectedType;
+
+            /*
+             * Until a category column exists, the category filter
+             * uses item_type. This avoids querying a nonexistent
+             * database field.
+             */
+            const matchesCategory =
+                !selectedCategory ||
+                String(product.item_type || "") === selectedCategory;
+
+            let matchesAvailability = true;
+
+            if (
+                selectedAvailability === "available" ||
+                selectedAvailability === "true"
+            ) {
+                matchesAvailability = product.is_available === true;
+            } else if (
+                selectedAvailability === "unavailable" ||
+                selectedAvailability === "false"
+            ) {
+                matchesAvailability = product.is_available === false;
+            }
+
+            return (
+                matchesSearch &&
+                matchesType &&
+                matchesCategory &&
+                matchesAvailability
+            );
+        });
+    }
+
+    function hasActiveFilters() {
+        return Boolean(
+            elements.search?.value.trim() ||
+            elements.filterType?.value ||
+            elements.filterCategory?.value ||
+            elements.filterAvailability?.value
+        );
+    }
+
+    function clearFilters() {
+        if (elements.search) elements.search.value = "";
+        if (elements.filterType) elements.filterType.value = "";
+        if (elements.filterCategory) elements.filterCategory.value = "";
+        if (elements.filterAvailability) {
+            elements.filterAvailability.value = "";
+        }
+
+        renderProducts();
+    }
+
+    /* -----------------------------------------------------
+       8. RENDER PRODUCT CARDS
+       ----------------------------------------------------- */
+
     function renderProducts() {
-        elements.grid.replaceChildren();
+        if (!elements.grid) {
+            console.error(
+                'Missing catalogue grid element: expected id="catalogue-grid".'
+            );
+            return;
+        }
 
         const filteredProducts = getFilteredProducts();
 
-        elements.empty.hidden = products.length !== 0;
+        elements.grid.replaceChildren();
 
-        elements.noResults.hidden =
-            products.length === 0 ||
-            filteredProducts.length !== 0;
+        setHidden(elements.loading, state.loading);
+        setHidden(elements.error, true);
+
+        if (state.products.length === 0) {
+            setHidden(elements.empty, false);
+            setHidden(elements.noResults, true);
+            return;
+        }
+
+        setHidden(elements.empty, true);
+
+        if (filteredProducts.length === 0) {
+            setHidden(elements.noResults, false);
+            return;
+        }
+
+        setHidden(elements.noResults, true);
 
         const fragment = document.createDocumentFragment();
 
         filteredProducts.forEach((product) => {
-            fragment.append(createProductCard(product));
+            fragment.appendChild(createProductCard(product));
         });
 
-        elements.grid.append(fragment);
+        elements.grid.appendChild(fragment);
     }
 
-    // ---------- Form validation ----------
+    function createProductCard(product) {
+        const card = document.createElement("article");
+        card.className = "product-card catalogue-product-card";
+        card.dataset.productId = product.id;
 
-    function clearValidation() {
-        [
-            elements.nameError,
-            elements.typeError,
-            elements.priceError,
-            elements.imageError
-        ].forEach((element) => {
-            setFieldError(element);
-        });
+        const name = escapeHTML(product.name || "Untitled product");
+        const description = escapeHTML(
+            product.description || "No description provided."
+        );
+        const type = escapeHTML(product.item_type || "Product");
+        const price = escapeHTML(formatPrice(product.price));
 
-        [
-            elements.name,
-            elements.type,
-            elements.price,
-            elements.image
-        ].forEach((element) => {
-            if (element) {
-                element.removeAttribute("aria-invalid");
+        const available = product.is_available === true;
+        const availabilityText = available ? "Available" : "Unavailable";
+        const availabilityClass = available
+            ? "available"
+            : "unavailable";
+
+        const imageUrl = safeImageUrl(product.image_url);
+
+        card.innerHTML = `
+            <div class="product-card-image">
+                ${
+                    imageUrl
+                        ? `<img src="${escapeHTML(imageUrl)}"
+                                alt="${name}"
+                                loading="lazy">`
+                        : `<div class="product-image-placeholder"
+                                aria-label="No product image">B</div>`
+                }
+                <span class="product-type-badge">${type}</span>
+            </div>
+
+            <div class="product-card-content">
+                <div class="product-card-heading">
+                    <h3>${name}</h3>
+                    <span class="product-availability ${availabilityClass}">
+                        ${availabilityText}
+                    </span>
+                </div>
+
+                <p class="product-card-description">${description}</p>
+
+                <div class="product-card-footer">
+                    <strong class="product-card-price">${price}</strong>
+
+                    <div class="product-card-actions">
+                        <button type="button"
+                                class="edit-product-button"
+                                data-action="edit"
+                                data-id="${escapeHTML(product.id)}">
+                            Edit
+                        </button>
+
+                        <button type="button"
+                                class="toggle-product-button"
+                                data-action="toggle"
+                                data-id="${escapeHTML(product.id)}">
+                            ${available ? "Mark unavailable" : "Mark available"}
+                        </button>
+
+                        <button type="button"
+                                class="delete-product-button"
+                                data-action="delete"
+                                data-id="${escapeHTML(product.id)}">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const image = card.querySelector("img");
+
+        if (image) {
+            image.addEventListener("error", () => {
+                const placeholder = document.createElement("div");
+                placeholder.className = "product-image-placeholder";
+                placeholder.textContent = "B";
+                placeholder.setAttribute("aria-label", "Image unavailable");
+                image.replaceWith(placeholder);
+            }, { once: true });
+        }
+
+        return card;
+    }
+
+    function safeImageUrl(value) {
+        if (!value) return "";
+
+        try {
+            const url = new URL(value, window.location.href);
+
+            if (url.protocol !== "http:" && url.protocol !== "https:") {
+                return "";
             }
+
+            return url.href;
+        } catch {
+            return "";
+        }
+    }
+
+    /* -----------------------------------------------------
+       9. OPEN AND RESET FORM
+       -------------------------------*/
+
+    function openEditor() {
+        if (!elements.editor) return;
+
+        elements.editor.hidden = false;
+        elements.editor.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
         });
+    }
+
+    function closeEditor() {
+        resetForm();
+
+        if (elements.editor) {
+            elements.editor.hidden = true;
+        }
+    }
+
+    function resetForm() {
+        if (elements.form) {
+            elements.form.reset();
+        }
+
+        state.editingProductId = null;
+
+        if (elements.editorTitle) {
+            elements.editorTitle.textContent = "Add Product";
+        }
+
+        if (elements.submitButton) {
+            elements.submitButton.textContent = "Add Product";
+            elements.submitButton.disabled = false;
+        }
+
+        if (elements.imagePreview) {
+            elements.imagePreview.replaceChildren();
+            elements.imagePreview.hidden = true;
+        }
+
+        if (elements.imageUrl) {
+            elements.imageUrl.value = "";
+        }
+
+        setSaving(false);
+    }
+
+    function startAddProduct() {
+        resetForm();
+        openEditor();
+    }
+
+    function startEditProduct(productId) {
+        const product = state.products.find(
+            (item) => String(item.id) === String(productId)
+        );
+
+        if (!product) {
+            showMessage("That product could not be found.", "error");
+            return;
+        }
+
+        resetForm();
+
+        state.editingProductId = product.id;
+
+        if (elements.name) {
+            elements.name.value = product.name || "";
+        }
+
+        if (elements.description) {
+            elements.description.value = product.description || "";
+        }
+
+        if (elements.price) {
+            elements.price.value = product.price ?? "";
+        }
+
+        if (elements.type) {
+            elements.type.value = product.item_type || "";
+        }
+
+        if (elements.category) {
+            /*
+             * The current known database query has no category
+             * column. Do not populate category from an assumed
+             * database value.
+             */
+            elements.category.value = "";
+        }
+
+        if (elements.availability) {
+            if (elements.availability.type === "checkbox") {
+                elements.availability.checked =
+                    product.is_available === true;
+            } else {
+                elements.availability.value =
+                    String(product.is_available === true);
+            }
+        }
+
+        if (elements.imageUrl) {
+            elements.imageUrl.value = product.image_url || "";
+        }
+
+        if (elements.editorTitle) {
+            elements.editorTitle.textContent = "Edit Product";
+        }
+
+        if (elements.imagePreview && product.image_url) {
+            elements.imagePreview.innerHTML = `
+                <img src="${escapeHTML(safeImageUrl(product.image_url))}"
+                     alt="Current product image">
+            `;
+            elements.imagePreview.hidden = false;
+        }
+
+        openEditor();
+    }
+
+    /* -----------------------------------------------------
+       10. FORM VALUES AND VALIDATION
+       ----------------------------------------------------- */
+
+    function getFormValue(element) {
+        return element ? String(element.value ?? "").trim() : "";
+    }
+
+    function getAvailabilityValue() {
+        const element = elements.availability;
+
+        if (!element) return true;
+
+        if (element.type === "checkbox") {
+            return element.checked;
+        }
+
+        return element.value !== "false";
     }
 
     function validateForm() {
-        clearValidation();
+        if (!elements.form) {
+            throw new Error(
+                "Product form not found. Check the form ID in products.html."
+            );
+        }
 
-        let valid = true;
+        if (!elements.name) {
+            throw new Error(
+                "Product name field not found. Expected item-name or product-name."
+            );
+        }
 
-        const name = elements.name.value.trim();
-        const description = elements.description.value.trim();
-        const priceValue = elements.price.value.trim();
+        const name = getFormValue(elements.name);
+        const priceText = getFormValue(elements.price);
 
         if (!name) {
-            setFieldError(
-                elements.nameError,
-                "Please enter an item name."
-            );
-
-            elements.name.setAttribute("aria-invalid", "true");
-            valid = false;
-        } else if (name.length > CONFIG.maxNameLength) {
-            setFieldError(
-                elements.nameError,
-                `The name cannot exceed ${CONFIG.maxNameLength} characters.`
-            );
-
-            elements.name.setAttribute("aria-invalid", "true");
-            valid = false;
+            elements.name.focus();
+            throw new Error("Please enter a product name.");
         }
 
-        if (!["product", "service"].includes(elements.type.value)) {
-            setFieldError(
-                elements.typeError,
-                "Choose a valid item type."
-            );
-
-            elements.type.setAttribute("aria-invalid", "true");
-            valid = false;
+        if (!priceText) {
+            elements.price?.focus();
+            throw new Error("Please enter a product price.");
         }
 
-        if (description.length > CONFIG.maxDescriptionLength) {
-            setStatus(
-                `Description cannot exceed ${CONFIG.maxDescriptionLength} characters.`,
-                "error"
-            );
+        const price = Number(priceText);
 
-            valid = false;
+        if (!Number.isFinite(price) || price < 0) {
+            elements.price?.focus();
+            throw new Error("Enter a valid non-negative price.");
         }
 
-        if (priceValue !== "") {
-            const price = Number(priceValue);
-
-            if (
-                !Number.isFinite(price) ||
-                price < 0 ||
-                price > CONFIG.maxPrice ||
-                !/^\d+(\.\d{1,2})?$/.test(priceValue)
-           ) {
-                setFieldError(
-                    elements.priceError,
-                    "Enter a valid price with up to two decimal places."
-                );
-
-                elements.price.setAttribute("aria-invalid", "true");
-                valid = false;
-            }
-        }
-
-        if (selectedImage) {
-            const imageError = validateImage(selectedImage);
-
-            if (imageError) {
-                setFieldError(elements.imageError, imageError);
-                elements.image.setAttribute("aria-invalid", "true");
-                valid = false;
-            }
-        }
-
-        if (!valid) {
-            setStatus(
-                "Please correct the highlighted fields.",
-                "error"
-            );
-        }
-
-        return valid;
+        return {
+            name,
+            description: getFormValue(elements.description),
+            price,
+            item_type: getFormValue(elements.type) || "Product",
+            is_available: getAvailabilityValue()
+        };
     }
 
-    // ---------- Add and edit products ----------
+    /* -----------------------------------------------------
+       11. IMAGE UPLOAD
+       ----------------------------------------------------- */
+
+    async function uploadProductImage(productId) {
+        const file = elements.imageInput?.files?.[0];
+
+        if (!file) {
+            return getFormValue(elements.imageUrl) || null;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            throw new Error("Please select a valid image file.");
+        }
+
+        const maxSize = 5 * 1024 * 1024;
+
+        if (file.size > maxSize) {
+            throw new Error("The image must be smaller than 5 MB.");
+        }
+
+        const supabase = SUPABASE();
+
+        const extension = (
+            file.name.split(".").pop() || "jpg"
+        ).toLowerCase().replace(/[^a-z0-9]/g, "");
+
+        const filePath =
+            `${state.business.id}/${productId}/${Date.now()}.${extension}`;
+
+        const { error: uploadError } = await supabase
+            .storage
+            .from(STORAGE_BUCKET)
+            .upload(filePath, file, {
+                upsert: true,
+                contentType: file.type
+            });
+
+        if (uploadError) {
+            throw new Error(
+                `Image upload failed: ${uploadError.message}`
+            );
+        }
+
+        const { data } = supabase
+            .storage
+            .from(STORAGE_BUCKET)
+            .getPublicUrl(filePath);
+
+        return data?.publicUrl || null;
+    }
+
+    /* -----------------------------------------------------
+       12. SAVE PRODUCT
+       ----------------------------------------------------- */
 
     async function saveProduct(event) {
         event.preventDefault();
 
-        if (isSaving) return;
+        if (state.saving) return;
 
-        setStatus("");
+        clearMessage();
+        setSaving(true);
 
-        if (!validateForm()) return;
-
-        isSaving = true;
-        setSaveButtonLoading(true);
-
-        let newlyUploadedImage = null;
-        let saveCompleted = false;
+        let uploadedProductId = null;
 
         try {
-            if (!currentUser || !currentBusiness) {
-                const business = await getAuthenticatedBusiness();
+            const supabase = SUPABASE();
 
-                if (!business) {
-                    throw new Error(
-                        "Please sign in to manage your items."
-                    );
-                }
+            if (!state.user) {
+                await getAuthenticatedUser();
             }
 
-            const productId = elements.productId.value;
-            const description = elements.description.value.trim();
-            const priceValue = elements.price.value.trim();
-
-            let imageUrl = originalImageUrl || null;
-
-            if (selectedImage) {
-                newlyUploadedImage = await uploadImage(selectedImage);
-                imageUrl = newlyUploadedImage;
-            } else if (imageRemoved) {
-                imageUrl = null;
+            if (!state.business) {
+                await getAuthenticatedBusiness();
             }
 
-            const productData = {
-                business_id: currentBusiness.id,
-                name: elements.name.value.trim(),
-                description: description || null,
-                price: priceValue === "" ? null : Number(priceValue),
-                image_url: imageUrl,
-                item_type: elements.type.value,
-                is_available: elements.available.checked
-            };
+            const formData = validateForm();
+            const isEditing = Boolean(state.editingProductId);
 
-            const query = productId
-                ? supabase
-                    .from(CONFIG.productsTable)
-                    .update(productData)
+            let productId = state.editingProductId;
+
+            if (!isEditing) {
+                /*
+                 * Insert first to obtain the new product ID.
+                 * Image upload follows, then the image URL is
+                 * written back to the same product record.
+                 */
+                const { data, error } = await supabase
+                    .from("products")
+                    .insert({
+                        business_id: state.business.id,
+                        ...formData,
+                        image_url: getFormValue(elements.imageUrl) || null
+                    })
+                    .select("id")
+                    .single();
+
+                if (error) throw error;
+
+                productId = data.id;
+                uploadedProductId = productId;
+            } else {
+                const { error } = await supabase
+                    .from("products")
+                    .update(formData)
                     .eq("id", productId)
-                    .eq("business_id", currentBusiness.id)
-                : supabase
-                    .from(CONFIG.productsTable)
-                    .insert(productData);
+                    .eq("business_id", state.business.id);
 
-            const { data, error } = await query
-                .select("id")
-                .maybeSingle();
-
-            if (error) throw error;
-
-            if (productId && !data) {
-                throw new Error(
-                    "The item was not updated. Check your database permissions."
-                );
+                if (error) throw error;
             }
 
-            saveCompleted = true;
+            const selectedImageFile =
+                elements.imageInput?.files?.[0];
 
-            // Clean up the previous image only after the database
-            // has successfully saved the new image URL.
-            if (
-                originalImageUrl &&
-                originalImageUrl !== imageUrl
-            ) {
-                await removeStoredImage(originalImageUrl);
+            if (selectedImageFile) {
+                const imageUrl = await uploadProductImage(productId);
+
+                const { error } = await supabase
+                    .from("products")
+                    .update({ image_url: imageUrl })
+                    .eq("id", productId)
+                    .eq("business_id", state.business.id);
+
+                if (error) throw error;
+            } else if (isEditing && elements.imageUrl) {
+                const imageUrl = getFormValue(elements.imageUrl) || null;
+
+                const { error } = await supabase
+                    .from("products")
+                    .update({ image_url: imageUrl })
+                    .eq("id", productId)
+                    .eq("business_id", state.business.id);
+
+                if (error) throw error;
             }
 
-            resetForm();
+            closeEditor();
+
+            showMessage(
+                isEditing
+                    ? "Product updated successfully."
+                    : "Product added successfully."
+            );
 
             await loadProducts();
-
-            showToast(
-                productId
-                    ? "Your item has been updated."
-                    : "Your item has been added to the catalogue."
-            );
         } catch (error) {
-            console.error(
-                "Bizvero could not save product:",
-                error
+            console.error("Saving product failed:", error);
+
+            /*
+             * If image upload fails after insertion, leave the
+             * inserted product in place. This avoids silently
+             * deleting a user's product because of an image error.
+             */
+            showMessage(
+                error.message || "Unable to save this product.",
+                "error"
             );
-
-            // Remove a newly uploaded image if saving failed.
-            if (newlyUploadedImage && !saveCompleted) {
-                await removeStoredImage(newlyUploadedImage);
-            }
-
-            const message = getErrorMessage(
-                error,
-                "Something went wrong while saving."
-            );
-
-            setStatus(message, "error");
-            showToast(message, "error");
         } finally {
-            isSaving = false;
-            setSaveButtonLoading(false);
+            setSaving(false);
         }
     }
+/* -----------------------------------------------------
+       13. AVAILABILITY TOGGLE
+       ----------------------------------------------------- */
 
-    function editProduct(productId) {
-        const product = products.find(
-            (item) => item.id === productId
+    async function toggleProductAvailability(productId) {
+        const product = state.products.find(
+            (item) => String(item.id) === String(productId)
         );
 
-        if (!product) return;
+        if (!product || !state.business) return;
 
-        isEditing = true;
-
-        elements.productId.value = product.id;
-        elements.name.value = product.name || "";
-        elements.type.value = product.item_type || "product";
-        elements.description.value = product.description || "";
-        elements.price.value = product.price ?? "";
-        elements.available.checked = Boolean(product.is_available);
-
-        // Category is not a column in the current products table.
-        if (elements.category) {
-            elements.category.value = "";
-        }
-
-        originalImageUrl = product.image_url || "";
-        selectedImage = null;
-        imageRemoved = false;
-
-        elements.image.value = "";
-
-        showImagePreview(
-            getProductImageUrl(originalImageUrl)
-        );
-
-        elements.formTitle.textContent = "Edit item";
-        elements.cancelEdit.hidden = false;
-        elements.resetForm.textContent = "Clear form";
-
-        updateDescriptionCount();
-        clearValidation();
-
-        setStatus("Editing your selected item.");
-
-        $("add-item-section")?.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-        elements.name.focus({ preventScroll: true });
-    }
-
-    async function deleteProduct(productId) {
-        if (isSaving || isLoading || !currentBusiness) return;
-
-        const product = products.find(
-            (item) => item.id === productId
-        );
-
-        if (!product) return;
-
-        const confirmed = window.confirm(
-            `Delete "${product.name}" from your catalogue? This action cannot be undone.`
-        );
-
-        if (!confirmed) return;
+        const newAvailability = product.is_available !== true;
 
         try {
-            const { data, error } = await supabase
-                .from(CONFIG.productsTable)
-                .delete()
-                .eq("id", productId)
-                .eq("business_id", currentBusiness.id)
-                .select("id");
+            const { error } = await SUPABASE()
+                .from("products")
+                .update({ is_available: newAvailability })
+                .eq("id", product.id)
+                .eq("business_id", state.business.id);
 
             if (error) throw error;
 
-            if (!data?.length) {
-                throw new Error(
-                    "The item was not deleted. Check your database permissions."
-                );
-            }
+            product.is_available = newAvailability;
 
-            // The database record is already deleted. Image cleanup
-            // is best-effort and must not make deletion appear to fail.
-            if (product.image_url) {
-                await removeStoredImage(product.image_url);
-            }
+            updateSummary();
+            renderProducts();
 
-            if (elements.productId.value === productId) {
-                resetForm();
-            }
-
-            await loadProducts();
-
-            showToast("Item deleted successfully.");
-        } catch (error) {
-            console.error(
-                "Bizvero could not delete product:",
-                error
+            showMessage(
+                newAvailability
+                    ? "Product marked as available."
+                    : "Product marked as unavailable."
             );
+        } catch (error) {
+            console.error("Availability update failed:", error);
 
-            showToast(
-                getErrorMessage(
-                    error,
-                    "Could not delete this item."
-                ),
+            showMessage(
+                error.message || "Could not update availability.",
                 "error"
             );
         }
     }
 
-    // ---------- Form reset and image input ----------
+    /* -----------------------------------------------------
+       14. DELETE PRODUCT
+       ----------------------------------------------------- */
 
-    function updateDescriptionCount() {
-        elements.descriptionCount.textContent =
-            `${elements.description.value.length}/${CONFIG.maxDescriptionLength}`;
-    }
+    async function deleteProduct(productId) {
+        const product = state.products.find(
+            (item) => String(item.id) === String(productId)
+        );
 
-    function resetForm() {
-        elements.form.reset();
+        if (!product || !state.business) return;
 
-        elements.productId.value = "";
-        elements.available.checked = true;
+        const confirmed = window.confirm(
+            `Delete "${product.name || "this product"}"? This cannot be undone.`
+        );
 
-        isEditing = false;
+        if (!confirmed) return;
 
-        resetImageState();
-        clearValidation();
-        setStatus("");
+        try {
+            const { error } = await SUPABASE()
+                .from("products")
+                .delete()
+                .eq("id", product.id)
+                .eq("business_id", state.business.id);
 
-        elements.formTitle.textContent = "Add a new item";
-        elements.cancelEdit.hidden = true;
-        elements.resetForm.textContent = "Clear form";
+            if (error) throw error;
 
-        setSaveButtonLoading(false);
-        updateDescriptionCount();
-    }
-
-    function setupImageUpload() {
-        elements.image.addEventListener("change", () => {
-            const file = elements.image.files?.[0];
-
-            if (!file) return;
-
-            const error = validateImage(file);
-
-            if (error) {
-                setFieldError(elements.imageError, error);
-
-                elements.image.setAttribute("aria-invalid", "true");
-                elements.image.value = "";
-                selectedImage = null;
-
-                // Keep the existing image preview when an invalid
-                // replacement image is selected.
-                return;
-            }
-
-            setFieldError(elements.imageError);
-            elements.image.removeAttribute("aria-invalid");
-
-            selectedImage = file;
-            imageRemoved = false;
-
-            showImagePreview(
-                URL.createObjectURL(file),
-                true
+            state.products = state.products.filter(
+                (item) => String(item.id) !== String(productId)
             );
-        });
 
-        elements.removeImage.addEventListener("click", () => {
-            selectedImage = null;
-            imageRemoved = true;
+            updateSummary();
+            populateCategoryFilter();
+            renderProducts();
 
-            elements.image.value = "";
+            showMessage("Product deleted successfully.");
+        } catch (error) {
+            console.error("Product deletion failed:", error);
 
-            showImagePreview("");
-
-            setFieldError(elements.imageError);
-            elements.image.removeAttribute("aria-invalid");
-        });
+            showMessage(
+                error.message || "Unable to delete this product.",
+                "error"
+            );
+        }
     }
 
-    // ---------- Mobile navigation ----------
+    /* -----------------------------------------------------
+       15. MOBILE SIDEBAR
+       ----------------------------------------------------- */
 
     function setupMobileNavigation() {
-        function setSidebarOpen(open) {
-            elements.sidebar.classList.toggle("is-open", open);
-            elements.sidebarOverlay.hidden = !open;
+        const sidebar = elements.sidebar;
+        const menuButton = elements.mobileMenuButton;
+        const overlay = elements.sidebarOverlay;
 
-            elements.menuButton.setAttribute(
-                "aria-expanded",
-                String(open)
-            );
+        if (!sidebar || !menuButton) return;
 
-            elements.menuButton.setAttribute(
-                "aria-label",
-                open ? "Close navigation" : "Open navigation"
-            );
+        function closeSidebar() {
+            sidebar.classList.remove("is-open");
+            document.body.classList.remove("sidebar-open");
 
-            document.body.style.overflow = open ? "hidden" : "";
+            if (overlay) {
+                overlay.classList.remove("is-visible");
+                overlay.hidden = true;
+            }
+
+            menuButton.setAttribute("aria-expanded", "false");
         }
 
-        elements.menuButton.addEventListener("click", () => {
-            const currentlyOpen =
-                elements.sidebar.classList.contains("is-open");
+        function openSidebar() {
+            sidebar.classList.add("is-open");
+            document.body.classList.add("sidebar-open");
 
-            setSidebarOpen(!currentlyOpen);
+            if (overlay) {
+                overlay.hidden = false;
+                overlay.classList.add("is-visible");
+            }
+
+            menuButton.setAttribute("aria-expanded", "true");
+        }
+
+        menuButton.addEventListener("click", () => {
+            const isOpen = sidebar.classList.contains("is-open");
+
+            if (isOpen) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
         });
 
-        elements.sidebarOverlay.addEventListener("click", () => {
-            setSidebarOpen(false);
-        });
+        overlay?.addEventListener("click", closeSidebar);
 
-        elements.sidebar.querySelectorAll("a").forEach((link) => {
-            link.addEventListener("click", () => {
-                setSidebarOpen(false);
-            });
+        sidebar.querySelectorAll("a").forEach((link) => {
+            link.addEventListener("click", closeSidebar);
         });
 
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
-                setSidebarOpen(false);
+                closeSidebar();
             }
         });
 
         window.addEventListener("resize", () => {
-            if (window.innerWidth > 950) {
-                setSidebarOpen(false);
+            if (window.innerWidth > 900) {
+                closeSidebar();
             }
         });
     }
 
-    // ---------- Logout ----------
-
-    async function logout() {
-        if (isLoggingOut) return;
-
-        const confirmed = window.confirm(
-            "Are you sure you want to log out?"
-        );
-
-        if (!confirmed) return;
-
-        isLoggingOut = true;
-        elements.logoutButton.disabled = true;
-
-        try {
-            const { error } = await supabase.auth.signOut();
-
-            if (error) throw error;
-
-            window.location.replace("./auth.html");
-        } catch (error) {
-            console.error("Bizvero logout failed:", error);
-
-            showToast(
-                getErrorMessage(
-                    error,
-                    "Could not log out. Please try again."
-                ),
-                "error"
-            );
-
-            isLoggingOut = false;
-            elements.logoutButton.disabled = false;
-        }
-    }
-// ---------- Event listeners ----------
+    /* -----------------------------------------------------
+       16. EVENT LISTENERS
+       ----------------------------------------------------- */
 
     function setupEventListeners() {
-        elements.form.addEventListener("submit", saveProduct);
+        elements.form?.addEventListener("submit", saveProduct);
 
-        elements.resetForm.addEventListener("click", resetForm);
+        elements.retry?.addEventListener("click", loadProducts);
 
-        elements.cancelEdit.addEventListener("click", () => {
-            resetForm();
+        elements.search?.addEventListener("input", renderProducts);
 
-            $("add-item-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        });
+        elements.filterType?.addEventListener("change", renderProducts);
 
-        elements.filter.addEventListener("change", renderProducts);
-
-        elements.retry.addEventListener("click", loadProducts);
-
-        elements.clearFilter.addEventListener("click", () => {
-            elements.filter.value = "all";
-            renderProducts();
-        });
-
-        elements.emptyAddButton.addEventListener("click", () => {
-            $("add-item-section")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-
-            elements.name.focus({ preventScroll: true });
-        });
-
-        elements.description.addEventListener(
-            "input",
-            updateDescriptionCount
+        elements.filterCategory?.addEventListener(
+            "change",
+            renderProducts
         );
 
-        elements.logoutButton.addEventListener("click", logout);
+        elements.filterAvailability?.addEventListener(
+            "change",
+            renderProducts
+        );
 
-        setupImageUpload();
-        setupMobileNavigation();
-    }
+        elements.clearFilters?.addEventListener("click", clearFilters);
 
-    // ---------- Initialization ----------
+        elements.emptyAddButton?.addEventListener(
+            "click",
+            startAddProduct
+        );
 
-    async function initialize() {
-        if (!validateRequiredElements()) {
-            return;
-        }
+        elements.cancelButton?.addEventListener(
+            "click",
+            closeEditor
+        );
 
-        // Preserve compatibility with the existing Supabase setup.
-        supabase = window.bizoraSupabase;
+        /*
+         * Support any existing "Add Product" button without
+         * requiring a specific new ID in the HTML.
+         */
+        document.querySelectorAll(
+            '[data-action="add-product"], #add-product-button, #add-item-button'
+        ).forEach((button) => {
+            button.addEventListener("click", startAddProduct);
+        });
 
-        if (!supabase) {
-            console.error(
-                "Bizvero: Supabase client was not initialized."
-            );
+        elements.grid?.addEventListener("click", async (event) => {
+            const button = event.target.closest("button[data-action]");
 
-            elements.errorMessage.textContent =
-                "Supabase could not be initialized. Check the script loading order.";
+            if (!button) return;
 
-            elements.error.hidden = false;
-            setLoading(false);
+            const action = button.dataset.action;
+            const productId = button.dataset.id;
 
-            return;
-        }
+            if (!productId) return;
 
-        setupEventListeners();
-        updateDescriptionCount();
+            if (action === "edit") {
+                startEditProduct(productId);
+            } else if (action === "toggle") {
+                await toggleProductAvailability(productId);
+            } else if (action === "delete") {
+                await deleteProduct(productId);
+            }
+        });
 
-        try {
-            const business = await getAuthenticatedBusiness();
+        elements.imageInput?.addEventListener("change", () => {
+            const file = elements.imageInput.files?.[0];
 
-            if (!business) {
-                setLoading(false);
+            if (!elements.imagePreview) return;
+
+            elements.imagePreview.replaceChildren();
+
+            if (!file) {
+                elements.imagePreview.hidden = true;
                 return;
             }
 
-            await loadProducts();
-        } catch (error) {
-            console.error(
-                "Bizvero could not initialize the products page:",
-                error
-            );
+            if (!file.type.startsWith("image/")) {
+                showMessage("Please select an image file.", "error");
+                elements.imageInput.value = "";
+                elements.imagePreview.hidden = true;
+                return;
+            }
 
-            elements.errorMessage.textContent = getErrorMessage(
-                error,
-                "Unable to load your business. Please try again."
-            );
+            const image = document.createElement("img");
+            image.alt = "Selected product image";
+            image.src = URL.createObjectURL(file);
 
-            elements.error.hidden = false;
-            setLoading(false);
-        }
+            image.addEventListener("load", () => {
+                URL.revokeObjectURL(image.src);
+            }, { once: true });
+
+            elements.imagePreview.appendChild(image);
+            elements.imagePreview.hidden = false;
+        });
+
+        setupMobileNavigation();
     }
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        initialize,
-        { once: true }
-    );
+    /* -----------------------------------------------------
+ 17. INITIALIZATION
+       ----------------------------------------------------- */
 
-    window.addEventListener(
-        "beforeunload",
-        revokePreviewObjectUrl
-    );
+    async function initialize() {
+        if (state.initialized) return;
+
+        state.initialized = true;
+
+        cacheElements();
+        setupEventListeners();
+
+        if (!elements.grid) {
+            console.error(
+                'Cannot initialize catalogue: #catalogue-grid is missing.'
+            );
+
+            showMessage(
+                "The catalogue grid is missing from products.html.",
+                "error"
+            );
+
+            setHidden(elements.loading, true);
+            setHidden(elements.error, false);
+            return;
+        }
+
+        setHidden(elements.loading, false);
+        setHidden(elements.error, true);
+
+        await loadProducts();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initialize, {
+            once: true
+        });
+    } else {
+        initialize();
+    }
 })();
