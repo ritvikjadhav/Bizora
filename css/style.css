@@ -23,32 +23,6 @@
     --shadow: 0 18px 50px rgba(18, 48, 71, 0.09);
 }
 
-
-/* BIZVERO OFFICIAL LOGO STYLE */
-
-.brand-mark {
-    display: grid;
-    width: 42px;
-    height: 42px;
-    min-width: 42px;
-    place-items: center;
-    border-radius: 15px;
-    color: #FFFFFF;
-    background: linear-gradient(145deg, #48B8F0 0%, #1688D4 48%, #1765B8 100%);
-    font-family: "Manrope", sans-serif;
-    font-size: 24px;
-    font-weight: 800;
-    line-height: 1;
-    box-shadow: 0 5px 14px rgba(22, 136, 212, 0.20);
-    flex-shrink: 0;
-    overflow: hidden;
-}
-
-/* ========================================
-   EXISTING WEBSITE STYLES
-   Keep the remainder of your original
-   style.css below this line.
-======================================== */
 /* RESET */
 
 * {
@@ -200,14 +174,18 @@ p {
     display: grid;
     width: 42px;
     height: 42px;
+    min-width: 42px;
     place-items: center;
-    border-radius: 12px;
-    color: var(--white);
-    background: var(--navy);
+    border-radius: 15px;
+    color: #FFFFFF;
+    background: linear-gradient(145deg, #48B8F0 0%, #1688D4 48%, #1765B8 100%);
     font-family: "Manrope", sans-serif;
     font-size: 24px;
     font-weight: 800;
-    letter-spacing: -0.06em;
+    line-height: 1;
+    box-shadow: 0 5px 14px rgba(22, 136, 212, 0.20);
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 .brand-name {
@@ -713,12 +691,18 @@ p {
     display: grid;
     width: 48px;
     height: 48px;
+    min-width: 48px;
     place-items: center;
-    border-radius: 13px;
-    color: var(--white);
-    background: var(--navy);
+    border-radius: 15px;
+    color: #FFFFFF;
+    background: linear-gradient(145deg, #48B8F0 0%, #1688D4 48%, #1765B8 100%);
+    font-family: "Manrope", sans-serif;
     font-size: 26px;
     font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 5px 14px rgba(22, 136, 212, 0.20);
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 .about-copy {
