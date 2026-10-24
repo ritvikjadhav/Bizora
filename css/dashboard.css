@@ -945,3 +945,135 @@
     font-size: 19px;
   }
 }
+
+/* =========================================
+   BIZVERO DASHBOARD — STOREFRONT BRAND MATCH
+========================================= */
+
+.workspace-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+
+    color: #102d46;
+    text-decoration: none;
+
+    font-family: "Manrope", sans-serif;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.9px;
+    line-height: 1;
+
+    flex-shrink: 0;
+}
+
+/* Match the storefront B logo */
+
+.workspace-brand .brand-mark {
+    position: relative;
+
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+
+    display: grid;
+    place-items: center;
+
+    overflow: hidden;
+
+    border: 1px solid rgb(255 255 255 / 24%);
+    border-radius: 14px;
+
+    background: linear-gradient(
+        145deg,
+        #102d46 0%,
+        #174f78 52%,
+        #397f7c 100%
+    );
+
+    box-shadow:
+        0 5px 12px rgb(16 45 70 / 17%),
+        inset 0 1px 0 rgb(255 255 255 / 18%);
+
+    color: #ffffff;
+
+    font-family: "Manrope", sans-serif;
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
+/* Same subtle shine as the storefront logo */
+
+.workspace-brand .brand-mark::after {
+    position: absolute;
+    inset: 0;
+
+    border-radius: inherit;
+
+    background: linear-gradient(
+        145deg,
+        rgb(255 255 255 / 13%),
+        transparent 58%
+    );
+
+    content: "";
+    pointer-events: none;
+}
+
+/* Match the storefront brand name */
+
+.workspace-brand .workspace-brand-name {
+    display: inline-flex;
+    align-items: baseline;
+
+    color: #102d46;
+
+    font-family: "Manrope", sans-serif;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.9px;
+    line-height: 1;
+
+    white-space: nowrap;
+}
+
+/* No decorative period after Bizvero */
+
+.workspace-brand .brand-period {
+    display: none;
+}
+
+/* Hover and keyboard accessibility */
+
+.workspace-brand:hover {
+    opacity: 0.88;
+}
+
+.workspace-brand:focus-visible {
+    outline: 3px solid rgb(99 209 194 / 85%);
+    outline-offset: 5px;
+    border-radius: 6px;
+}
+
+/* Responsive sizing */
+
+@media (max-width: 480px) {
+    .workspace-brand {
+        gap: 8px;
+    }
+
+    .workspace-brand .brand-mark {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+        border-radius: 11px;
+        font-size: 19px;
+    }
+
+    .workspace-brand .workspace-brand-name {
+        font-size: 20px;
+        letter-spacing: -0.7px;
+    }
+}
