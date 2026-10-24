@@ -19,54 +19,59 @@
 
     const $ = (id) => document.getElementById(id);
 
-    const elements = {
-        form: $("product-form"),
-        productId: $("product-id"),
-        name: $("item-name"),
-        type: $("item-type"),
-        category: $("item-category"),
-        description: $("item-description"),
-        price: $("item-price"),
-        available: $("item-available"),
-        image: $("item-image"),
-        imagePreview: $("image-preview-img"),
-        imagePlaceholder: $("image-placeholder"),
-        removeImage: $("remove-image"),
+    
+const elements = {
+    form: $("product-form"),
+    productId: $("product-id"),
+    name: $("item-name"),
+    type: $("item-type"),
+    category: $("item-category"),
+    description: $("item-description"),
+    price: $("item-price"),
+    available: $("item-available"),
+    image: $("item-image"),
+    imagePreview: $("image-preview-img"),
+    imagePlaceholder: $("image-placeholder"),
+    removeImage: $("remove-image"),
 
-        nameError: $("name-error"),
-        typeError: $("type-error"),
-        priceError: $("price-error"),
-        imageError: $("image-error"),
-        descriptionCount: $("description-count"),
+    nameError: $("name-error"),
+    typeError: $("type-error"),
+    priceError: $("price-error"),
+    imageError: $("image-error"),
+    descriptionCount: $("description-count"),
 
-        totalItems: $("total-items"),
-        availableItems: $("available-items"),
-        unavailableItems: $("unavailable-items"),
+    totalItems: $("total-products"),
+    availableItems: $("available-products"),
+    categoriesCount: $("product-categories-count"),
 
-        filter: $("item-filter"),
-        grid: $("catalogue-grid"),
-        loading: $("catalogue-loading"),
-        empty: $("catalogue-empty"),
-        error: $("catalogue-error"),
-        errorMessage: $("catalogue-error-message"),
-        retry: $("retry-loading"),
-        noResults: $("no-results"),
-        clearFilter: $("clear-filter"),
-        emptyAddButton: $("empty-add-button"),
+    search: $("product-search"),
+    filterType: $("filter-type"),
+    filterCategory: $("filter-category"),
+    filterAvailability: $("filter-availability"),
 
-        formTitle: $("form-title"),
-        saveButton: $("save-item"),
-        saveButtonText: $("save-button-text"),
-        cancelEdit: $("cancel-edit"),
-        resetForm: $("reset-form"),
-        formStatus: $("form-status"),
-        toast: $("products-toast"),
+    grid: $("catalogue-grid"),
+    loading: $("catalogue-loading"),
+    empty: $("catalogue-empty"),
+    error: $("catalogue-error"),
+    retry: $("retry-catalogue"),
+    noResults: $("catalogue-no-results"),
+    clearFilter: $("clear-product-filters"),
+    emptyAddButton: $("empty-add-product-button"),
 
-        sidebar: $("sidebar"),
-        menuButton: $("mobile-menu-button"),
-        sidebarOverlay: $("sidebar-overlay"),
-        logoutButton: $("logout-button")
-    };
+    formTitle: $("editor-title"),
+    saveButton: $("save-item"),
+    saveButtonText: $("save-button-text"),
+    cancelEdit: $("cancel-edit"),
+    resetForm: $("reset-form"),
+    formStatus: $("form-status"),
+    toast: $("dashboard-message"),
+
+    sidebar: $("dashboard-sidebar"),
+    menuButton: $("mobile-menu-button"),
+    sidebarOverlay: $("sidebar-overlay"),
+    logoutButton: $("logout-button")
+};
+
 
     let supabase = null;
     let currentUser = null;
