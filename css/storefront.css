@@ -2147,3 +2147,21 @@ body.storefront-page {
         transition: none !important;
     }
 }
+
+/* Visit Website — full-width button */
+
+.business-contact-actions .contact-button[href]:not([href^="tel:"]):not([href^="mailto:"]):not([href*="wa.me"]):not([href*="whatsapp.com"]) {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 100%;
+}
+
+/* Keep the full-width button aligned on mobile */
+
+@media (max-width: 600px) {
+    .business-contact-actions .contact-button[href]:not([href^="tel:"]):not([href^="mailto:"]):not([href*="wa.me"]):not([href*="whatsapp.com"]) {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 0;
+    }
+}
