@@ -1715,3 +1715,257 @@
         transition-duration: 0.01ms !important;
     }
 }
+/* =========================================================
+BIZVERO DASHBOARD — MOBILE LAYOUT REPAIR
+Append this at the VERY END of dashboard.css
+========================================================= */
+
+.dashboard-page .workspace-shell {
+position: relative;
+min-height: 100vh;
+}
+
+.dashboard-page .workspace-main {
+min-width: 0;
+width: auto;
+}
+
+.dashboard-page .workspace-content {
+position: relative;
+isolation: isolate;
+min-width: 0;
+}
+
+/* Keep the sticky header above page content. */
+.dashboard-page .workspace-topbar {
+z-index: 200;
+background: rgba(255, 255, 255, 0.97);
+}
+
+/* Restore the three snapshot cards on larger screens. */
+.dashboard-page .snapshot-grid {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 17px;
+}
+
+.dashboard-page .snapshot-card {
+display: flex;
+flex-direction: column;
+min-width: 0;
+border: 1px solid var(--db-border);
+border-radius: 22px;
+background: #fff;
+box-shadow: var(--db-shadow);
+}
+
+/* Restore separate cards for every next step. */
+.dashboard-page .path-list {
+display: grid;
+grid-template-columns: minmax(0, 1fr);
+gap: 12px;
+}
+
+.dashboard-page .path-item {
+position: relative;
+display: grid;
+grid-template-columns: 45px minmax(0, 1fr) 34px;
+align-items: center;
+gap: 15px;
+min-width: 0;
+padding: 18px 20px;
+border: 1px solid var(--db-border);
+border-radius: 17px;
+background: #fff;
+box-shadow: 0 4px 16px rgba(16, 45, 70, 0.035);
+text-decoration: none;
+}
+
+.dashboard-page .path-number {
+display: grid;
+width: 42px;
+height: 42px;
+place-items: center;
+border: 1px solid #e0efed;
+border-radius: 13px;
+background: #f0f8f7;
+color: var(--db-teal);
+}
+
+.dashboard-page .path-text {
+display: grid;
+gap: 6px;
+min-width: 0;
+}
+
+.dashboard-page .path-text strong {
+color: var(--db-ink);
+font-family: "Manrope", sans-serif;
+font-size: 14px;
+font-weight: 800;
+line-height: 1.5;
+}
+
+.dashboard-page .path-text small {
+color: var(--db-muted);
+font-size: 11px;
+line-height: 1.7;
+}
+
+.dashboard-page .path-arrow {
+display: grid;
+width: 34px;
+height: 34px;
+place-items: center;
+border: 1px solid var(--db-border);
+border-radius: 11px;
+color: var(--db-teal);
+}
+
+.dashboard-page .path-item:hover {
+border-color: #cfe8e5;
+box-shadow: var(--db-shadow);
+}
+
+/* Keep account information inside its card. */
+.dashboard-page .account-card {
+display: flex;
+align-items: center;
+gap: 18px;
+min-width: 0;
+border: 1px solid var(--db-border);
+border-radius: 23px;
+background: #fff;
+box-shadow: var(--db-shadow);
+}
+
+.dashboard-page .account-information {
+flex: 1;
+min-width: 0;
+}
+
+.dashboard-page .account-information > strong,
+.dashboard-page .account-information > span,
+.dashboard-page .account-information > small {
+overflow-wrap: anywhere;
+}
+
+/* Use the single Orbity ring instead of multiple artwork rings. */
+.dashboard-page .launch-card {
+position: relative;
+isolation: isolate;
+overflow: hidden;
+}
+
+.dashboard-page .launch-card::before {
+pointer-events: none;
+}
+
+.dashboard-page .launch-art .art-ring {
+display: none !important;
+}
+
+/* Ensure hidden elements stay hidden even when other CSS is loaded. */
+.dashboard-page [hidden] {
+display: none !important;
+}
+
+/* Mobile layout */
+@media (max-width: 760px) {
+.dashboard-page .workspace-main {
+margin-left: 0;
+width: 100%;
+}
+
+.dashboard-page .workspace-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    min-height: 86px;
+}
+
+.dashboard-page .workspace-content {
+    padding: 31px 20px 20px;
+}
+
+.dashboard-page .snapshot-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+}
+
+.dashboard-page .snapshot-card {
+    min-height: 0;
+    padding: 20px;
+}
+
+.dashboard-page .path-list {
+    gap: 12px;
+}
+
+.dashboard-page .path-item {
+    grid-template-columns: 39px minmax(0, 1fr) 30px;
+    gap: 12px;
+    padding: 16px 13px;
+}
+
+.dashboard-page .path-number {
+    width: 37px;
+    height: 37px;
+}
+
+.dashboard-page .path-text strong {
+    font-size: 12px;
+}
+
+.dashboard-page .path-text small {
+    font-size: 10px;
+}
+
+.dashboard-page .path-arrow {
+    width: 30px;
+    height: 30px;
+}
+
+.dashboard-page .account-card {
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 17px;
+}
+
+.dashboard-page .account-large-avatar {
+    width: 53px;
+    height: 53px;
+    flex: 0 0 53px;
+}
+
+.dashboard-page .launch-card {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+}
+
+/* Small phones */
+@media (max-width: 390px) {
+.dashboard-page .workspace-content {
+padding-right: 15px;
+padding-left: 15px;
+}
+
+.dashboard-page .path-item {
+    grid-template-columns: 34px minmax(0, 1fr) 27px;
+    gap: 9px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.dashboard-page .path-number {
+    width: 33px;
+    height: 33px;
+}
+
+.dashboard-page .path-arrow {
+    width: 27px;
+    height: 27px;
+}
+
+}
