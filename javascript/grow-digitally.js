@@ -1,13 +1,15 @@
+
 /* =========================================================
    BIZVERO — GROW DIGITALLY
-   Lesson progress, digital tools, payment safety and navigation
+   Sales ideas, digital tools, UPI safety and navigation
+   Lightweight JavaScript — no external API required
    ========================================================= */
 
 (() => {
   "use strict";
 
   /* =======================================================
-     SELECTORS & CONSTANTS
+     HELPERS
   ======================================================= */
 
   const $ = (selector, parent = document) =>
@@ -15,9 +17,6 @@
 
   const $$ = (selector, parent = document) =>
     Array.from(parent.querySelectorAll(selector));
-
-  const STORAGE_KEY = "bizvero_growth_completed_lessons";
-  const TOAST_DURATION = 3000;
 
   let toastTimer;
 
@@ -36,197 +35,18 @@
     toast.textContent = message;
     toast.classList.add("is-visible");
 
-    clearTimeout(toastTimer);
+    window.clearTimeout(toastTimer);
 
     toastTimer = window.setTimeout(() => {
       toast.classList.remove("is-visible");
-    }, TOAST_DURATION);
-  }
-
-  /* =======================================================
-     SAFE LOCAL STORAGE
-  ======================================================= */
-
-  function readStorage(key, fallback) {
-    try {
-      const value = localStorage.getItem(key);
-
-      if (value === null) {
-        return fallback;
-      }
-
-      return JSON.parse(value);
-    } catch (error) {
-      console.warn("[Bizvero] Could not read saved data:", error);
-      return fallback;
-    }
-  }
-
-  function writeStorage(key, value) {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch (error) {
-      console.error("[Bizvero] Could not save progress:", error);
-      showToast("Progress could not be saved on this device.");
-      return false;
-    }
-  }
-
-  /* =======================================================
-     LESSON COMPLETION & PROGRESS
-  ======================================================= */
-
-  function getCompletedLessons() {
-    const saved = readStorage(STORAGE_KEY, []);
-
-    if (!Array.isArray(saved)) {
-      return [];
-    }
-
-    return [
-      ...new Set(
-        saved.filter(
-          (id) => typeof id === "string" && id.trim() !== ""
-        )
-      )
-    ];
-  }
-
-  function getLessonButtons() {
-    return $$("[data-complete-module]");
-  }
-
-  function updateLessonProgress() {
-    const buttons = getLessonButtons();
-
-    const lessonIds = [
-      ...new Set(
-        buttons
-          .map((button) => button.dataset.completeModule)
-          .filter(Boolean)
-      )
-    ];
-
-    const completed = getCompletedLessons();
-
-    const total = lessonIds.length;
-
-    const completedCount = lessonIds.filter((id) =>
-      completed.includes(id)
-    ).length;
-
-    const percentage = total
-      ? Math.round((completedCount / total) * 100)
-      : 0;
-
-    /* Update lesson buttons and cards. */
-
-    buttons.forEach((button) => {
-      const id = button.dataset.completeModule;
-      const isComplete = completed.includes(id);
-      const card = button.closest(".learning-module");
-
-      button.textContent = isComplete
-        ? "✓ Completed"
-        : "Mark as complete";
-
-      button.setAttribute("aria-pressed", String(isComplete));
-
-      if (card) {
-        card.classList.toggle("is-complete", isComplete);
-      }
-    });
-
-    /* Update completed lesson count. */
-
-    const count = $("#completed-lessons");
-
-    if (count) {
-      count.textContent = `${completedCount} of ${total}`;
-    }
-
-    /* Update progress heading. */
-
-    const title = $("#growth-progress-title");
-
-    if (title) {
-      title.textContent =
-        total > 0 && completedCount === total
-          ? "You've completed every lesson!"
-          : "Your digital growth progress";
-    }
-
-    /* Update progress description. */
-
-    const description = $("#growth-progress-description");
-
-    if (description) {
-      description.textContent =
-        total > 0 && completedCount === total
-          ? "Great work! Return to these lessons whenever you need a refresher."
-          : "Explore practical lessons and mark each one complete as you learn.";
-    }
-
-    /* Update progress bar. */
-
-    const progressBar = $(".growth-progress-track > span");
-
-    if (progressBar) {
-      progressBar.style.width = `${percentage}%`;
-
-      progressBar.setAttribute("role", "progressbar");
-      progressBar.setAttribute("aria-valuemin", "0");
-      progressBar.setAttribute("aria-valuemax", "100");
-      progressBar.setAttribute("aria-valuenow", String(percentage));
-      progressBar.setAttribute(
-        "aria-label",
-        "Completed lesson progress"
-      );
-    }
-
-    return {
-      total,
-      completedCount,
-      percentage
-    };
-  }
-
-  function setupLessonCompletion() {
-    getLessonButtons().forEach((button) => {
-      button.addEventListener("click", () => {
-        const id = button.dataset.completeModule;
-
-        if (!id) {
-          return;
-        }
-
-        const completed = getCompletedLessons();
-        const isComplete = completed.includes(id);
-
-        const updated = isComplete
-          ? completed.filter((item) => item !== id)
-          : [...completed, id];
-
-        if (!writeStorage(STORAGE_KEY, updated)) {
-          return;
-        }
-
-        updateLessonProgress();
-
-        showToast(
-          isComplete
-            ? "Lesson marked as incomplete."
-            : "Lesson completed. Keep growing!"
-        );
-      });
-    });
-
-    updateLessonProgress();
+    }, 2800);
   }
 
   /* =======================================================
      DIGITAL TOOL FILTERS
+     Supports:
+     data-tool-filter="all|visibility|payments|communication|sales"
+     data-tool-category="visibility|payments|communication|sales"
   ======================================================= */
 
   function setupToolFilters() {
@@ -237,24 +57,25 @@
       return;
     }
 
-    function applyFilter(selectedButton) {
-      const selectedCategory = selectedButton.dataset.toolFilter;
+    function applyFilter(filterButton) {
+      const category = filterButton.dataset.toolFilter;
 
       filters.forEach((button) => {
-        const isActive = button === selectedButton;
+        const active = button === filterButton;
 
-        button.classList.toggle("is-active", isActive);
-        button.setAttribute("aria-pressed", String(isActive));
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
       });
 
       cards.forEach((card) => {
-        const cardCategory = card.dataset.toolCategory;
+        const categories = (card.dataset.toolCategory || "")
+          .split(/\s+/)
+          .filter(Boolean);
 
-        const shouldHide =
-          selectedCategory !== "all" &&
-          cardCategory !== selectedCategory;
+        const visible =
+          category === "all" || categories.includes(category);
 
-        card.hidden = shouldHide;
+        card.hidden = !visible;
       });
     }
 
@@ -273,515 +94,250 @@
   }
 
   /* =======================================================
-     PAYMENT SAFETY CHALLENGE
-     Five practical UPI safety scenarios
+     SALES BOOSTER
+     Uses predefined suggestions. No AI API or backend needed.
+
+     Optional HTML:
+     #sales-booster-form
+     #sales-booster-type
+     #sales-booster-result
+     #sales-booster-title
+     #sales-booster-description
+     #sales-booster-action
   ======================================================= */
 
-  const scenarios = [
-    {
-      title: "A customer shows you a payment screenshot.",
+  const salesIdeas = {
+    bundles: {
+      title: "Create a useful bundle",
       description:
-        "They say the money has been sent and ask you to hand over the goods.",
-      question: "What should you do?",
-
-      options: [
-        {
-          id: "trust-screenshot",
-          title: "Trust the screenshot",
-          detail: "It looks like a successful payment."
-        },
-        {
-          id: "verify-payment",
-          title: "Verify the transaction",
-          detail: "Check your own payment app or bank account."
-        },
-        {
-          id: "ask-for-pin",
-          title: "Ask for their UPI PIN",
-          detail: "Use it to confirm the payment."
-        }
-      ],
-
-      correct: "verify-payment",
-
-      explanation:
-        "Verify the transaction in your own payment app or bank account before handing over goods. Screenshots and sounds alone are not proof of payment."
+        "Combine two complementary products or services into one " +
+        "simple offer. For example, a tea seller could offer tea " +
+        "with biscuits, or a stationery shop could bundle notebooks " +
+        "with pens. Show the individual prices and the bundle price " +
+        "clearly, and only advertise a saving you can genuinely offer.",
+      action: "Choose two related products and calculate your costs."
     },
 
-    {
-      title: "Someone asks for your UPI PIN to send you money.",
+    slow: {
+      title: "Give a slow-moving product more visibility",
       description:
-        "The person claims that entering your PIN will help them transfer money to your account.",
-      question: "What is the safest response?",
-
-      options: [
-        {
-          id: "enter-pin",
-          title: "Enter your UPI PIN",
-          detail: "Follow the person's instructions."
-        },
-        {
-          id: "share-otp",
-          title: "Share your OTP",
-          detail: "Help them complete the transfer."
-        },
-        {
-          id: "never-share",
-          title: "Never share your PIN or OTP",
-          detail: "Decline and verify the request independently."
-        }
-      ],
-
-      correct: "never-share",
-
-      explanation:
-        "Never share your UPI PIN or OTP. You do not need to disclose these secrets to receive money. Contact your bank through its official channel if you are concerned."
+        "Feature one product that customers often overlook. Put it " +
+        "near your best-selling item, explain its main benefit, or " +
+        "include it in a relevant bundle. Avoid buying more stock " +
+        "until you understand whether customers want it.",
+      action: "Select one product and give it a clear, useful description."
     },
 
-    {
-      title: "You receive an unexpected UPI collect request.",
+    repeat: {
+      title: "Encourage repeat customers",
       description:
-        "A stranger says you must approve the request to receive a refund or prize.",
-      question: "What should you do?",
-
-      options: [
-        {
-          id: "approve-request",
-          title: "Approve it immediately",
-          detail: "The stranger says it will send you money."
-        },
-        {
-          id: "check-request",
-          title: "Review and decline if unexpected",
-          detail: "Do not approve a payment you do not recognise."
-        },
-        {
-          id: "share-details",
-          title: "Send your bank details",
-          detail: "Ask the stranger to explain the request."
-        }
-      ],
-
-      correct: "check-request",
-
-      explanation:
-        "A collect request may ask you to authorise a payment from your account. Do not approve unexpected requests. Verify any refund through the business or provider's official channel."
+        "Remind customers about products they regularly use. A " +
+        "grocery shop could share a weekly essentials list, while " +
+        "a tailor could remind customers about seasonal clothing " +
+        "services. Message customers only when appropriate and with " +
+        "their permission.",
+      action: "Identify one product or service customers buy regularly."
     },
 
-    {
-      title: "A customer says their payment is still pending.",
+    whatsapp: {
+      title: "Make your WhatsApp catalogue work harder",
       description:
-        "They show a pending transaction screen and ask you to release the goods now.",
-      question: "What is the safest action?",
-
-      options: [
-        {
-          id: "release-goods",
-          title: "Release the goods immediately",
-          detail: "The customer says the money will arrive soon."
-        },
-        {
-          id: "verify-status",
-          title: "Check the actual payment status",
-          detail: "Confirm the credit using your own payment app or bank."
-        },
-        {
-          id: "trust-message",
-          title: "Trust their message",
-          detail: "A payment notification is enough."
-        }
-      ],
-
-      correct: "verify-status",
-
-      explanation:
-        "A pending transaction is not confirmation that money has reached you. Check your own account and follow your payment provider's guidance if the status remains unclear."
+        "Add clear product names, current prices, useful photos " +
+        "and availability information. Share a relevant catalogue " +
+        "item when a customer asks about it instead of sending " +
+        "a long list of unrelated products.",
+      action: "Update three important catalogue items today."
     },
 
-    {
-      title: "Someone asks you to scan a QR code for a refund.",
+    visibility: {
+      title: "Help nearby customers discover you",
       description:
-        "They tell you to scan it and enter your UPI PIN to receive money.",
-      question: "What should you do?",
+        "Keep your business name, address, opening hours and phone " +
+        "number consistent across your online profiles. Add genuine " +
+        "photos and explain what makes your products or services " +
+        "useful to local customers.",
+      action: "Check your business details on your main online profile."
+    },
 
-      options: [
-        {
-          id: "scan-enter-pin",
-          title: "Scan and enter your PIN",
-          detail: "Follow the instructions to get the refund."
-        },
-        {
-          id: "send-small-amount",
-          title: "Send a small amount first",
-          detail: "Test whether the refund works."
-        },
-        {
-          id: "refuse-verify",
-          title: "Stop and verify independently",
-          detail: "Do not authorise an unfamiliar payment."
-        }
-      ],
-
-      correct: "refuse-verify",
-
-      explanation:
-        "Do not follow unfamiliar QR-code or PIN instructions to receive a refund. A QR payment flow may initiate money leaving your account. Contact the business or provider using a trusted, official channel."
+    pricing: {
+      title: "Review your pricing before offering a discount",
+      description:
+        "Calculate the product cost, packaging, delivery and other " +
+        "relevant expenses before reducing your price. A bundle or " +
+        "helpful add-on may provide more value than a large discount.",
+      action: "Work out your minimum acceptable selling price first."
     }
-  ];
+  };
 
-  function setupPaymentSimulator() {
-    const container = $("#simulator-options");
-    const panel = $(".simulator-panel");
+  function setupSalesBooster() {
+    const form = $("#sales-booster-form");
+    const selector = $("#sales-booster-type");
+    const result = $("#sales-booster-result");
 
-    if (!container || !panel) {
+    if (!form || !selector || !result) {
       return;
     }
 
-    const situation = $(".simulator-situation", panel);
-    const feedback = $("#simulator-feedback");
-    const checkButton = $("#simulator-check");
-    const retryButton = $("#simulator-retry");
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
 
-    if (!situation || !checkButton) {
-      return;
-    }
+      const idea = salesIdeas[selector.value];
 
-    const heading = $("#simulator-title");
-
-    const sectionDescription = heading
-      ? heading.closest(".section-heading")?.querySelector("p")
-      : null;
-
-    if (sectionDescription) {
-      sectionDescription.textContent =
-        "Five everyday situations. Choose the safest action and learn why.";
-    }
-
-    /* Challenge state. */
-
-    let currentScenario = 0;
-    let score = 0;
-    let answered = false;
-    let selectedAnswer = null;
-
-    /* Find or create the Next button. */
-
-    let nextButton = $("#simulator-next");
-
-    if (!nextButton) {
-      nextButton = document.createElement("button");
-
-      nextButton.type = "button";
-      nextButton.id = "simulator-next";
-      nextButton.className = "module-primary-link";
-      nextButton.textContent = "Next scenario →";
-      nextButton.hidden = true;
-
-      const controls = $(".simulator-controls", panel);
-
-      if (controls) {
-        controls.appendChild(nextButton);
-      } else {
-        panel.appendChild(nextButton);
-      }
-    }
-
-    /* Find or create the final results container. */
-
-    let resultSummary = $("#simulator-result");
-
-    if (!resultSummary) {
-      resultSummary = document.createElement("div");
-
-      resultSummary.id = "simulator-result";
-      resultSummary.className = "simulator-result";
-      resultSummary.hidden = true;
-      resultSummary.setAttribute("role", "status");
-
-      panel.appendChild(resultSummary);
-    }
-
-    /* Score label. */
-
-    let scoreLabel = $("#simulator-score");
-
-    if (!scoreLabel) {
-      scoreLabel = document.createElement("strong");
-
-      scoreLabel.id = "simulator-score";
-      scoreLabel.className = "simulator-score";
-
-      situation.insertBefore(scoreLabel, situation.firstChild);
-    }
-
-    /* Render one scenario. */
-
-    function renderScenario() {
-      const scenario = scenarios[currentScenario];
-
-      answered = false;
-      selectedAnswer = null;
-
-      const label = $(".simulator-label", situation);
-      const icon = $(".simulator-icon", situation);
-      const title = $("h3", situation);
-      const description = $("p", situation);
-      const question = $("strong", situation);
-
-      if (label) {
-        label.textContent =
-          `SCENARIO ${String(currentScenario + 1).padStart(2, "0")} OF ${scenarios.length}`;
-      }
-
-      scoreLabel.textContent = `Score: ${score}`;
-
-      if (icon) {
-        icon.textContent = "₹";
-        icon.setAttribute("aria-hidden", "true");
-      }
-
-      if (title) {
-        title.textContent = scenario.title;
-      }
-
-      if (description) {
-        description.textContent = scenario.description;
-      }
-
-      if (question) {
-        question.textContent = scenario.question;
-      }
-
-      /* Rebuild answer choices safely. */
-
-      container.replaceChildren();
-      container.hidden = false;
-
-      scenario.options.forEach((option, index) => {
-        const button = document.createElement("button");
-
-        button.type = "button";
-        button.dataset.simulatorAnswer = option.id;
-        button.setAttribute("aria-pressed", "false");
-
-        const letter = document.createElement("span");
-
-        letter.className = "simulator-choice-letter";
-        letter.textContent = String.fromCharCode(65 + index);
-        letter.setAttribute("aria-hidden", "true");
-
-        const content = document.createElement("span");
-
-        const optionTitle = document.createElement("strong");
-        optionTitle.textContent = option.title;
-
-        const detail = document.createElement("small");
-        detail.textContent = option.detail;
-
-        content.append(optionTitle, detail);
-        button.append(letter, content);
-
-        button.addEventListener("click", () => {
-          if (answered) {
-            return;
-          }
-
-          selectedAnswer = option.id;
-
-          $$("[data-simulator-answer]", container).forEach((item) => {
-            const isSelected = item === button;
-
-            item.classList.toggle("is-selected", isSelected);
-            item.setAttribute("aria-pressed", String(isSelected));
-          });
-
-          if (feedback) {
-            feedback.hidden = true;
-            feedback.textContent = "";
-            feedback.classList.remove("is-warning", "is-correct");
-          }
-        });
-
-        container.appendChild(button);
-      });
-
-      /* Reset feedback and controls. */
-
-      if (feedback) {
-        feedback.hidden = true;
-        feedback.textContent = "";
-        feedback.classList.remove("is-warning", "is-correct");
-      }
-
-      checkButton.hidden = false;
-      checkButton.disabled = false;
-      checkButton.textContent = "Check answer →";
-
-      nextButton.hidden = true;
-
-      if (retryButton) {
-        retryButton.hidden = true;
-      }
-
-      resultSummary.hidden = true;
-
-      situation.hidden = false;
-    }
-
-    /* Display the final score. */
-
-    function finishChallenge() {
-      container.hidden = true;
-      situation.hidden = true;
-      checkButton.hidden = true;
-      nextButton.hidden = true;
-
-      if (retryButton) {
-        retryButton.hidden = true;
-      }
-
-      if (feedback) {
-        feedback.hidden = true;
-      }
-
-      let message;
-
-      if (score === scenarios.length) {
-        message =
-          "Excellent! You answered all five scenarios correctly.";
-      } else if (score >= 3) {
-        message =
-          "Good work! Review the explanations to strengthen your payment safety.";
-      } else {
-        message =
-          "Keep learning. Review the safety tips and practise again.";
-      }
-
-      resultSummary.replaceChildren();
-
-      const title = document.createElement("h3");
-      title.textContent = "Challenge complete";
-
-      const scoreText = document.createElement("p");
-      scoreText.textContent =
-        `Your score: ${score} / ${scenarios.length}`;
-
-      const description = document.createElement("p");
-      description.textContent = message;
-
-      const restartButton = document.createElement("button");
-
-      restartButton.type = "button";
-      restartButton.className = "module-primary-link";
-      restartButton.textContent = "Try all scenarios again →";
-
-      restartButton.addEventListener("click", () => {
-        currentScenario = 0;
-        score = 0;
-
-        resultSummary.hidden = true;
-
-        container.hidden = false;
-        situation.hidden = false;
-
-        renderScenario();
-      });
-
-      resultSummary.append(
-        title,
-        scoreText,
-        description,
-        restartButton
-      );
-
-      resultSummary.hidden = false;
-    }
-
-    /* Check the selected answer. */
-
-    checkButton.addEventListener("click", () => {
-      if (answered) {
+      if (!idea) {
+        showToast("Choose a sales idea first.");
         return;
       }
 
-      if (!selectedAnswer) {
-        showToast("Choose an answer first.");
-        return;
-      }
+      const title = $("#sales-booster-title");
+      const description = $("#sales-booster-description");
+      const action = $("#sales-booster-action");
 
-      const scenario = scenarios[currentScenario];
-      const isCorrect = selectedAnswer === scenario.correct;
+      if (title) title.textContent = idea.title;
+      if (description) description.textContent = idea.description;
+      if (action) action.textContent = idea.action;
 
-      answered = true;
+      result.hidden = false;
+      result.classList.add("is-visible");
 
-      if (isCorrect) {
-        score++;
-      }
-
-      $$("[data-simulator-answer]", container).forEach((button) => {
-        button.disabled = true;
-
-        const answerId = button.dataset.simulatorAnswer;
-
-        if (answerId === scenario.correct) {
-          button.classList.add("is-correct");
-        } else if (answerId === selectedAnswer) {
-          button.classList.add("is-incorrect");
-        }
+      result.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
       });
-
-      if (feedback) {
-        const resultText = isCorrect ? "Correct!" : "Not quite.";
-
-        feedback.textContent =
-          `${resultText} ${scenario.explanation}`;
-
-        feedback.hidden = false;
-
-        feedback.classList.toggle("is-warning", !isCorrect);
-        feedback.classList.toggle("is-correct", isCorrect);
-      }
-
-      scoreLabel.textContent = `Score: ${score}`;
-
-      checkButton.hidden = true;
-      nextButton.hidden = false;
-
-      nextButton.textContent =
-        currentScenario < scenarios.length - 1
-          ? "Next scenario →"
-          : "See final score →";
     });
-
-    /* Continue to the next scenario or finish. */
-
-    nextButton.addEventListener("click", () => {
-      if (!answered) {
-        return;
-      }
-
-      if (currentScenario < scenarios.length - 1) {
-        currentScenario++;
-        renderScenario();
-      } else {
-        finishChallenge();
-      }
-    });
-
-    /* Optional retry control, if present in the HTML. */
-
-    if (retryButton) {
-      retryButton.addEventListener("click", () => {
-        renderScenario();
-      });
-    }
-
-    renderScenario();
   }
 
   /* =======================================================
-     SIDEBAR NAVIGATION
-     Supports existing mobile-menu HTML if present.
+     COPY BUTTONS
+     Useful for safety checklists, business descriptions,
+     product descriptions and ready-to-use sales messages.
+
+     Add data-copy-text="Text to copy" to any button.
+     Or add data-copy-target="#element-id" to copy element text.
+  ======================================================= */
+
+  async function copyText(text) {
+    if (!text) {
+      showToast("There is no text to copy.");
+      return;
+    }
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement("textarea");
+
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        const copied = document.execCommand("copy");
+        textarea.remove();
+
+        if (!copied) {
+          throw new Error("Copy command failed.");
+        }
+      }
+
+      showToast("Copied successfully.");
+    } catch (error) {
+      console.error("[Bizvero] Copy failed:", error);
+      showToast("Could not copy. Please select the text manually.");
+    }
+  }
+
+  function setupCopyButtons() {
+    $$("[data-copy-text], [data-copy-target]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const targetSelector = button.dataset.copyTarget;
+        const target = targetSelector
+          ? $(targetSelector)
+          : null;
+
+        const text = target
+          ? target.innerText
+          : button.dataset.copyText;
+
+        copyText(text);
+      });
+    });
+  }
+
+  /* =======================================================
+     PAYMENT SAFETY CHECKLIST
+     Optional standalone checklist.
+     Add data-safety-checklist to its container.
+     Each checkbox inside is saved for this browser.
+  ======================================================= */
+
+  const SAFETY_STORAGE_KEY = "bizvero_upi_safety_checklist";
+
+  function setupSafetyChecklist() {
+    const checklist = $("[data-safety-checklist]");
+
+    if (!checklist) {
+      return;
+    }
+
+    const checkboxes = $$('input[type="checkbox"]', checklist);
+
+    let saved = {};
+
+    try {
+      saved = JSON.parse(
+        localStorage.getItem(SAFETY_STORAGE_KEY) || "{}"
+      );
+
+      if (!saved || typeof saved !== "object" || Array.isArray(saved)) {
+        saved = {};
+      }
+    } catch {
+      saved = {};
+    }
+
+    checkboxes.forEach((checkbox, index) => {
+      const key = checkbox.dataset.safetyItem || String(index);
+
+      checkbox.checked = saved[key] === true;
+
+      checkbox.addEventListener("change", () => {
+        saved[key] = checkbox.checked;
+
+        try {
+          localStorage.setItem(
+            SAFETY_STORAGE_KEY,
+            JSON.stringify(saved)
+          );
+        } catch (error) {
+          console.warn("[Bizvero] Checklist could not be saved.", error);
+        }
+
+        updateChecklistCount();
+      });
+    });
+
+    function updateChecklistCount() {
+      const count = $("#safety-checklist-count");
+
+      if (count) {
+        const completed = checkboxes.filter(
+          (checkbox) => checkbox.checked
+        ).length;
+
+        count.textContent = `${completed} of ${checkboxes.length} checked`;
+      }
+    }
+
+    updateChecklistCount();
+  }
+
+  /* =======================================================
+     MOBILE SIDEBAR
+     Supports the existing dashboard sidebar and overlay.
   ======================================================= */
 
   function setupMobileSidebar() {
@@ -789,7 +345,7 @@
     const sidebar = $("#sidebar");
     const overlay = $("#sidebar-overlay");
 
-    if (!menuButton || !sidebar) {
+    if (!sidebar) {
       return;
     }
 
@@ -800,7 +356,10 @@
         overlay.classList.remove("is-visible");
       }
 
-      menuButton.setAttribute("aria-expanded", "false");
+      if (menuButton) {
+        menuButton.setAttribute("aria-expanded", "false");
+      }
+
       document.body.classList.remove("sidebar-open");
     }
 
@@ -811,25 +370,26 @@
         overlay.classList.add("is-visible");
       }
 
-      menuButton.setAttribute("aria-expanded", "true");
+      if (menuButton) {
+        menuButton.setAttribute("aria-expanded", "true");
+      }
+
       document.body.classList.add("sidebar-open");
     }
 
-    menuButton.addEventListener("click", () => {
-      const isOpen = sidebar.classList.contains("is-open");
-
-      if (isOpen) {
-        closeSidebar();
-      } else {
-        openSidebar();
-      }
-    });
+    if (menuButton) {
+      menuButton.addEventListener("click", () => {
+        sidebar.classList.contains("is-open")
+          ? closeSidebar()
+          : openSidebar();
+      });
+    }
 
     if (overlay) {
       overlay.addEventListener("click", closeSidebar);
     }
 
-    sidebar.querySelectorAll("a").forEach((link) => {
+    $$("a", sidebar).forEach((link) => {
       link.addEventListener("click", closeSidebar);
     });
 
@@ -844,14 +404,11 @@
         closeSidebar();
       }
     });
-
-    if (window.innerWidth <= 900) {
-      closeSidebar();
-    }
   }
 
   /* =======================================================
      LOGOUT
+     Uses the existing shared Supabase client.
   ======================================================= */
 
   function setupLogout() {
@@ -862,10 +419,13 @@
     }
 
     button.addEventListener("click", async () => {
-      const originalText = button.textContent;
+      if (button.disabled) {
+        return;
+      }
+
+      const originalHTML = button.innerHTML;
 
       button.disabled = true;
-      button.textContent = "Signing out…";
 
       try {
         const client =
@@ -886,27 +446,55 @@
         showToast("Could not sign out. Please try again.");
 
         button.disabled = false;
-        button.textContent = originalText;
+        button.innerHTML = originalHTML;
       }
     });
   }
 
   /* =======================================================
-     EXTERNAL LINK SAFETY
+     HERO NAVIGATION
+     Keep the existing hero card and its visual design.
+  ======================================================= */
+
+  function setupHeroNavigation() {
+    $$('a[href="#growth-guides"]').forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const target = $("#growth-guides");
+
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+
+        target.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+        if (window.history.replaceState) {
+          window.history.replaceState(null, "", "#growth-guides");
+        }
+      });
+    });
+  }
+
+  /* =======================================================
+     EXTERNAL LINKS
   ======================================================= */
 
   function setupExternalLinks() {
     $$('a[target="_blank"]').forEach((link) => {
-      const relValues = new Set(
+      const rel = new Set(
         (link.getAttribute("rel") || "")
           .split(/\s+/)
           .filter(Boolean)
       );
 
-      relValues.add("noopener");
-      relValues.add("noreferrer");
+      rel.add("noopener");
+      rel.add("noreferrer");
 
-      link.setAttribute("rel", [...relValues].join(" "));
+      link.setAttribute("rel", [...rel].join(" "));
     });
   }
 
@@ -915,14 +503,16 @@
   ======================================================= */
 
   function init() {
-    setupLessonCompletion();
     setupToolFilters();
-    setupPaymentSimulator();
+    setupSalesBooster();
+    setupCopyButtons();
+    setupSafetyChecklist();
     setupMobileSidebar();
     setupLogout();
+    setupHeroNavigation();
     setupExternalLinks();
 
-    console.info("[Bizvero] Grow Digitally initialised.");
+    console.info("[Bizvero] Grow Digitally ready.");
   }
 
   if (document.readyState === "loading") {
