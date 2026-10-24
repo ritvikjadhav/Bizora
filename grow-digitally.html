@@ -3,591 +3,633 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="description"
+        content="Practical digital sales strategies, payment safety advice and useful online tools for small businesses with Bizvero.">
+
+  <meta name="theme-color" content="#102D46">
+
   <title>Grow Digitally | Bizvero</title>
 
-  <!-- Keep your existing stylesheet files -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
   <link rel="stylesheet" href="./css/dashboard.css">
   <link rel="stylesheet" href="./css/grow-digitally.css">
+
+  <script src="./js/supabase.js" defer></script>
+  <script src="./js/grow-digitally.js" defer></script>
 </head>
 
-<body>
-  <div class="workspace-shell">
 <body class="growth-page">
 
-    <!-- SIDEBAR -->
-    <aside class="workspace-sidebar">
-      <div class="workspace-brand">
-        <div class="workspace-brand-mark">B</div>
-        <span>Bizvero</span>
-      </div>
+  <div class="app-layout">
 
-      <nav class="workspace-nav">
-        <a href="dashboard.html" class="workspace-nav-link">
-          Overview
+    <!-- SIDEBAR: preserve Bizvero workspace navigation -->
+
+    <aside class="sidebar" id="sidebar">
+
+      <a class="brand" href="./dashboard.html" aria-label="Bizvero home">
+        <span class="brand-mark">B</span>
+        <span class="brand-name">bizvero<span>.</span></span>
+      </a>
+
+      <div class="sidebar-section-label">Workspace</div>
+
+      <nav class="sidebar-nav" aria-label="Main navigation">
+
+        <a class="nav-link" href="./dashboard.html">
+          <span class="nav-icon" aria-hidden="true">▦</span>
+          <span>Overview</span>
         </a>
 
-        <a href="my-business.html" class="workspace-nav-link">
-          My Business
+        <a class="nav-link" href="./my-business.html">
+          <span class="nav-icon" aria-hidden="true">⌂</span>
+          <span>My Business</span>
         </a>
 
-        <a href="products.html" class="workspace-nav-link">
-          Products &amp; Services
+        <a class="nav-link" href="./products-services.html">
+          <span class="nav-icon" aria-hidden="true">▤</span>
+          <span>Products &amp; Services</span>
         </a>
 
-        <a href="grow-digitally.html"
-           class="workspace-nav-link active">
-          Grow Digitally
+        <a class="nav-link is-active"
+           href="./grow-digitally.html"
+           aria-current="page">
+          <span class="nav-icon" aria-hidden="true">✳</span>
+          <span>Grow Digitally</span>
         </a>
 
-        <a href="settings.html" class="workspace-nav-link">
-          Settings
-        </a>
       </nav>
 
-      <div class="workspace-sidebar-bottom">
-        <div class="workspace-user">
-          <div class="workspace-user-avatar">U</div>
-          <div>
-            <strong>Your Business</strong>
-            <p>Business Owner</p>
-          </div>
-        </div>
-
-        <a href="login.html" class="workspace-nav-link">
-          Log Out
+      <div class="sidebar-secondary">
+        <a class="nav-link" href="./account-settings.html">
+          <span class="nav-icon" aria-hidden="true">⚙</span>
+          <span>Account settings</span>
         </a>
       </div>
+
+      <div class="sidebar-guidance">
+        <span class="guidance-eyebrow">A LITTLE GUIDANCE</span>
+        <h2>Make digital feel simple.</h2>
+        <p>Small, practical steps to help your business reach more customers.</p>
+        <a href="#growth-guides" class="guidance-link">
+          Explore guides <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar" id="sidebar-user-avatar">B</div>
+        <div class="sidebar-user-details">
+          <span class="sidebar-user-name" id="sidebar-user-name">Your account</span>
+          <span class="sidebar-user-email" id="sidebar-user-email">Bizvero workspace</span>
+        </div>
+        <button class="sidebar-user-menu"
+                id="logout-button"
+                type="button"
+                aria-label="Sign out"
+                title="Sign out">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="5" cy="12" r="1"/>
+            <circle cx="12" cy="12" r="1"/>
+            <circle cx="19" cy="12" r="1"/>
+          </svg>
+        </button>
+      </div>
+
     </aside>
 
-    <!-- MAIN CONTENT -->
-    <main class="workspace-main">
+    <!-- MAIN PAGE -->
 
-     
-<section class="grow-hero" aria-labelledby="grow-hero-title">
-  <div class="grow-hero-copy">
-    <p class="grow-hero-eyebrow">
-      <span aria-hidden="true"></span>
-      YOUR BUSINESS, MORE DISCOVERABLE
-    </p>
+    <main class="growth-main">
 
-    <h1 id="grow-hero-title">
-      Take your business<br>
-      <span>further online.</span>
-    </h1>
+      <header class="growth-topbar">
+        <div class="breadcrumb">
+          <span>Workspace</span>
+          <span class="breadcrumb-divider">/</span>
+          <span class="breadcrumb-current">Grow Digitally</span>
+        </div>
 
-    <p class="grow-hero-description">
-      Simple, practical ways to help customers discover your business,
-      explore what you offer and connect with you online.
-    </p>
+        <a class="topbar-storefront-link" href="./storefront.html">
+          View storefront <span aria-hidden="true">↗</span>
+        </a>
+      </header>
 
-    <a class="grow-hero-button" href="#growth-guides">
-      Explore growth guides <span aria-hidden="true">→</span>
-    </a>
+      <div class="growth-content">
 
-    <p class="grow-hero-supporting">
-      Practical ideas. Clear next steps. Built for small businesses.
-    </p>
-  </div>
+        <!-- HERO CARD: orbital Bizvero design -->
 
-  <div class="grow-hero-art" aria-hidden="true">
-    <span class="grow-hero-ring grow-hero-ring-one"></span>
-    <span class="grow-hero-ring grow-hero-ring-two"></span>
-    <span class="grow-hero-ring grow-hero-ring-three"></span>
+        <section class="growth-hero" aria-labelledby="growth-hero-title">
 
-    <div class="grow-storefront-tile">
-      <svg viewBox="0 0 48 48" fill="none"
-           stroke="currentColor" stroke-width="2.1"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M8 21h32v20H8z"/>
-        <path d="M6 21l4-12h28l4 12"/>
-        <path d="M6 21c0 3 2 5 5 5s5-2 5-5c0 3 2 5 5 5s5-2 5-5c0 3 2 5 5 5s5-2 5-5c0 3 2 5 5 5"/>
-        <path d="M18 41V29h12v12"/>
-      </svg>
-    </div>
+          <div class="growth-hero-content">
 
-    <div class="grow-feature-chip grow-chip-discover">
-      <span class="grow-chip-icon">✦</span>
-      <span>
-        <strong>Get discovered</strong>
-        <small>Reach more customers</small>
-      </span>
-    </div>
+            <span class="eyebrow">
+              <span class="eyebrow-dot"></span>
+              YOUR BUSINESS, MORE DISCOVERABLE
+            </span>
 
-    <div class="grow-feature-chip grow-chip-payments">
-      <span class="grow-chip-icon grow-chip-rupee">₹</span>
-      <span>
-        <strong>Accept payments</strong>
-        <small>Make digital easier</small>
-      </span>
-    </div>
+            <h1 id="growth-hero-title">
+              Take your business
+              <span>further online.</span>
+            </h1>
 
-    <div class="grow-feature-chip grow-chip-reach">
-      <span class="grow-chip-icon">↗</span>
-      <span>
-        <strong>Grow your reach</strong>
-        <small>Build your online presence</small>
-      </span>
-    </div>
-  </div>
-</section>
-
-<section
-  class="grow-tools-section"
-  id="growth-guides"
-  aria-label="Business growth tools"
->
-  <div class="grow-section-intro">
-    <p class="grow-section-eyebrow">GROW YOUR BUSINESS</p>
-    <h2>Small steps. Real progress.</h2>
-    <p>Explore practical ideas you can use in your business.</p>
-  </div>
-
-  <!-- Keep your existing growth tool cards directly below this intro. -->
-</section>
-
-      <!-- FEATURE CARDS -->
-      <section class="grow-tools-grid">
-
-        <!-- CARD 1 -->
-        <article class="grow-tool-card">
-          <div class="grow-tool-icon">🌐</div>
-
-          <h2>Digital Presence Helper</h2>
-
-          <p>
-            Help customers discover your business online and find the
-            information they need before visiting or contacting you.
-          </p>
-
-          <ul>
-            <li>Improve your Google Business Profile</li>
-            <li>Keep your address and contact details updated</li>
-            <li>Show business hours, products, and services</li>
-            <li>Share your business location with customers</li>
-          </ul>
-
-          <a
-            href="https://www.google.com/business/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="grow-tool-button"
-          >
-            Improve Online Presence
-          </a>
-        </article>
-
-        <!-- CARD 2 -->
-        <article class="grow-tool-card">
-          <div class="grow-tool-icon">🏷️</div>
-
-          <h2>Sales &amp; Offer Maker</h2>
-
-          <p>
-            Plan attractive offers while checking that your selling price
-            covers your costs.
-          </p>
-
-          <div class="grow-form-group">
-            <label for="product-cost">Product Cost (₹)</label>
-            <input
-              type="number"
-              id="product-cost"
-              min="0"
-              step="0.01"
-              placeholder="Enter product cost"
-            >
-          </div>
-
-          <div class="grow-form-group">
-            <label for="selling-price">Selling Price (₹)</label>
-            <input
-              type="number"
-              id="selling-price"
-              min="0"
-              step="0.01"
-              placeholder="Enter selling price"
-            >
-          </div>
-
-          <div class="grow-form-group">
-            <label for="discount-percent">Discount (%)</label>
-            <input
-              type="number"
-              id="discount-percent"
-              min="0"
-              max="100"
-              step="1"
-              value="10"
-            >
-          </div>
-
-          <button
-            type="button"
-            class="grow-tool-button"
-            onclick="calculateOffer()"
-          >
-            Calculate Offer
-          </button>
-
-          <div
-            id="offer-result"
-            class="grow-result"
-            aria-live="polite"
-          ></div>
-
-          <div class="grow-form-group">
-            <label for="offer-name">Offer or Product Name</label>
-            <input
-              type="text"
-              id="offer-name"
-              placeholder="e.g. Festive Special"
-            >
-          </div>
-
-          <button
-            type="button"
-            class="grow-tool-button grow-secondary-button"
-            onclick="generatePromotion()"
-          >
-            Create Promotion Text
-          </button>
-
-          <textarea
-            id="promotion-result"
-            rows="4"
-            placeholder="Your promotion message will appear here."
-            readonly
-          ></textarea>
-
-          <button
-            type="button"
-            class="grow-tool-button grow-secondary-button"
-            onclick="copyPromotion()"
-          >
-            Copy Promotion
-          </button>
-        </article>
-
-        <!-- CARD 3 -->
-        <article class="grow-tool-card">
-          <div class="grow-tool-icon">🛡️</div>
-
-          <h2>UPI &amp; Payment Safety</h2>
-
-          <p>
-            Learn how to recognize common digital payment scams and
-            protect your business payments.
-          </p>
-
-          <div class="grow-safety-item">
-            <h3>Fake Payment Screenshots</h3>
-            <p>
-              Never rely only on a screenshot or SMS. Check your own
-              payment app or bank statement to confirm that money arrived.
+            <p class="growth-hero-description">
+              Simple, practical ways to help customers discover your
+              business, explore what you offer and connect with you online.
             </p>
-          </div>
 
-          <div class="grow-safety-item">
-            <h3>Unexpected Collect Requests</h3>
-            <p>
-              Read payment requests carefully. You generally do not need
-              to enter your UPI PIN to receive money.
+            <div class="growth-hero-actions">
+              <a href="#growth-guides" class="primary-cta">
+                Explore growth guides <span aria-hidden="true">→</span>
+              </a>
+
+              <a href="./my-business.html" class="secondary-cta">
+                View my business
+              </a>
+            </div>
+
+            <p class="hero-note">
+              Practical ideas. Clear next steps. Built for small businesses.
             </p>
+
           </div>
 
-          <div class="grow-safety-item">
-            <h3>QR Code Scams</h3>
-            <p>
-              Scanning a QR code and entering your UPI PIN can authorize
-              a payment. Check the transaction details before approving.
-            </p>
+          <div class="growth-hero-visual" aria-hidden="true">
+
+            <div class="hero-orbit hero-orbit-outer"></div>
+            <div class="hero-orbit hero-orbit-inner"></div>
+
+            <div class="hero-center">
+              <div class="hero-store-icon">
+                <svg viewBox="0 0 64 64" fill="none">
+                  <path d="M12 27h40v27H12V27Z"
+                        stroke="currentColor" stroke-width="2.5"
+                        stroke-linejoin="round"/>
+                  <path d="m9 27 5-15h36l5 15"
+                        stroke="currentColor" stroke-width="2.5"
+                        stroke-linejoin="round"/>
+                  <path d="M9 27c0 4 3 7 7 7s7-3 7-7c0 4 3 7 7 7s7-3 7-7c0 4 3 7 7 7s7-3 7-7"
+                        stroke="currentColor" stroke-width="2.5"
+                        stroke-linejoin="round"/>
+                  <path d="M23 54V39h13v15"
+                        stroke="currentColor" stroke-width="2.5"
+                        stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="hero-floating-item hero-floating-discover">
+              <span class="floating-icon">✦</span>
+              <span>
+                <strong>Get discovered</strong>
+                <small>Reach more customers</small>
+              </span>
+            </div>
+
+            <div class="hero-floating-item hero-floating-payments">
+              <span class="floating-icon">₹</span>
+              <span>
+                <strong>Accept payments</strong>
+                <small>Make digital easier</small>
+              </span>
+            </div>
+
+            <div class="hero-floating-item hero-floating-customers">
+              <span class="floating-icon">↗</span>
+              <span>
+                <strong>Grow your reach</strong>
+                <small>Build your online presence</small>
+              </span>
+            </div>
+
           </div>
 
-          <a
-            href="https://www.npci.org.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="grow-tool-button"
-          >
-            Visit NPCI
+        </section>
+
+        <!-- GROWTH GUIDES -->
+
+        <section class="learning-library"
+                 id="growth-guides"
+                 aria-labelledby="growth-guides-title">
+
+          <div class="section-heading library-heading">
+            <div>
+              <span class="section-kicker">GROW YOUR BUSINESS</span>
+              <h2 id="growth-guides-title">Small steps. Real progress.</h2>
+              <p>Explore practical ideas you can use in your business.</p>
+            </div>
+          </div>
+
+          <!-- GUIDE 1: sales strategies -->
+
+          <article class="learning-module">
+
+            <div class="module-visual module-visual-discovery">
+              <span class="module-visual-label">TURN INTEREST INTO SALES</span>
+
+              <div class="discovery-visual-content">
+                <div class="discovery-search">
+                  <span aria-hidden="true">✦</span>
+                  <span>Simple ways to sell more</span>
+                </div>
+
+                <div class="discovery-business-preview">
+                  <div class="discovery-placeholder-logo">₹</div>
+                  <div>
+                    <strong>Offer of the day</strong>
+                    <div class="discovery-location-line">
+                      Useful products. Clear value.
+                    </div>
+                  </div>
+                  <span class="discovery-status">Ideas</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="module-content">
+              <div class="module-meta">
+                <span class="module-category">Sales strategies</span>
+                <span class="module-duration">Easy to try</span>
+              </div>
+
+              <h3>Practical ways to boost your sales</h3>
+
+              <p>
+                You do not need a big advertising budget. Small changes to
+                how you present and promote your products can encourage
+                customers to buy.
+              </p>
+
+              <ul class="module-learning-points">
+                <li>Bundle related products into one useful offer.</li>
+                <li>Highlight a popular product or a seasonal favourite.</li>
+                <li>Share a clear offer with its price and end date.</li>
+                <li>Suggest a relevant add-on without pressuring customers.</li>
+              </ul>
+
+              <div class="module-actions">
+                <a class="module-primary-link"
+                   href="./products-services.html">
+                  Improve my catalogue <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+
+          </article>
+
+          <!-- GUIDE 2: UPI and QR security -->
+
+          <article class="learning-module learning-module-reverse">
+
+            <div class="module-visual module-visual-payments">
+              <span class="module-visual-label">PAYMENT SAFETY FIRST</span>
+
+              <div class="payment-visual-content">
+                <div class="payment-qr-example">
+                  <div class="qr-example-pattern" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                    <span></span><span></span><span></span>
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="qr-example-caption">Scan. Verify. Confirm.</div>
+                </div>
+
+                <div class="payment-safety-note">
+                  <span class="safety-check">✓</span>
+                  <div>
+                    <strong>Check your own account</strong>
+                    <small>Never rely only on a screenshot.</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="module-content">
+              <div class="module-meta">
+                <span class="module-category">UPI &amp; QR payments</span>
+                <span class="module-duration">Essential safety</span>
+              </div>
+
+              <h3>Protect your business from payment scams</h3>
+
+              <p>
+                Digital payments are convenient, but vendors should know
+                how to spot fake payment confirmations, suspicious requests
+                and common QR-code tricks.
+              </p>
+
+              <ul class="module-learning-points">
+                <li>Check your bank or UPI app before handing over goods.</li>
+                <li>A payment screenshot or SMS alone is not proof of payment.</li>
+                <li>You do not need to enter your UPI PIN to receive money.</li>
+                <li>Never share your PIN, OTP or banking credentials.</li>
+                <li>If money is lost to a suspected cyber fraud in India, report it promptly through official channels.</li>
+              </ul>
+
+              <div class="module-actions">
+                <a class="module-primary-link"
+                   href="https://www.npci.org.in/"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                  Learn about UPI safety <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </div>
+
+          </article>
+
+          <!-- GUIDE 3: digital presence -->
+
+          <article class="learning-module">
+
+            <div class="module-visual module-visual-catalogue">
+              <span class="module-visual-label">BE EASY TO FIND</span>
+
+              <div class="catalogue-visual-content">
+                <div class="catalogue-example-header">
+                  <span class="catalogue-example-dot"></span>
+                  <span class="catalogue-example-dot"></span>
+                  <span class="catalogue-example-dot"></span>
+                  <span class="catalogue-example-title">Your online shopfront</span>
+                </div>
+
+                <div class="catalogue-example-item">
+                  <div class="catalogue-example-image"></div>
+                  <div>
+                    <strong>Business details</strong>
+                    <small>Location and contact</small>
+                  </div>
+                  <span class="catalogue-item-arrow">✓</span>
+                </div>
+
+                <div class="catalogue-example-item">
+                  <div class="catalogue-example-image catalogue-example-image-two"></div>
+                  <div>
+                    <strong>Products and prices</strong>
+                    <small>Clear and up to date</small>
+                  </div>
+                  <span class="catalogue-item-arrow">✓</span>
+                </div>
+
+                <p class="catalogue-example-disclaimer">
+                  Make important information easy to find
+                </p>
+              </div>
+            </div>
+
+            <div class="module-content">
+              <div class="module-meta">
+                <span class="module-category">Digital presence</span>
+                <span class="module-duration">Get discovered</span>
+              </div>
+
+              <h3>Help more customers find your business</h3>
+
+              <p>
+                Your online presence can work like a shopfront beyond your
+                local street. Start with the information customers need most.
+              </p>
+
+              <ul class="module-learning-points">
+                <li>Create or update your Google Business Profile if eligible.</li>
+                <li>Keep your address, hours and contact information accurate.</li>
+                <li>Add clear product photos, descriptions and prices to your catalogue.</li>
+                <li>Share your storefront link with existing customers.</li>
+              </ul>
+
+              <div class="module-actions">
+                <a class="module-primary-link"
+                   href="./my-business.html">
+                  Review my business <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+
+          </article>
+
+          <!-- GUIDE 4: customer communication -->
+
+          <article class="learning-module learning-module-reverse">
+
+            <div class="module-visual module-visual-trust">
+              <span class="module-visual-label">MAKE EVERY MESSAGE COUNT</span>
+
+              <div class="trust-visual-content">
+                <span class="trust-quote-mark">“</span>
+                <h4>Make it easy for customers to say yes.</h4>
+
+                <div class="trust-principles">
+                  <span><span aria-hidden="true">✓</span> Clear prices</span>
+                  <span><span aria-hidden="true">✓</span> Quick replies</span>
+                  <span><span aria-hidden="true">✓</span> Honest offers</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="module-content">
+              <div class="module-meta">
+                <span class="module-category">Customer communication</span>
+                <span class="module-duration">Build relationships</span>
+              </div>
+
+              <h3>Turn customer conversations into repeat business</h3>
+
+              <p>
+                Helpful, timely communication makes buying simpler and
+                gives customers a reason to return.
+              </p>
+
+              <ul class="module-learning-points">
+                <li>Prepare quick replies for common questions about price and availability.</li>
+                <li>Share product photos and relevant offers with permission.</li>
+                <li>Follow up on enquiries politely, without spamming customers.</li>
+                <li>Ask satisfied customers for honest feedback.</li>
+              </ul>
+
+              <div class="module-actions">
+                <a class="module-primary-link"
+                   href="https://business.whatsapp.com/"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                  Explore WhatsApp Business <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </div>
+
+          </article>
+
+        </section>
+
+        <!-- USEFUL DIGITAL TOOLS -->
+
+        <section class="digital-tools"
+                 id="digital-tools"
+                 aria-labelledby="digital-tools-title">
+
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker">USEFUL RESOURCES</span>
+              <h2 id="digital-tools-title">Tools for your next step</h2>
+              <p>Free starting points to help your business get discovered, accept payments and communicate with customers.</p>
+            </div>
+          </div>
+
+          <div class="tool-filter-list" aria-label="Filter digital tools">
+            <button class="tool-filter is-active"
+                    type="button"
+                    data-tool-filter="all"
+                    aria-pressed="true">All tools</button>
+            <button class="tool-filter"
+                    type="button"
+                    data-tool-filter="visibility"
+                    aria-pressed="false">Online visibility</button>
+            <button class="tool-filter"
+                    type="button"
+                    data-tool-filter="payments"
+                    aria-pressed="false">Payments</button>
+            <button class="tool-filter"
+                    type="button"
+                    data-tool-filter="communication"
+                    aria-pressed="false">Communication</button>
+          </div>
+
+          <div class="tool-list">
+
+            <article class="tool-item" data-tool-category="visibility">
+              <div class="tool-item-icon" aria-hidden="true">G</div>
+              <div class="tool-item-content">
+                <h3>Google Business Profile</h3>
+                <p>Help local customers find your business, opening hours and location on Google. The profile is free for eligible businesses.</p>
+              </div>
+              <a href="https://www.google.com/business/"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 class="tool-item-link"
+                 aria-label="Explore Google Business Profile">↗</a>
+            </article>
+
+            <article class="tool-item" data-tool-category="payments">
+              <div class="tool-item-icon" aria-hidden="true">₹</div>
+              <div class="tool-item-content">
+                <h3>UPI and QR payments</h3>
+                <p>Learn about UPI and use your bank or a supported payment app to set up merchant payments.</p>
+              </div>
+              <a href="https://www.npci.org.in/"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 class="tool-item-link"
+                 aria-label="Explore NPCI resources">↗</a>
+            </article>
+
+            <article class="tool-item" data-tool-category="communication">
+              <div class="tool-item-icon" aria-hidden="true">W</div>
+              <div class="tool-item-content">
+                <h3>WhatsApp Business</h3>
+                <p>Explore business profiles, product catalogues and messaging tools for customer enquiries.</p>
+              </div>
+              <a href="https://business.whatsapp.com/"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 class="tool-item-link"
+                 aria-label="Explore WhatsApp Business">↗</a>
+            </article>
+
+          </div>
+
+        </section>
+
+        <!-- SIMPLE VENDOR ACTION PLAN -->
+
+        <section class="trusted-resources"
+                 aria-labelledby="vendor-plan-title">
+
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker">YOUR NEXT STEP</span>
+              <h2 id="vendor-plan-title">Three things to try this week</h2>
+              <p>No extra software or complicated setup required.</p>
+            </div>
+          </div>
+
+          <div class="resource-links">
+
+            <a href="./products-services.html" class="resource-link">
+              <span>
+                <strong>1. Improve one product listing</strong>
+                <small>Add a clear photo, useful description and accurate price.</small>
+              </span>
+              <span aria-hidden="true">→</span>
+            </a>
+
+            <a href="./storefront.html" class="resource-link">
+              <span>
+                <strong>2. Share your storefront</strong>
+                <small>Send your business link to customers who may find it useful.</small>
+              </span>
+              <span aria-hidden="true">→</span>
+            </a>
+
+            <a href="https://www.npci.org.in/"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="resource-link">
+              <span>
+                <strong>3. Review your payment safety</strong>
+                <small>Know how to verify payments and recognise common scams.</small>
+              </span>
+              <span aria-hidden="true">↗</span>
+            </a>
+
+          </div>
+
+        </section>
+
+        <!-- FOOTER -->
+
+        <footer class="growth-footer">
+          <span>Bizvero <span aria-hidden="true">·</span> Your business, moving forward.</span>
+          <a href="./dashboard.html">
+            Back to overview <span aria-hidden="true">→</span>
           </a>
+        </footer>
 
-          <a
-            href="https://cybercrime.gov.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="grow-text-link"
-          >
-            Report Cybercrime
-          </a>
-        </article>
-
-        <!-- CARD 4 -->
-        <article class="grow-tool-card">
-          <div class="grow-tool-icon">📈</div>
-
-          <h2>Customer Growth Finder</h2>
-
-          <p>
-            Find practical ways to attract new customers, encourage repeat
-            purchases, and make better use of your existing stock.
-          </p>
-
-          <div class="grow-form-group">
-            <label for="growth-challenge">
-              What would you like to improve?
-            </label>
-
-            <select id="growth-challenge">
-              <option value="new">Attract new customers</option>
-              <option value="repeat">Get repeat customers</option>
-              <option value="slow">Sell slow-moving stock</option>
-              <option value="local">Reach nearby customers</option>
-              <option value="online">Improve online visibility</option>
-            </select>
-          </div>
-
-          <button
-            type="button"
-            class="grow-tool-button"
-            onclick="findGrowthIdeas()"
-          >
-            Find Growth Ideas
-          </button>
-
-          <div
-            id="growth-result"
-            class="grow-result"
-            aria-live="polite"
-          ></div>
-        </article>
-
-        <!-- CARD 5: CENTRED UNDER THE FIRST FOUR -->
-        <article class="grow-tool-card grow-tool-card-centred">
-          <div class="grow-tool-icon">⭐</div>
-
-          <h2>Trust &amp; Reputation</h2>
-
-          <p>
-            Build customer trust with polite review requests, helpful
-            responses, and reliable service.
-          </p>
-
-          <div class="grow-form-group">
-            <label for="review-business-name">Business Name</label>
-            <input
-              type="text"
-              id="review-business-name"
-              placeholder="Enter your business name"
-            >
-          </div>
-
-          <button
-            type="button"
-            class="grow-tool-button"
-            onclick="generateReviewMessage()"
-          >
-            Create Review Request
-          </button>
-
-          <textarea
-            id="review-message"
-            rows="4"
-            placeholder="Your review request will appear here."
-            readonly
-          ></textarea>
-
-          <button
-            type="button"
-            class="grow-tool-button grow-secondary-button"
-            onclick="copyReviewMessage()"
-          >
-            Copy Review Request
-          </button>
-
-          <div class="grow-safety-item">
-            <h3>Build lasting trust</h3>
-            <ul>
-              <li>Respond politely to positive and negative reviews.</li>
-              <li>Be clear about pricing, delivery, and return policies.</li>
-              <li>Ask all customers honestly for feedback.</li>
-              <li>Never buy fake reviews or pressure customers to leave them.</li>
-            </ul>
-          </div>
-        </article>
-
-      </section>
+      </div>
     </main>
   </div>
 
-  <!-- INTERACTION LOGIC -->
+  <div class="growth-toast"
+       id="growth-toast"
+       role="status"
+       aria-live="polite"></div>
+
+  <!-- Functional tool filters; works without an API -->
+
   <script>
-    function getNumber(id) {
-      return Number(document.getElementById(id).value);
-    }
+    (() => {
+      const filters = document.querySelectorAll("[data-tool-filter]");
+      const tools = document.querySelectorAll("[data-tool-category]");
 
-    function calculateOffer() {
-      const cost = getNumber("product-cost");
-      const price = getNumber("selling-price");
-      const discount = getNumber("discount-percent");
-      const result = document.getElementById("offer-result");
+      filters.forEach((button) => {
+        button.addEventListener("click", () => {
+          const selected = button.dataset.toolFilter;
 
-      if (
-        document.getElementById("product-cost").value === "" ||
-        document.getElementById("selling-price").value === "" ||
-        !Number.isFinite(cost) ||
-        !Number.isFinite(price) ||
-        cost < 0 ||
-        price < 0
-      ) {
-        result.textContent = "Enter a valid product cost and selling price.";
-        return;
-      }
+          filters.forEach((filter) => {
+            const active = filter === button;
+            filter.classList.toggle("is-active", active);
+            filter.setAttribute("aria-pressed", String(active));
+          });
 
-      if (!Number.isFinite(discount) || discount < 0 || discount > 100) {
-        result.textContent = "Enter a discount between 0% and 100%.";
-        return;
-      }
-
-      const finalPrice = price * (1 - discount / 100);
-      const profit = finalPrice - cost;
-
-      result.textContent =
-        "Price after discount: ₹" + finalPrice.toFixed(2) +
-        " | Difference from product cost: ₹" + profit.toFixed(2) +
-        (profit < 0
-          ? " — this offer is below product cost."
-          : profit === 0
-            ? " — this covers product cost only."
-            : " — this is before other business expenses.");
-    }
-
-    function generatePromotion() {
-      const name =
-        document.getElementById("offer-name").value.trim() ||
-        "our special offer";
-
-      const costInput = document.getElementById("product-cost").value;
-      const priceInput = document.getElementById("selling-price").value;
-      const discountInput =
-        document.getElementById("discount-percent").value;
-
-      const discount = Number(discountInput);
-      let message =
-        "Discover " + name + " at our store! " +
-        "Contact us to learn more. We look forward to serving you.";
-
-      if (
-        costInput !== "" &&
-        priceInput !== "" &&
-        Number(priceInput) >= 0 &&
-        Number(costInput) >= 0 &&
-        discountInput !== "" &&
-        discount >= 0 &&
-        discount <= 100
-      ) {
-        const finalPrice = Number(priceInput) * (1 - discount / 100);
-        message =
-          "SPECIAL OFFER: " + name + "! " +
-          discount + "% off. Offer price: ₹" +
-          finalPrice.toFixed(2) +
-          ". Visit or contact our store for details. " +
-          "Thank you for supporting our business!";
-      }
-
-      document.getElementById("promotion-result").value = message;
-    }
-
-    function findGrowthIdeas() {
-      const choice = document.getElementById("growth-challenge").value;
-      const result = document.getElementById("growth-result");
-
-      const ideas = {
-        new: [
-          "Tell existing customers about your business referral offer.",
-          "Share clear product photos and prices in your customer groups.",
-          "Ask nearby complementary businesses about a simple partnership."
-        ],
-        repeat: [
-          "Thank customers after a purchase and share useful product updates.",
-          "Offer a loyalty benefit that fits your profit margin.",
-          "Keep a record of customer preferences only with their permission."
-        ],
-        slow: [
-          "Create a bundle with a related popular product.",
-          "Explain the product's uses through a short demonstration.",
-          "Try a limited offer after checking your costs and margins."
-        ],
-        local: [
-          "Keep your Google Business Profile accurate and up to date.",
-          "Share your location, opening hours, and contact details clearly.",
-          "Ask satisfied customers to share honest feedback."
-        ],
-        online: [
-          "Use clear, well-lit photos of your products or services.",
-          "Keep your business name, phone number, and hours consistent.",
-          "Post useful updates regularly and reply to customer questions."
-        ]
-      };
-
-      result.innerHTML = "";
-      const list = document.createElement("ul");
-
-      ideas[choice].forEach(function (idea) {
-        const item = document.createElement("li");
-        item.textContent = idea;
-        list.appendChild(item);
+          tools.forEach((tool) => {
+            tool.hidden =
+              selected !== "all" &&
+              tool.dataset.toolCategory !== selected;
+          });
+        });
       });
-
-      result.appendChild(list);
-    }
-
-    function generateReviewMessage() {
-      const businessName =
-        document.getElementById("review-business-name").value.trim() ||
-        "our business";
-
-      document.getElementById("review-message").value =
-        "Thank you for choosing " + businessName +
-        "! We appreciate your support. If you have a moment, " +
-        "please consider sharing an honest review of your experience. " +
-        "Your feedback helps us improve. Thank you!";
-    }
-
-    async function copyTextFrom(id) {
-      const field = document.getElementById(id);
-      const text = field.value;
-
-      if (!text.trim()) {
-        field.focus();
-        return;
-      }
-
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch (error) {
-        field.focus();
-        field.select();
-
-        try {
-          document.execCommand("copy");
-        } catch (copyError) {
-          alert("Please select and copy the text manually.");
-        }
-      }
-    }
-
-    function copyPromotion() {
-      copyTextFrom("promotion-result");
-    }
-
-    function copyReviewMessage() {
-      copyTextFrom("review-message");
-    }
+    })();
   </script>
 
-  <!-- Keep this only if your project uses Supabase on this page -->
-  <script src="./js/supabase.js"></script>
-  <script src="./js/grow-digitally.js"></script>
 </body>
 </html>
