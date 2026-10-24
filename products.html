@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +9,6 @@
 
     <title>Products &amp; Services | Bizvero</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -16,675 +16,568 @@
         rel="stylesheet"
     >
 
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/products.css">
 </head>
 
 <body>
-    <div class="app-layout">
+<div class="app-layout">
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
-            <a href="./dashboard.html" class="brand" aria-label="Bizvero dashboard">
-                <span class="brand-mark">B</span>
-                <span class="brand-name">bizvero</span>
+    <!-- SIDEBAR: keep consistent with dashboard -->
+    <aside class="sidebar" id="sidebar">
+        <a href="./dashboard.html" class="brand" aria-label="Bizvero dashboard">
+            <span class="brand-mark" aria-hidden="true">B</span>
+            <span class="brand-name">Bizvero</span>
+        </a>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav" aria-label="Main navigation">
+            <a href="./dashboard.html" class="nav-link">
+                <span class="nav-icon" aria-hidden="true">⌂</span>
+                <span>Overview</span>
             </a>
 
-            <div class="sidebar-label">WORKSPACE</div>
+            <a href="./create-business.html" class="nav-link">
+                <span class="nav-icon" aria-hidden="true">▤</span>
+                <span>My Business</span>
+            </a>
 
-            <nav class="sidebar-nav" aria-label="Main navigation">
-                <a href="./dashboard.html" class="nav-link">
-                    <span class="nav-icon" aria-hidden="true">⌂</span>
-                    <span>Overview</span>
-                </a>
+            <a
+                href="./products.html"
+                class="nav-link active"
+                aria-current="page"
+            >
+                <span class="nav-icon" aria-hidden="true">▦</span>
+                <span>Products &amp; Services</span>
+            </a>
 
-                <a href="./create-business.html" class="nav-link">
-                    <span class="nav-icon" aria-hidden="true">▤</span>
-                    <span>My Business</span>
-                </a>
+            <a href="./grow-digitally.html" class="nav-link">
+                <span class="nav-icon" aria-hidden="true">↗</span>
+                <span>Grow Digitally</span>
+            </a>
+        </nav>
 
-                <a
-                    href="./products.html"
-                    class="nav-link active"
-                    aria-current="page"
-                >
-                    <span class="nav-icon" aria-hidden="true">▦</span>
-                    <span>Products &amp; Services</span>
-                </a>
-
-                <a href="./grow-digitally.html" class="nav-link">
-                    <span class="nav-icon" aria-hidden="true">↗</span>
-                    <span>Grow Digitally</span>
-                </a>
-            </nav>
-
-            <div class="sidebar-bottom">
-                <div class="sidebar-help">
-                    <span class="help-icon" aria-hidden="true">?</span>
-
-                    <div>
-                        <strong>Need a hand?</strong>
-                        <p>Take your next digital step.</p>
-                        <a href="./grow-digitally.html">Explore guides →</a>
-                    </div>
+        <div class="sidebar-bottom">
+            <div class="sidebar-help">
+                <span class="help-icon" aria-hidden="true">?</span>
+                <div>
+                    <strong>Need a hand?</strong>
+                    <p>Take your next digital step.</p>
+                    <a href="./grow-digitally.html">Explore guides →</a>
                 </div>
-
-                <button
-                    class="sidebar-logout"
-                    id="logout-button"
-                    type="button"
-                >
-                    <span aria-hidden="true">↪</span>
-                    <span>Log out</span>
-                </button>
             </div>
-        </aside>
 
-        <!-- MAIN CONTENT -->
-        <main class="main-content">
+            <button
+                class="sidebar-logout"
+                id="logout-button"
+                type="button"
+            >
+                <span aria-hidden="true">↪</span>
+                <span>Log out</span>
+            </button>
+        </div>
+    </aside>
 
-            <!-- TOPBAR -->
-            <header class="topbar">
-                <button
-                    class="mobile-menu-button"
-                    id="mobile-menu-button"
-                    type="button"
-                    aria-label="Open navigation"
-                    aria-controls="sidebar"
-                    aria-expanded="false"
-                >
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
 
-                <div class="breadcrumb">
-                    <span>Workspace</span>
-                    <span class="breadcrumb-divider" aria-hidden="true">/</span>
-                    <span class="breadcrumb-current">Products &amp; Services</span>
+        <header class="topbar">
+            <button
+                class="mobile-menu-button"
+                id="mobile-menu-button"
+                type="button"
+                aria-label="Open navigation"
+                aria-controls="sidebar"
+                aria-expanded="false"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="breadcrumb">
+                <span>Workspace</span>
+                <span class="breadcrumb-divider" aria-hidden="true">/</span>
+                <span class="breadcrumb-current">Products &amp; Services</span>
+            </div>
+
+            <div class="topbar-actions">
+                <a href="./dashboard.html" class="topbar-home">
+                    <span>Back to overview</span>
+                    <span aria-hidden="true">↗</span>
+                </a>
+            </div>
+        </header>
+
+        <div class="page-container">
+
+            <!-- PAGE HEADING -->
+            <section class="page-heading">
+                <div>
+                    <span class="eyebrow">YOUR DIGITAL CATALOGUE</span>
+                    <h1>Products &amp; Services</h1>
+                    <p>
+                        Manage your products and services in one place.
+                        Keep your offerings clear, accurate and up to date.
+                    </p>
                 </div>
 
-                <div class="topbar-actions">
-                    <a href="./dashboard.html" class="topbar-home">
-                        <span>Back to overview</span>
-                        <span aria-hidden="true">↗</span>
-                    </a>
+                <a href="#add-item-section" class="primary-button">
+                    <span aria-hidden="true">+</span>
+                    Add new item
+                </a>
+            </section>
+
+            <!-- PAGE FEEDBACK -->
+            <div
+                class="catalogue-feedback"
+                id="products-page-message"
+                role="status"
+                aria-live="polite"
+                hidden
+            ></div>
+
+            <!-- CATALOGUE SUMMARY -->
+            <section
+                class="catalogue-summary"
+                aria-label="Catalogue summary"
+            >
+                <div class="summary-icon" aria-hidden="true">▦</div>
+
+                <div class="summary-copy">
+                    <span class="summary-label">YOUR CATALOGUE</span>
+                    <h2><span id="total-items">0</span> items added</h2>
+                    <p>Your products and services, all in one place.</p>
                 </div>
-            </header>
 
-            <div class="page-container">
+                <div class="summary-divider" aria-hidden="true"></div>
 
-                <!-- PAGE HEADING -->
-                <section class="page-heading">
+                <div class="summary-stat">
+                    <span class="summary-stat-value" id="available-items">0</span>
+                    <span class="summary-stat-label">Available</span>
+                </div>
+
+                <div class="summary-stat">
+                    <span class="summary-stat-value" id="unavailable-items">0</span>
+                    <span class="summary-stat-label">Unavailable</span>
+                </div>
+            </section>
+
+            <!-- CATALOGUE -->
+            <section class="catalogue-section" id="catalogue-section">
+
+                <div class="section-heading">
                     <div>
-                        <span class="eyebrow">YOUR DIGITAL CATALOGUE</span>
-                        <h1>Products &amp; Services</h1>
-
-                        <p>
-                            Show customers what you offer. Manage your products
-                            and services in one place and keep your catalogue up to date.
-                        </p>
+                        <h2>Your offerings</h2>
+                        <p>View and manage the items in your catalogue.</p>
                     </div>
 
-                    <a href="#add-item-section" class="primary-button">
-                        <span aria-hidden="true">+</span>
-                        Add new item
-                    </a>
-                </section>
+                    <div class="catalogue-controls">
+                        <label class="visually-hidden" for="item-filter">
+                            Filter catalogue
+                        </label>
 
-                <!-- PAGE MESSAGE -->
+                        <select id="item-filter" class="filter-select">
+                            <option value="all">All items</option>
+                            <option value="product">Products</option>
+                            <option value="service">Services</option>
+                            <option value="available">Available</option>
+                            <option value="unavailable">Unavailable</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- LOADING -->
                 <div
                     class="catalogue-feedback"
-                    id="products-page-message"
+                    id="catalogue-loading"
                     role="status"
                     aria-live="polite"
                     hidden
+                >
+                    <span class="loading-spinner" aria-hidden="true"></span>
+                    <p>Loading your catalogue...</p>
+                </div>
+
+                <!-- ERROR -->
+                <div
+                    class="catalogue-feedback error-state"
+                    id="catalogue-error"
+                    role="alert"
+                    hidden
+                >
+                    <div class="feedback-icon" aria-hidden="true">!</div>
+                    <h3>We couldn't load your catalogue</h3>
+                    <p id="catalogue-error-message">
+                        Check your connection and try again.
+                    </p>
+                    <button
+                        class="secondary-button"
+                        id="retry-loading"
+                        type="button"
+                    >
+                        Try again
+                    </button>
+                </div>
+
+                <!-- ITEMS RENDERED BY products.js -->
+                <div
+                    class="catalogue-grid"
+                    id="catalogue-grid"
+                    aria-live="polite"
                 ></div>
 
-                <!-- CATALOGUE SUMMARY -->
-                <section
-                    class="catalogue-summary"
-                    aria-label="Catalogue summary"
+                <!-- EMPTY CATALOGUE -->
+                <div
+                    class="catalogue-feedback empty-state"
+                    id="catalogue-empty"
+                    hidden
                 >
-                    <div class="summary-icon" aria-hidden="true">▦</div>
-
-                    <div class="summary-copy">
-                        <span class="summary-label">YOUR CATALOGUE</span>
-
-                        <h2>
-                            <span id="total-items">0</span> items added
-                        </h2>
-
-                        <p>Keep your offerings clear and up to date.</p>
-                    </div>
-
-                    <div class="summary-divider" aria-hidden="true"></div>
-
-                    <div class="summary-stat">
-                        <span class="summary-stat-value" id="available-items">
-                            0
-                        </span>
-                        <span class="summary-stat-label">Available</span>
-                    </div>
-
-                    <div class="summary-stat">
-                        <span class="summary-stat-value" id="unavailable-items">
-                            0
-                        </span>
-                        <span class="summary-stat-label">Unavailable</span>
-                    </div>
-                </section>
-
-                <!-- CATALOGUE SECTION -->
-                <section class="catalogue-section" id="catalogue-section">
-
-                    <div class="section-heading">
-                        <div>
-                            <h2>Your offerings</h2>
-                            <p>
-                                Manage the products and services associated
-                                with your business.
-                            </p>
-                        </div>
-
-                        <div class="catalogue-controls">
-                            <label class="visually-hidden" for="item-filter">
-                                Filter catalogue
-                            </label>
-
-                            <select id="item-filter" class="filter-select">
-                                <option value="all">All items</option>
-                                <option value="product">Products</option>
-                                <option value="service">Services</option>
-                                <option value="available">Available</option>
-                                <option value="unavailable">Unavailable</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- LOADING STATE -->
-                    <div
-                        class="catalogue-feedback"
-                        id="catalogue-loading"
-                        role="status"
-                        aria-live="polite"
-                        hidden
+                    <div class="empty-illustration" aria-hidden="true">▦</div>
+                    <h3>Your catalogue starts here</h3>
+                    <p>
+                        Add your first product or service to start building
+                        your catalogue. Images are optional.
+                    </p>
+                    <button
+                        class="primary-button"
+                        id="empty-add-button"
+                        type="button"
                     >
-                        <span class="loading-spinner" aria-hidden="true"></span>
-                        <p>Loading your catalogue...</p>
-                    </div>
+                        <span aria-hidden="true">+</span>
+                        Add your first item
+                    </button>
+                </div>
 
-                    <!-- ERROR STATE -->
-                    <div
-                        class="catalogue-feedback error-state"
-                        id="catalogue-error"
-                        role="alert"
-                        hidden
+                <!-- FILTER EMPTY STATE -->
+                <div
+                    class="catalogue-feedback no-results-state"
+                    id="no-results"
+                    hidden
+                >
+                    <h3>No matching items</h3>
+                    <p>Try another filter to find what you're looking for.</p>
+                    <button
+                        class="text-button"
+                        id="clear-filter"
+                        type="button"
                     >
-                        <div class="feedback-icon" aria-hidden="true">!</div>
-                        <h3>We couldn't load your catalogue</h3>
+                        Show all items
+                    </button>
+                </div>
 
-                        <p id="catalogue-error-message">
-                            Check your connection and try again.
-                        </p>
+            </section>
 
-                        <button
-                            class="secondary-button"
-                            id="retry-loading"
-                            type="button"
-                        >
-                            Try again
-                        </button>
-                    </div>
+            <!-- ADD / EDIT ITEM -->
+            <section class="add-item-section" id="add-item-section">
 
-                    <!-- PRODUCTS ARE INSERTED HERE BY JAVASCRIPT -->
-                    <div
-                        class="catalogue-grid"
-                        id="catalogue-grid"
-                        aria-live="polite"
-                    ></div>
-
-                    <!-- EMPTY CATALOGUE STATE -->
-                    <div
-                        class="catalogue-feedback empty-state"
-                        id="catalogue-empty"
-                        hidden
-                    >
-                        <div class="empty-illustration" aria-hidden="true">▦</div>
-                        <h3>Your catalogue starts here</h3>
-
+                <div class="form-section-heading">
+                    <div>
+                        <span class="eyebrow">GROW YOUR PRESENCE</span>
+                        <h2 id="form-title">Add a new item</h2>
                         <p>
-                            Add your first product or service. You can add an image
-                            now or do it later.
+                            Add the details customers need to understand
+                            your product or service.
                         </p>
-
-                        <button
-                            class="primary-button"
-                            id="empty-add-button"
-                            type="button"
-                        >
-                            <span aria-hidden="true">+</span>
-                            Add your first item
-                        </button>
                     </div>
 
-                    <!-- FILTER NO-RESULTS STATE -->
-                    <div
-                        class="catalogue-feedback no-results-state"
-                        id="no-results"
-                        hidden
+                    <span class="form-step">Simple setup</span>
+                </div>
+
+                <form id="product-form" novalidate>
+                    <input
+                        type="hidden"
+                        id="product-id"
+                        name="product-id"
                     >
-                        <h3>No matching items</h3>
-                        <p>Try another filter to find what you're looking for.</p>
 
-                        <button
-                            class="text-button"
-                            id="clear-filter"
-                            type="button"
-                        >
-                            Show all items
-                        </button>
-                    </div>
+                    <div class="form-layout">
 
-                </section>
+                        <!-- LEFT COLUMN -->
+                        <div class="form-main">
 
-                <!-- ADD / EDIT ITEM SECTION -->
-                <section class="add-item-section" id="add-item-section">
+                            <div class="form-card">
+                                <div class="form-card-heading">
+                                    <span class="form-card-number">01</span>
+                                    <div>
+                                        <h3>Basic information</h3>
+                                        <p>Start with the essentials.</p>
+                                    </div>
+                                </div>
 
-                    <div class="form-section-heading">
-                        <div>
-                            <span class="eyebrow">GROW YOUR PRESENCE</span>
-                            <h2 id="form-title">Add a new item</h2>
+                                <div class="form-field">
+                                    <label for="item-name">
+                                        Name <span class="required-mark">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="item-name"
+                                        name="name"
+                                        placeholder="e.g. Masala Chai"
+                                        maxlength="100"
+                                        autocomplete="off"
+                                        required
+                                    >
+                                    <small>Use a name customers will recognize.</small>
+                                    <span class="field-error" id="name-error"></span>
+                                </div>
 
-                            <p>
-                                Give customers the details they need to understand
-                                what you offer.
-                            </p>
-                        </div>
-
-                        <span class="form-step">Simple setup</span>
-                    </div>
-
-                    <form id="product-form" novalidate>
-
-                        <input
-                            type="hidden"
-                            id="product-id"
-                            name="product-id"
-                        >
-
-                        <div class="form-layout">
-
-                            <!-- LEFT COLUMN -->
-                            <div class="form-main">
-
-                                <!-- BASIC INFORMATION -->
-                                <div class="form-card">
-                                    <div class="form-card-heading">
-                                        <span class="form-card-number">01</span>
-
-                                        <div>
-                                            <h3>Basic information</h3>
-                                            <p>Start with the essentials.</p>
-                                        </div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label for="item-type">
+                                            Offering type
+                                            <span class="required-mark">*</span>
+                                        </label>
+                                        <select id="item-type" name="item_type" required>
+                                            <option value="product">Product</option>
+                                            <option value="service">Service</option>
+                                        </select>
+                                        <span class="field-error" id="type-error"></span>
                                     </div>
 
                                     <div class="form-field">
-                                        <label for="item-name">
-                                            Name <span class="required-mark">*</span>
-                                        </label>
-
+                                        <label for="item-category">Category</label>
                                         <input
                                             type="text"
-                                            id="item-name"
-                                            name="name"
-                                            placeholder="e.g. Masala Chai"
-                                            maxlength="100"
-                                            autocomplete="off"
-                                            required
+                                            id="item-category"
+                                            name="category"
+                                            placeholder="e.g. Beverages"
+                                            maxlength="60"
                                         >
-
-                                        <small>
-                                            Use a name customers will recognize.
-                                        </small>
-
-                                        <span class="field-error" id="name-error"></span>
-                                    </div>
-
-                                    <div class="form-row">
-
-                                        <div class="form-field">
-                                            <label for="item-type">
-                                                Offering type
-                                                <span class="required-mark">*</span>
-                                            </label>
-
-                                            <select
-                                                id="item-type"
-                                                name="item_type"
-                                                required
-                                            >
-                                                <option value="product">Product</option>
-                                                <option value="service">Service</option>
-                                            </select>
-
-                                            <span class="field-error" id="type-error"></span>
-                                        </div>
-
-                                        <div class="form-field">
-                                            <label for="item-category">Category</label>
-
-                                            <input
-                                                type="text"
-                                                id="item-category"
-                                                name="category"
-                                                placeholder="e.g. Beverages"
-                                                maxlength="60"
-                                            >
-
-                                            <small>Optional</small>
-                                        </div>
-
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label for="item-description">Description</label>
-
-                                        <textarea
-                                            id="item-description"
-                                            name="description"
-                                            rows="4"
-                                            maxlength="500"
-                                            placeholder="Describe your product or service in a few simple words..."
-                                        ></textarea>
-
-                                        <div class="field-meta">
-                                            <small>
-                                                Help customers understand what makes it useful.
-                                            </small>
-
-                                            <span id="description-count">0/500</span>
-                                        </div>
+                                        <small>Optional</small>
                                     </div>
                                 </div>
 
-                                <!-- PRICE AND AVAILABILITY -->
-                                <div class="form-card">
-                                    <div class="form-card-heading">
-                                        <span class="form-card-number">02</span>
+                                <div class="form-field">
+                                    <label for="item-description">Description</label>
+                                    <textarea
+                                        id="item-description"
+                                        name="description"
+                                        rows="4"
+                                        maxlength="500"
+                                        placeholder="Describe your product or service in a few simple words..."
+                                    ></textarea>
 
-                                        <div>
-                                            <h3>Price &amp; availability</h3>
-                                            <p>Tell customers what to expect.</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label for="item-price">Price (₹)</label>
-
-                                        <div class="price-input-wrapper">
-                                            <span aria-hidden="true">₹</span>
-
-                                            <input
-                                                type="number"
-                                                id="item-price"
-                                                name="price"
-                                                min="0"
-                                                max="99999999"
-                                                step="0.01"
-                                                placeholder="0.00"
-                                            >
-                                        </div>
-
+                                    <div class="field-meta">
                                         <small>
-                                            Optional. Leave blank if the price varies
-                                            or customers need to enquire.
+                                            Explain what you offer in clear, simple language.
                                         </small>
-
-                                        <span class="field-error" id="price-error"></span>
-                                    </div>
-
-                                    <div class="availability-control">
-                                        <div class="availability-copy">
-                                            <strong>Available to customers</strong>
-
-                                            <p>
-                                                Show whether this item is currently available.
-                                            </p>
-                                        </div>
-
-                                        <label
-                                            class="toggle-switch"
-                                            for="item-available"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                id="item-available"
-                                                name="is_available"
-                                                checked
-                                            >
-
-                                            <span class="toggle-slider"></span>
-
-                                            <span class="visually-hidden">
-                                                Item is available
-                                            </span>
-                                        </label>
+                                        <span id="description-count">0/500</span>
                                     </div>
                                 </div>
-
                             </div>
 
-                            <!-- RIGHT COLUMN -->
-                            <div class="form-sidebar">
-
-                                <!-- IMAGE UPLOAD -->
-                               <div class="form-card image-card">
-                                    <div class="form-card-heading">
-                                        <span class="form-card-number">03</span>
-
-                                        <div>
-                                            <h3>Item image</h3>
-                                            <p>Give customers a better look.</p>
-                                        </div>
+                            <div class="form-card">
+                                <div class="form-card-heading">
+                                    <span class="form-card-number">02</span>
+                                    <div>
+                                        <h3>Price &amp; availability</h3>
+                                        <p>Tell customers what to expect.</p>
                                     </div>
+                                </div>
 
-                                    <div
-                                        class="image-upload-area"
-                                        id="image-upload-area"
-                                    >
-                                        <div
-                                            class="image-preview"
-                                            id="image-preview"
-                                        >
-                                            <div
-                                                class="image-placeholder"
-                                                id="image-placeholder"
-                                            >
-                                                <span
-                                                    class="image-placeholder-icon"
-                                                    aria-hidden="true"
-                                                >▧</span>
-
-                                                <strong>No image added</strong>
-
-                                                <span>
-                                                    Your item can still be saved without a photo.
-                                                </span>
-                                            </div>
-
-                                            <img
-                                                id="image-preview-img"
-                                                src=""
-                                                alt="Item image preview"
-                                                hidden
-                                            >
-                                        </div>
-
-                                        <label
-                                            for="item-image"
-                                            class="secondary-button upload-button"
-                                        >
-                                            <span aria-hidden="true">↑</span>
-                                            Choose image
-                                        </label>
-
+                                <div class="form-field">
+                                    <label for="item-price">Price (₹)</label>
+                                    <div class="price-input-wrapper">
+                                        <span aria-hidden="true">₹</span>
                                         <input
-                                            type="file"
-                                            id="item-image"
-                                            name="image"
-                                            accept="image/jpeg,image/png,image/webp"
-                                            hidden
+                                            type="number"
+                                            id="item-price"
+                                            name="price"
+                                            min="0"
+                                            max="99999999"
+                                            step="0.01"
+                                            placeholder="0.00"
                                         >
+                                    </div>
+                                    <small>
+                                        Optional. Leave blank if the price varies
+                                        or customers need to enquire.
+                                    </small>
+                                    <span class="field-error" id="price-error"></span>
+                                </div>
 
-                                        <button
-                                            class="text-button remove-image-button"
-                                            id="remove-image"
-                                            type="button"
-                                            hidden
+                                <div class="availability-control">
+                                    <div class="availability-copy">
+                                        <strong>Available to customers</strong>
+                                        <p>Mark whether this item is currently available.</p>
+                                    </div>
+
+                                    <label class="toggle-switch" for="item-available">
+                                        <input
+                                            type="checkbox"
+                                            id="item-available"
+                                            name="is_available"
+                                            checked
                                         >
-                                            Remove image
-                                        </button>
+                                        <span class="toggle-slider"></span>
+                                        <span class="visually-hidden">
+                                            Item is available
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
 
-                                        <p class="upload-hint">
-                                            JPG, PNG or WebP. Maximum 5 MB.
-                                        </p>
+                        </div>
 
-                                        <span class="field-error" id="image-error"></span>
+                        <!-- RIGHT COLUMN -->
+                        <div class="form-sidebar">
+
+                            <div class="form-card image-card">
+                                <div class="form-card-heading">
+                                    <span class="form-card-number">03</span>
+                                    <div>
+                                        <h3>Item image</h3>
+                                        <p>Show customers what you're offering.</p>
                                     </div>
                                 </div>
 
-                                <!-- HELPFUL INFORMATION -->
-                                <div class="visibility-card">
-                                    <div class="visibility-icon" aria-hidden="true">◎</div>
+                                <div
+                                    class="image-upload-area"
+                                    id="image-upload-area"
+                                >
+                                    <div class="image-preview" id="image-preview">
+                                        <div
+                                            class="image-placeholder"
+                                            id="image-placeholder"
+                                        >
+                                            <span
+                                                class="image-placeholder-icon"
+                                                aria-hidden="true"
+                                            >▧</span>
+                                            <strong>No image added</strong>
+                                            <span>
+                                                You can save this item without a photo.
+                                            </span>
+                                        </div>
 
-                                    <h3>Made for your customers</h3>
+                                        <img
+                                            id="image-preview-img"
+                                            src=""
+                                            alt="Item image preview"
+                                            hidden
+                                        >
+                                    </div>
 
-                                    <p>
-                                        Your catalogue helps customers discover
-                                        what you offer in one place.
+                                    <label
+                                        for="item-image"
+                                        class="secondary-button upload-button"
+                                    >
+                                        <span aria-hidden="true">↑</span>
+                                        Choose image
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        id="item-image"
+                                        name="image"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        hidden
+                                    >
+
+                                    <button
+                                        class="text-button remove-image-button"
+                                        id="remove-image"
+                                        type="button"
+                                        hidden
+                                    >
+                                        Remove image
+                                    </button>
+
+                                    <p class="upload-hint">
+                                        JPG, PNG or WebP. Maximum 5 MB.
                                     </p>
 
-                                    <div class="visibility-divider"></div>
-
-                                    <p class="visibility-note">
-                                        <span aria-hidden="true">✓</span>
-                                        No image required
-                                    </p>
-
-                                    <p class="visibility-note">
-                                        <span aria-hidden="true">✓</span>
-                                        Simple and easy to update
-                                    </p>
+                                    <span class="field-error" id="image-error"></span>
                                 </div>
-
                             </div>
 
                         </div>
+                    </div>
 
-                        <!-- FORM ACTIONS -->
-                        <div class="form-actions">
-                            <p
-                                class="form-status"
-                                id="form-status"
-                                role="status"
-                                aria-live="polite"
-                            ></p>
+                    <!-- FORM ACTIONS -->
+                    <div class="form-actions">
+                        <p
+                            class="form-status"
+                            id="form-status"
+                            role="status"
+                            aria-live="polite"
+                        ></p>
 
-                            <div class="form-action-buttons">
-                                <button
-                                    class="secondary-button"
-                                    id="cancel-edit"
-                                    type="button"
-                                    hidden
-                                >
-                                    Cancel
-                                </button>
+                        <div class="form-action-buttons">
+                            <button
+                                class="secondary-button"
+                                id="cancel-edit"
+                                type="button"
+                                hidden
+                            >
+                                Cancel
+                            </button>
 
-                                <button
-                                    class="secondary-button"
-                                    id="reset-form"
-                                    type="reset"
-                                >
-                                    Clear form
-                                </button>
+                            <button
+                                class="secondary-button"
+                                id="reset-form"
+                                type="reset"
+                            >
+                                Clear form
+                            </button>
 
-                                <button
-                                    class="primary-button"
-                                    id="save-item"
-                                    type="submit"
-                                >
-                                    <span aria-hidden="true">+</span>
-
-                                    <span id="save-button-text">
-                                        Add to catalogue
-                                    </span>
-                                </button>
-                            </div>
+                            <button
+                                class="primary-button"
+                                id="save-item"
+                                type="submit"
+                            >
+                                <span aria-hidden="true">+</span>
+                                <span id="save-button-text">Add to catalogue</span>
+                            </button>
                         </div>
+                    </div>
+                </form>
 
-                    </form>
+            </section>
 
-                </section>
+            <!-- FOOTER: no separate year script -->
+            <footer class="page-footer">
+                <a href="./dashboard.html" class="footer-brand" aria-label="Bizvero dashboard">
+                    <span class="footer-brand-mark" aria-hidden="true">B</span>
+                    <span>Bizvero</span>
+                </a>
 
-                <!-- FOOTER -->
-                <footer class="page-footer">
-                    <a href="./dashboard.html" class="footer-brand">
-                        <span class="footer-brand-mark">B</span>
-                        <span>bizvero</span>
-                    </a>
+                <p>Your business. Ready for more.</p>
 
-                    <p>Your business. Ready for more.</p>
+                <nav class="footer-links" aria-label="Footer navigation">
+                    <a href="./dashboard.html">Overview</a>
+                    <a href="./create-business.html">My Business</a>
+                    <a href="./grow-digitally.html">Digital guides</a>
+                </nav>
 
-                    <nav class="footer-links" aria-label="Footer navigation">
-                        <a href="./dashboard.html">Overview</a>
-                        <a href="./create-business.html">My Business</a>
-                        <a href="./grow-digitally.html">Digital guides</a>
-                    </nav>
+                <span class="footer-copyright">Bizvero</span>
+            </footer>
 
-                    <span class="footer-copyright">
-                        &copy; <span id="current-year"></span> Bizvero
-                    </span>
-                </footer>
+        </div>
+    </main>
+</div>
 
-            </div>
-        </main>
-    </div>
+<!-- MOBILE SIDEBAR OVERLAY -->
+<div
+    class="mobile-sidebar-overlay"
+    id="sidebar-overlay"
+    hidden
+></div>
 
-    <!-- MOBILE SIDEBAR OVERLAY -->
-    <div
-        class="mobile-sidebar-overlay"
-        id="sidebar-overlay"
-        hidden
-    ></div>
+<!-- TOAST NOTIFICATIONS -->
+<div
+    class="toast"
+    id="products-toast"
+    role="status"
+    aria-live="polite"
+    hidden
+></div>
 
-    <!-- TOAST NOTIFICATIONS -->
-    <div
-        class="toast"
-        id="products-toast"
-        role="status"
-        aria-live="polite"
-        hidden
-    ></div>
-
-    <!-- JAVASCRIPT -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./javascript/supabase.js"></script>
-    <script src="./javascript/products.js"></script>
-
-    <!-- FOOTER YEAR -->
-    <script>
-        (() => {
-            "use strict";
-
-            const year = document.getElementById("current-year");
-
-            if (year) {
-                year.textContent = new Date().getFullYear();
-            }
-        })();
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./javascript/supabase.js"></script>
+<script src="./javascript/products.js"></script>
 
 </body>
 </html>
