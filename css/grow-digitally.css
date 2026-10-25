@@ -811,4 +811,99 @@
     transition: none;
   }
 }
+/* GROW DIGITALLY — WORKSPACE HEADER */
 
+.growth-workspace-topbar {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 110px;
+    padding: 20px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    background: #ffffff;
+    border-bottom: 1px solid #edf1f4;
+}
+
+.growth-workspace-topbar .topbar-leading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.growth-workspace-topbar .mobile-menu-button {
+    width: 62px;
+    height: 60px;
+    flex: 0 0 62px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0;
+    border: 1px solid #e5ebef;
+    border-radius: 17px;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.growth-workspace-topbar .mobile-menu-button span {
+    display: block;
+    width: 26px;
+    height: 2.5px;
+    flex: 0 0 2.5px;
+    border-radius: 2px;
+    background: #193849;
+}
+
+.growth-workspace-topbar .topbar-title {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.growth-workspace-topbar .topbar-title > span {
+    color: #8b9aa5;
+    font-family: "DM Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+    line-height: 1.4;
+}
+
+.growth-workspace-topbar .topbar-title > strong {
+    color: #193849;
+    font-family: "Manrope", sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.growth-workspace-topbar .topbar-right {
+    display: none !important;
+}
+
+@media (max-width: 700px) {
+    .growth-workspace-topbar {
+        min-height: 110px;
+        padding: 20px 25px;
+    }
+}
+
+@media (max-width: 380px) {
+    .growth-workspace-topbar {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .growth-workspace-topbar .topbar-leading {
+        gap: 12px;
+    }
+
+    .growth-workspace-topbar .topbar-title > strong {
+        font-size: 18px;
+    }
+}
