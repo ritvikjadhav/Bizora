@@ -323,101 +323,100 @@
     updateChecklistCount();
   }
 
- /* =========================================================
-MOBILE SIDEBAR — WORKING NAVIGATION
+ 
+/* =========================================================
+   MOBILE SIDEBAR — BIZVERO
 ========================================================= */
 
 function setupMobileSidebar() {
-const menuButton = $("#mobile-menu-button");
-const sidebar = $("#dashboard-sidebar") || $("#sidebar");
-const overlay = $("#sidebar-overlay");
-const page = document.querySelector(".growth-page");
+  const menuButton = document.getElementById("mobile-menu-button");
+  const sidebar = document.getElementById("dashboard-sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
 
-if (!menuButton || !sidebar) {
-console.error("[Bizvero] Mobile navigation elements not found.", {
-menuButton: Boolean(menuButton),
-sidebar: Boolean(sidebar)
-});
-return;
+  if (!menuButton || !sidebar || !overlay) {
+    console.error("[Bizvero] Sidebar elements missing.");
+    return;
+  }
+
+  // Avoid attaching listeners more than once.
+  if (menuButton.dataset.sidebarInitialized === "true") {
+    return;
+  }
+
+  menuButton.dataset.sidebarInitialized = "true";
+
+  const mobileQuery = window.matchMedia("(max-width: 900px)");
+
+  function setSidebarOpen(open) {
+    const shouldOpen = Boolean(open) && mobileQuery.matches;
+
+    sidebar.classList.toggle("is-open", shouldOpen);
+    document.body.classList.toggle("sidebar-menu-open", shouldOpen);
+
+    overlay.hidden = !shouldOpen;
+    overlay.classList.toggle("is-visible", shouldOpen);
+
+    menuButton.setAttribute(
+      "aria-expanded",
+      String(shouldOpen)
+    );
+
+    menuButton.setAttribute(
+      "aria-label",
+      shouldOpen ? "Close navigation" : "Open navigation"
+    );
+  }
+
+  // Hamburger button
+  menuButton.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    const currentlyOpen = sidebar.classList.contains("is-open");
+
+    setSidebarOpen(!currentlyOpen);
+  });
+
+  // Click outside to close
+  overlay.addEventListener("click", () => {
+    setSidebarOpen(false);
+  });
+
+  // Close when a sidebar link is selected
+  sidebar.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      setSidebarOpen(false);
+    });
+  });
+
+  // Escape key
+  document.addEventListener("keydown", (event) => {
+    if (
+      event.key === "Escape" &&
+      sidebar.classList.contains("is-open")
+    ) {
+      setSidebarOpen(false);
+      menuButton.focus();
+    }
+  });
+
+  // Reset when returning to desktop
+  const handleViewportChange = () => {
+    if (!mobileQuery.matches) {
+      setSidebarOpen(false);
+    }
+  };
+
+  if (mobileQuery.addEventListener) {
+    mobileQuery.addEventListener("change", handleViewportChange);
+  } else {
+    mobileQuery.addListener(handleViewportChange);
+  }
+
+  // Initial state
+  setSidebarOpen(false);
 }
 
-// Prevent duplicate event listeners if initialization runs again.
-if (menuButton.dataset.sidebarInitialized === "true") return;
-menuButton.dataset.sidebarInitialized = "true";
 
-const mobileQuery = window.matchMedia("(max-width: 900px)");
-
-function setMenuOpen(open) {
-// The drawer only opens on mobile screens.
-const shouldOpen = Boolean(open) && mobileQuery.matches;
-
-sidebar.classList.toggle("is-open", shouldOpen);
-
-menuButton.setAttribute("aria-expanded", String(shouldOpen));
-menuButton.setAttribute(
-  "aria-label",
-  shouldOpen ? "Close navigation" : "Open navigation"
-);
-
-if (overlay) {
-  overlay.hidden = !shouldOpen;
-  overlay.classList.toggle("is-visible", shouldOpen);
-  overlay.setAttribute("aria-hidden", String(!shouldOpen));
-}
-
-// Lock page scrolling while the drawer is open.
-document.body.classList.toggle("sidebar-open", shouldOpen);
-
-// Match the scroll-lock selector used by grow-digitally.css:
-// .growth-page.sidebar-menu-open
-if (page) {
-  page.classList.toggle("sidebar-menu-open", shouldOpen);
-}
-
-}
-
-menuButton.addEventListener("click", (event) => {
-event.preventDefault();
-setMenuOpen(!sidebar.classList.contains("is-open"));
-});
-
-if (overlay) {
-overlay.addEventListener("click", () => setMenuOpen(false));
-}
-
-// Close after navigating to an item in the sidebar.
-sidebar.addEventListener("click", (event) => {
-const link = event.target.closest("a");
-
-if (link) setMenuOpen(false);
-
-});
-
-// Close with Escape.
-document.addEventListener("keydown", (event) => {
-if (event.key === "Escape" && sidebar.classList.contains("is-open")) {
-setMenuOpen(false);
-menuButton.focus();
-}
-});
-
-// Close the drawer when returning to desktop width.
-function handleViewportChange() {
-if (!mobileQuery.matches) {
-setMenuOpen(false);
-}
-}
-
-if (mobileQuery.addEventListener) {
-mobileQuery.addEventListener("change", handleViewportChange);
-} else {
-// Older browser fallback.
-mobileQuery.addListener(handleViewportChange);
-}
-
-// Correct initial state.
-setMenuOpen(false);
-}
 
   /* =======================================================
      LOGOUT
