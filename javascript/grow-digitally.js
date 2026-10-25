@@ -1,4 +1,3 @@
-
 /* =========================================================
    BIZVERO — GROW DIGITALLY
    Sales ideas, digital tools, UPI safety and navigation
@@ -44,18 +43,13 @@
 
   /* =======================================================
      DIGITAL TOOL FILTERS
-     Supports:
-     data-tool-filter="all|visibility|payments|communication|sales"
-     data-tool-category="visibility|payments|communication|sales"
   ======================================================= */
 
   function setupToolFilters() {
     const filters = $$("[data-tool-filter]");
     const cards = $$("[data-tool-category]");
 
-    if (!filters.length || !cards.length) {
-      return;
-    }
+    if (!filters.length || !cards.length) return;
 
     function applyFilter(filterButton) {
       const category = filterButton.dataset.toolFilter;
@@ -72,17 +66,13 @@
           .split(/\s+/)
           .filter(Boolean);
 
-        const visible =
-          category === "all" || categories.includes(category);
-
-        card.hidden = !visible;
+        card.hidden =
+          category !== "all" && !categories.includes(category);
       });
     }
 
     filters.forEach((button) => {
-      button.addEventListener("click", () => {
-        applyFilter(button);
-      });
+      button.addEventListener("click", () => applyFilter(button));
     });
 
     const initialFilter =
@@ -95,15 +85,6 @@
 
   /* =======================================================
      SALES BOOSTER
-     Uses predefined suggestions. No AI API or backend needed.
-
-     Optional HTML:
-     #sales-booster-form
-     #sales-booster-type
-     #sales-booster-result
-     #sales-booster-title
-     #sales-booster-description
-     #sales-booster-action
   ======================================================= */
 
   const salesIdeas = {
@@ -125,7 +106,8 @@
         "near your best-selling item, explain its main benefit, or " +
         "include it in a relevant bundle. Avoid buying more stock " +
         "until you understand whether customers want it.",
-      action: "Select one product and give it a clear, useful description."
+      action:
+        "Select one product and give it a clear, useful description."
     },
 
     repeat: {
@@ -136,7 +118,8 @@
         "a tailor could remind customers about seasonal clothing " +
         "services. Message customers only when appropriate and with " +
         "their permission.",
-      action: "Identify one product or service customers buy regularly."
+      action:
+        "Identify one product or service customers buy regularly."
     },
 
     whatsapp: {
@@ -156,7 +139,8 @@
         "number consistent across your online profiles. Add genuine " +
         "photos and explain what makes your products or services " +
         "useful to local customers.",
-      action: "Check your business details on your main online profile."
+      action:
+        "Check your business details on your main online profile."
     },
 
     pricing: {
@@ -165,7 +149,8 @@
         "Calculate the product cost, packaging, delivery and other " +
         "relevant expenses before reducing your price. A bundle or " +
         "helpful add-on may provide more value than a large discount.",
-      action: "Work out your minimum acceptable selling price first."
+      action:
+        "Work out your minimum acceptable selling price first."
     }
   };
 
@@ -174,9 +159,7 @@
     const selector = $("#sales-booster-type");
     const result = $("#sales-booster-result");
 
-    if (!form || !selector || !result) {
-      return;
-    }
+    if (!form || !selector || !result) return;
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -208,11 +191,6 @@
 
   /* =======================================================
      COPY BUTTONS
-     Useful for safety checklists, business descriptions,
-     product descriptions and ready-to-use sales messages.
-
-     Add data-copy-text="Text to copy" to any button.
-     Or add data-copy-target="#element-id" to copy element text.
   ======================================================= */
 
   async function copyText(text) {
@@ -230,6 +208,7 @@
         textarea.value = text;
         textarea.setAttribute("readonly", "");
         textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
         textarea.style.opacity = "0";
 
         document.body.appendChild(textarea);
@@ -254,9 +233,18 @@
     $$("[data-copy-text], [data-copy-target]").forEach((button) => {
       button.addEventListener("click", () => {
         const targetSelector = button.dataset.copyTarget;
-        const target = targetSelector
-          ? $(targetSelector)
-          : null;
+        let target = null;
+
+        if (targetSelector) {
+          try {
+            target = $(targetSelector);
+          } catch (error) {
+            console.warn(
+              "[Bizvero] Invalid copy target selector.",
+              error
+            );
+          }
+        }
 
         const text = target
           ? target.innerText
@@ -269,9 +257,6 @@
 
   /* =======================================================
      PAYMENT SAFETY CHECKLIST
-     Optional standalone checklist.
-     Add data-safety-checklist to its container.
-     Each checkbox inside is saved for this browser.
   ======================================================= */
 
   const SAFETY_STORAGE_KEY = "bizvero_upi_safety_checklist";
@@ -279,9 +264,7 @@
   function setupSafetyChecklist() {
     const checklist = $("[data-safety-checklist]");
 
-    if (!checklist) {
-      return;
-    }
+    if (!checklist) return;
 
     const checkboxes = $$('input[type="checkbox"]', checklist);
 
@@ -292,7 +275,8 @@
         localStorage.getItem(SAFETY_STORAGE_KEY) || "{}"
       );
 
-      if (!saved || typeof saved !== "object" || Array.isArray(saved)) {
+      if (!saved || typeof saved !== "object" ||
+          Array.isArray(saved)) {
         saved = {};
       }
     } catch {
@@ -313,7 +297,10 @@
             JSON.stringify(saved)
           );
         } catch (error) {
-          console.warn("[Bizvero] Checklist could not be saved.", error);
+          console.warn(
+            "[Bizvero] Checklist could not be saved.",
+            error
+          );
         }
 
         updateChecklistCount();
@@ -328,7 +315,8 @@
           (checkbox) => checkbox.checked
         ).length;
 
-        count.textContent = `${completed} of ${checkboxes.length} checked`;
+        count.textContent =
+          `${completed} of ${checkboxes.length} checked`;
       }
     }
 
@@ -337,73 +325,79 @@
 
   /* =======================================================
      MOBILE SIDEBAR
-     Supports the existing dashboard sidebar and overlay.
+     Supports both:
+       #dashboard-sidebar (workspace sidebar)
+       #sidebar          (legacy sidebar)
+
+     Hamburger:
+       #mobile-menu-button
+
+     Backdrop:
+       #sidebar-overlay
   ======================================================= */
 
   function setupMobileSidebar() {
     const menuButton = $("#mobile-menu-button");
-    const sidebar = $("#sidebar");
+
+    const sidebar =
+      $("#dashboard-sidebar") || $("#sidebar");
+
     const overlay = $("#sidebar-overlay");
 
-    if (!sidebar) {
-      return;
-    }
+    if (!sidebar || !menuButton) return;
 
-    function closeSidebar() {
-      sidebar.classList.remove("is-open");
+    function setMenuOpen(open) {
+      sidebar.classList.toggle("is-open", open);
 
       if (overlay) {
-        overlay.classList.remove("is-visible");
+        overlay.classList.toggle("is-visible", open);
+        overlay.hidden = !open;
       }
 
-      if (menuButton) {
-        menuButton.setAttribute("aria-expanded", "false");
-      }
+      menuButton.setAttribute(
+        "aria-expanded",
+        String(open)
+      );
 
-      document.body.classList.remove("sidebar-open");
+      menuButton.setAttribute(
+        "aria-label",
+        open ? "Close navigation" : "Open navigation"
+      );
+
+      document.body.classList.toggle("sidebar-open", open);
     }
 
-    function openSidebar() {
-      sidebar.classList.add("is-open");
+    menuButton.addEventListener("click", () => {
+      const isOpen = sidebar.classList.contains("is-open");
+      setMenuOpen(!isOpen);
+    });
 
-      if (overlay) {
-        overlay.classList.add("is-visible");
-      }
-
-      if (menuButton) {
-        menuButton.setAttribute("aria-expanded", "true");
-      }
-
-      document.body.classList.add("sidebar-open");
-    }
-
-    if (menuButton) {
-      menuButton.addEventListener("click", () => {
-        sidebar.classList.contains("is-open")
-          ? closeSidebar()
-          : openSidebar();
+    if (overlay) {
+      overlay.addEventListener("click", () => {
+        setMenuOpen(false);
       });
     }
 
-    if (overlay) {
-      overlay.addEventListener("click", closeSidebar);
-    }
-
     $$("a", sidebar).forEach((link) => {
-      link.addEventListener("click", closeSidebar);
+      link.addEventListener("click", () => {
+        setMenuOpen(false);
+      });
     });
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
-        closeSidebar();
+        setMenuOpen(false);
       }
     });
 
     window.addEventListener("resize", () => {
       if (window.innerWidth > 900) {
-        closeSidebar();
+        setMenuOpen(false);
       }
     });
+
+    // Keep the initial state consistent with the HTML.
+    setMenuOpen(false);
   }
 
   /* =======================================================
@@ -414,17 +408,12 @@
   function setupLogout() {
     const button = $("#logout-button");
 
-    if (!button) {
-      return;
-    }
+    if (!button) return;
 
     button.addEventListener("click", async () => {
-      if (button.disabled) {
-        return;
-      }
+      if (button.disabled) return;
 
       const originalHTML = button.innerHTML;
-
       button.disabled = true;
 
       try {
@@ -434,9 +423,7 @@
         if (client?.auth) {
           const { error } = await client.auth.signOut();
 
-          if (error) {
-            throw error;
-          }
+          if (error) throw error;
         }
 
         window.location.href = "./auth.html";
@@ -453,7 +440,6 @@
 
   /* =======================================================
      HERO NAVIGATION
-     Keep the existing hero card and its visual design.
   ======================================================= */
 
   function setupHeroNavigation() {
@@ -461,9 +447,7 @@
       link.addEventListener("click", (event) => {
         const target = $("#growth-guides");
 
-        if (!target) {
-          return;
-        }
+        if (!target) return;
 
         event.preventDefault();
 
@@ -473,7 +457,11 @@
         });
 
         if (window.history.replaceState) {
-          window.history.replaceState(null, "", "#growth-guides");
+          window.history.replaceState(
+            null,
+            "",
+            "#growth-guides"
+          );
         }
       });
     });
