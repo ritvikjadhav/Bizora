@@ -27,79 +27,121 @@
 
   <div class="app-layout">
 
-    <!-- SIDEBAR: preserve Bizvero workspace navigation -->
+    
+<!-- =========================================
+     SIDEBAR — MATCH DASHBOARD
+========================================== -->
 
-    <aside class="sidebar" id="sidebar">
+<aside
+    class="workspace-sidebar"
+    id="dashboard-sidebar"
+    aria-label="Workspace sidebar"
+>
+    <a
+        class="workspace-brand"
+        href="./index.html"
+        aria-label="Bizvero home"
+    >
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span class="workspace-brand-name">Bizvero</span>
+    </a>
 
-      <a class="brand" href="./dashboard.html" aria-label="Bizvero home">
-        <span class="brand-mark">B</span>
-        <span class="brand-name">bizvero<span>.</span></span>
-      </a>
+    <div class="sidebar-caption">WORKSPACE</div>
 
-      <div class="sidebar-section-label">Workspace</div>
-
-      <nav class="sidebar-nav" aria-label="Main navigation">
-
-        <a class="nav-link" href="./dashboard.html">
-          <span class="nav-icon" aria-hidden="true">▦</span>
-          <span>Overview</span>
+    <nav class="workspace-nav" aria-label="Main navigation">
+        <a class="workspace-nav-link" href="./dashboard.html">
+            <span class="nav-icon" aria-hidden="true">⌂</span>
+            <span>Overview</span>
         </a>
 
-        <a class="nav-link" href="./create-business.html">
-          <span class="nav-icon" aria-hidden="true">⌂</span>
-          <span>My Business</span>
+        <a class="workspace-nav-link" href="./create-business.html">
+            <span class="nav-icon" aria-hidden="true">▤</span>
+            <span>My Business</span>
+            <span class="nav-chevron" aria-hidden="true">↗</span>
         </a>
 
-        <a class="nav-link" href="./products.html">
-          <span class="nav-icon" aria-hidden="true">▤</span>
-          <span>Products &amp; Services</span>
+        <a class="workspace-nav-link" href="./products.html">
+            <span class="nav-icon" aria-hidden="true">▦</span>
+            <span>Products &amp; Services</span>
         </a>
 
-        <a class="nav-link is-active"
-           href="./grow-digitally.html"
-           aria-current="page">
-          <span class="nav-icon" aria-hidden="true">✳</span>
-          <span>Grow Digitally</span>
+        <a
+            class="workspace-nav-link is-active"
+            href="./grow-digitally.html"
+            aria-current="page"
+        >
+            <span class="nav-icon" aria-hidden="true">✳</span>
+            <span>Grow Digitally</span>
         </a>
+    </nav>
 
-      </nav>
+    <div class="sidebar-bottom">
+        <div class="sidebar-guide">
+            <span class="guide-kicker">YOUR NEXT OPPORTUNITY</span>
 
-      <div class="sidebar-secondary">
-        <a class="nav-link" href="./account.html">
-          <span class="nav-icon" aria-hidden="true">⚙</span>
-          <span>Account settings</span>
-        </a>
-      </div>
+            <div class="sidebar-guide-icon" aria-hidden="true">✦</div>
 
-      <div class="sidebar-guidance">
-        <span class="guidance-eyebrow">A LITTLE GUIDANCE</span>
-        <h2>Make digital feel simple.</h2>
-        <p>Small, practical steps to help your business reach more customers.</p>
-        <a href="#growth-guides" class="guidance-link">
-          Explore guides <span aria-hidden="true">→</span>
-        </a>
-      </div>
+            <strong>Small steps. Real progress.</strong>
 
-      <div class="sidebar-user">
-        <div class="sidebar-user-avatar" id="sidebar-user-avatar">B</div>
-        <div class="sidebar-user-details">
-          <span class="sidebar-user-name" id="sidebar-user-name">Your account</span>
-          <span class="sidebar-user-email" id="sidebar-user-email">Bizvero workspace</span>
+            <p>
+                Build your online presence one useful step at a time.
+            </p>
+
+            <a href="#growth-guides">
+                Explore growth guides
+                <span aria-hidden="true">→</span>
+            </a>
         </div>
-        <button class="sidebar-user-menu"
-                id="logout-button"
-                type="button"
-                aria-label="Sign out"
-                title="Sign out">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="5" cy="12" r="1"/>
-            <circle cx="12" cy="12" r="1"/>
-            <circle cx="19" cy="12" r="1"/>
-          </svg>
-        </button>
-      </div>
 
-    </aside>
+        <a
+            class="workspace-nav-link settings-nav-link"
+            href="#account-settings"
+            data-settings-link
+        >
+            <span class="nav-icon" aria-hidden="true">⚙</span>
+            <span>Account settings</span>
+        </a>
+
+        <div class="sidebar-account">
+            <button
+                class="account-trigger"
+                id="profile-menu-button"
+                type="button"
+                aria-expanded="false"
+                aria-controls="profile-menu"
+            >
+                <span class="account-avatar" id="profile-avatar">B</span>
+
+                <span class="account-copy">
+                    <strong id="profile-name">Your account</strong>
+                    <small id="profile-email">Loading account…</small>
+                </span>
+
+                <span class="account-more" aria-hidden="true">···</span>
+            </button>
+
+            <div class="account-menu" id="profile-menu" hidden>
+                <a href="#account-settings" data-settings-link>
+                    Account settings
+                </a>
+
+                <button type="button" id="logout-button">
+                    Log out
+                </button>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- Mobile sidebar backdrop -->
+<button
+    class="sidebar-scrim"
+    id="sidebar-overlay"
+    type="button"
+    aria-label="Close navigation"
+    hidden
+></button>
+
 
     <!-- MAIN PAGE -->
 
