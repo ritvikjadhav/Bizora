@@ -762,3 +762,53 @@
   }
 }
 
+/* Hamburger navigation button */
+.growth-page .growth-menu-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0;
+  border: 1px solid #e3eaf0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgb(16 45 70 / 5%);
+  cursor: pointer;
+}
+
+.growth-page .growth-menu-toggle span {
+  display: block;
+  width: 19px;
+  height: 2px;
+  flex: 0 0 2px;
+  border-radius: 2px;
+  background: #123b50;
+}
+
+.growth-page .growth-menu-toggle:hover {
+  border-color: #65d3c5;
+  background: #f2fbf9;
+}
+
+@media (max-width: 700px) {
+  .growth-page .growth-menu-toggle {
+    display: flex;
+    position: relative;
+    z-index: 10;
+    margin: 12px 20px 0;
+  }
+
+  .growth-page .growth-content {
+    padding-top: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .growth-page .growth-menu-toggle {
+    transition: none;
+  }
+}
+
