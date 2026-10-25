@@ -323,82 +323,101 @@
     updateChecklistCount();
   }
 
-  /* =======================================================
-     MOBILE SIDEBAR
-     Supports both:
-       #dashboard-sidebar (workspace sidebar)
-       #sidebar          (legacy sidebar)
+ /* =========================================================
+MOBILE SIDEBAR — WORKING NAVIGATION
+========================================================= */
 
-     Hamburger:
-       #mobile-menu-button
+function setupMobileSidebar() {
+const menuButton = $("#mobile-menu-button");
+const sidebar = $("#dashboard-sidebar") || $("#sidebar");
+const overlay = $("#sidebar-overlay");
+const page = document.querySelector(".growth-page");
 
-     Backdrop:
-       #sidebar-overlay
-  ======================================================= */
+if (!menuButton || !sidebar) {
+console.error("[Bizvero] Mobile navigation elements not found.", {
+menuButton: Boolean(menuButton),
+sidebar: Boolean(sidebar)
+});
+return;
+}
 
-  function setupMobileSidebar() {
-    const menuButton = $("#mobile-menu-button");
+// Prevent duplicate event listeners if initialization runs again.
+if (menuButton.dataset.sidebarInitialized === "true") return;
+menuButton.dataset.sidebarInitialized = "true";
 
-    const sidebar =
-      $("#dashboard-sidebar") || $("#sidebar");
+const mobileQuery = window.matchMedia("(max-width: 900px)");
 
-    const overlay = $("#sidebar-overlay");
+function setMenuOpen(open) {
+// The drawer only opens on mobile screens.
+const shouldOpen = Boolean(open) && mobileQuery.matches;
 
-    if (!sidebar || !menuButton) return;
+sidebar.classList.toggle("is-open", shouldOpen);
 
-    function setMenuOpen(open) {
-      sidebar.classList.toggle("is-open", open);
+menuButton.setAttribute("aria-expanded", String(shouldOpen));
+menuButton.setAttribute(
+  "aria-label",
+  shouldOpen ? "Close navigation" : "Open navigation"
+);
 
-      if (overlay) {
-        overlay.classList.toggle("is-visible", open);
-        overlay.hidden = !open;
-      }
+if (overlay) {
+  overlay.hidden = !shouldOpen;
+  overlay.classList.toggle("is-visible", shouldOpen);
+  overlay.setAttribute("aria-hidden", String(!shouldOpen));
+}
 
-      menuButton.setAttribute(
-        "aria-expanded",
-        String(open)
-      );
+// Lock page scrolling while the drawer is open.
+document.body.classList.toggle("sidebar-open", shouldOpen);
 
-      menuButton.setAttribute(
-        "aria-label",
-        open ? "Close navigation" : "Open navigation"
-      );
+// Match the scroll-lock selector used by grow-digitally.css:
+// .growth-page.sidebar-menu-open
+if (page) {
+  page.classList.toggle("sidebar-menu-open", shouldOpen);
+}
 
-      document.body.classList.toggle("sidebar-open", open);
-    }
+}
 
-    menuButton.addEventListener("click", () => {
-      const isOpen = sidebar.classList.contains("is-open");
-      setMenuOpen(!isOpen);
-    });
+menuButton.addEventListener("click", (event) => {
+event.preventDefault();
+setMenuOpen(!sidebar.classList.contains("is-open"));
+});
 
-    if (overlay) {
-      overlay.addEventListener("click", () => {
-        setMenuOpen(false);
-      });
-    }
+if (overlay) {
+overlay.addEventListener("click", () => setMenuOpen(false));
+}
 
-    $$("a", sidebar).forEach((link) => {
-      link.addEventListener("click", () => {
-        setMenuOpen(false);
-      });
-    });
+// Close after navigating to an item in the sidebar.
+sidebar.addEventListener("click", (event) => {
+const link = event.target.closest("a");
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        setMenuOpen(false);
-      }
-    });
+if (link) setMenuOpen(false);
 
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 900) {
-        setMenuOpen(false);
-      }
-    });
+});
 
-    // Keep the initial state consistent with the HTML.
-    setMenuOpen(false);
-  }
+// Close with Escape.
+document.addEventListener("keydown", (event) => {
+if (event.key === "Escape" && sidebar.classList.contains("is-open")) {
+setMenuOpen(false);
+menuButton.focus();
+}
+});
+
+// Close the drawer when returning to desktop width.
+function handleViewportChange() {
+if (!mobileQuery.matches) {
+setMenuOpen(false);
+}
+}
+
+if (mobileQuery.addEventListener) {
+mobileQuery.addEventListener("change", handleViewportChange);
+} else {
+// Older browser fallback.
+mobileQuery.addListener(handleViewportChange);
+}
+
+// Correct initial state.
+setMenuOpen(false);
+}
 
   /* =======================================================
      LOGOUT
