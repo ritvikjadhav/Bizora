@@ -2186,3 +2186,93 @@
     transition: none;
   }
 }
+/* FINAL HEADER + HAMBURGER OVERRIDE */
+.growth-page .growth-main > .growth-workspace-topbar {
+    box-sizing: border-box !important;
+    display: flex !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 79px !important;
+    margin: 0 !important;
+    padding: 14px 42px !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgb(229 235 240 / 85%) !important;
+    border-radius: 0 !important;
+    background: rgb(255 255 255 / 94%) !important;
+    box-shadow: none !important;
+    align-items: center !important;
+}
+
+.growth-page .growth-workspace-topbar .mobile-menu-button {
+    box-sizing: border-box !important;
+    display: none;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    flex: 0 0 40px !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    margin: 0 !important;
+    padding: 9px !important;
+    border: 1px solid #E5EBF0 !important;
+    border-radius: 11px !important;
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+    appearance: none !important;
+    cursor: pointer;
+}
+
+.growth-page .growth-workspace-topbar .mobile-menu-button > span {
+    display: block !important;
+    width: 17px !important;
+    min-width: 17px !important;
+    height: 2px !important;
+    min-height: 2px !important;
+    flex: 0 0 2px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 3px !important;
+    background: #102D46 !important;
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+@media (max-width: 900px) {
+    .growth-page .growth-main > .growth-workspace-topbar {
+        min-height: 72px !important;
+        padding: 12px 24px !important;
+    }
+
+    .growth-page .growth-workspace-topbar .mobile-menu-button {
+        display: flex !important;
+    }
+}
+
+@media (max-width: 650px) {
+    .growth-page .growth-main > .growth-workspace-topbar {
+        padding: 11px 16px !important;
+    }
+
+    .growth-page .growth-workspace-topbar .topbar-leading {
+        gap: 10px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .growth-page .growth-main > .growth-workspace-topbar {
+        padding-right: 11px !important;
+        padding-left: 11px !important;
+    }
+
+    .growth-page .growth-workspace-topbar .mobile-menu-button {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
+        flex-basis: 36px !important;
+    }
+}
