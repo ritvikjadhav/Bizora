@@ -266,13 +266,31 @@
 }
 
 
+
 /* ==========================================
-   BIZVERO SIDEBAR — MOBILE DRAWER
-   Screenshot-matched layout
+   ACCESSIBILITY — REDUCED MOTION
+   ========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .growth-page *,
+  .growth-page *::before,
+  .growth-page *::after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================
+   BIZVERO WORKSPACE SIDEBAR
+   Matches the new dashboard sidebar HTML
    ========================================== */
 
-/* Desktop sidebar */
-.growth-page .sidebar {
+.growth-page .app-layout {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.growth-page .workspace-sidebar {
   position: fixed;
   inset: 0 auto 0 0;
   z-index: 1000;
@@ -283,8 +301,10 @@
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: auto;
-  background: #fff;
   border-right: 1px solid #e6ebf1;
+  background: #fff;
+  color: #142d42;
+  overscroll-behavior: contain;
 }
 
 .growth-page .growth-main {
@@ -294,252 +314,391 @@
 }
 
 /* Brand */
-.growth-page .sidebar .brand {
+.growth-page .workspace-brand {
   display: flex;
+  min-height: 88px;
+  flex: 0 0 auto;
   align-items: center;
   gap: 12px;
-  min-height: 100px;
-  padding: 22px 26px;
+  padding: 20px 24px;
 }
 
-.growth-page .sidebar .brand-mark {
+.growth-page .workspace-brand .brand-mark {
   display: grid;
-  width: 46px;
-  height: 46px;
-  flex: 0 0 46px;
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
   place-items: center;
-  border-radius: 15px;
+  border-radius: 14px;
   background: linear-gradient(145deg, #123b58, #176b78);
-  box-shadow: 0 5px 14px rgb(16 45 70 / 16%);
+  box-shadow: 0 5px 14px rgb(16 45 70 / 12%);
   color: #fff;
-  font-size: 23px;
+  font-family: "Manrope", sans-serif;
+  font-size: 22px;
   font-weight: 800;
 }
 
-.growth-page .sidebar .brand-name {
+.growth-page .workspace-brand-name {
   color: #102d46;
-  font-size: 23px;
+  font-family: "Manrope", sans-serif;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.7px;
 }
 
-.growth-page .sidebar .brand-name span {
-  color: #278e89;
-}
-
-/* Workspace label */
-.growth-page .sidebar-section-label {
-  margin: 24px 26px 16px;
+.growth-page .sidebar-caption {
+  margin: 19px 24px 12px;
   color: #9aa8b4;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 2px;
+  letter-spacing: 1.8px;
 }
 
-/* Vertical navigation */
-.growth-page .sidebar-nav,
-.growth-page .sidebar-secondary {
+/* Main navigation */
+.growth-page .workspace-nav {
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
-  gap: 8px;
-  padding: 0 16px;
+  gap: 6px;
+  padding: 0 12px;
 }
 
-.growth-page .sidebar .nav-link {
+.growth-page .workspace-nav-link {
   display: flex;
-  min-height: 60px;
+  min-height: 48px;
   align-items: center;
-  gap: 17px;
-  padding: 0 24px;
+  gap: 12px;
+  padding: 0 14px;
   border: 1px solid transparent;
-  border-radius: 19px;
+  border-radius: 13px;
+  background: transparent;
   color: #697b8b;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   text-decoration: none;
-  transition: background 180ms ease, color 180ms ease;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
 
-.growth-page .sidebar .nav-link:hover {
+.growth-page .workspace-nav-link:hover {
   background: #f4f9f8;
   color: #276f6c;
 }
 
-.growth-page .sidebar .nav-link.active,
-.growth-page .sidebar .nav-link[aria-current="page"] {
+.growth-page .workspace-nav-link.is-active,
+.growth-page .workspace-nav-link[aria-current="page"] {
   border-color: #e0f0ec;
   background: linear-gradient(110deg, #e7f6f3, #f1f9f7);
   color: #347c78;
 }
 
-.growth-page .sidebar .nav-icon {
-  display: inline-grid;
-  width: 24px;
-  flex: 0 0 24px;
-  place-items: center;
-  color: inherit;
-  font-size: 21px;
+.growth-page .workspace-nav-link > svg,
+.growth-page .workspace-nav-link > .nav-icon,
+.growth-page .workspace-nav-link > .nav-link-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
 }
 
-/* Growth guidance card */
-.growth-page .sidebar-guidance {
+/* Sidebar bottom area */
+.growth-page .sidebar-bottom {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 0 12px 14px;
+}
+
+.growth-page .sidebar-guide {
   position: relative;
   overflow: hidden;
-  margin: auto 16px 22px;
-  padding: 27px 26px;
+  padding: 19px 17px;
   border: 1px solid #e1efec;
-  border-radius: 27px;
+  border-radius: 20px;
   background:
     radial-gradient(
       circle at 100% 0%,
       rgb(101 211 197 / 15%),
-      transparent 32%
+      transparent 36%
     ),
     linear-gradient(145deg, #f5fbf9, #eef8f6);
 }
 
-.growth-page .sidebar-guidance::after {
+.growth-page .sidebar-guide::after {
   position: absolute;
-  top: -36px;
-  right: -34px;
-  width: 135px;
-  height: 135px;
-  border: 1px solid rgb(39 142 137 / 9%);
+  top: -45px;
+  right: -42px;
+  width: 120px;
+  height: 120px;
+  border: 1px solid rgb(39 142 137 / 10%);
   border-radius: 50%;
   content: "";
   pointer-events: none;
 }
 
-.growth-page .guidance-eyebrow {
+.growth-page .guide-kicker {
+  position: relative;
+  z-index: 1;
   color: #578b86;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 800;
-  letter-spacing: 1.7px;
+  letter-spacing: 1.2px;
+  line-height: 1.6;
 }
 
-.growth-page .sidebar-guidance p {
+.growth-page .sidebar-guide-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  margin: 13px 0 10px;
+  border-radius: 11px;
+  background: #dff3ee;
+  color: #278e89;
+  font-size: 20px;
+}
+
+.growth-page .sidebar-guide strong {
+  position: relative;
+  z-index: 1;
+  display: block;
   color: #102d46;
-  font-size: 13px;
-  line-height: 1.8;
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.5;
 }
 
-.growth-page .guidance-link {
+.growth-page .sidebar-guide p {
+  position: relative;
+  z-index: 1;
+  margin: 7px 0 0;
+  color: #718294;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.growth-page .sidebar-guide > a {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 7px;
   margin-top: 12px;
-  color: #478781;
-  font-size: 13px;
+  color: #267d79;
+  font-size: 11px;
   font-weight: 800;
 }
 
-/* Account settings */
-.growth-page .sidebar-secondary {
-  margin-bottom: 18px;
+.growth-page .sidebar-guide > a:hover {
+  color: #102d46;
 }
 
-.growth-page .sidebar-user {
+/* Account settings link */
+.growth-page .settings-nav-link {
+  min-height: 43px;
+  font-size: 12px;
+}
+
+/* Account/profile control */
+.growth-page .sidebar-account {
+  position: relative;
+  min-width: 0;
+  padding-top: 12px;
+  border-top: 1px solid #edf0f4;
+}
+
+.growth-page .account-trigger {
   display: flex;
+  width: 100%;
+  min-width: 0;
   align-items: center;
-  gap: 13px;
-  margin: 0 16px 18px;
-  padding: 17px 15px;
-  border: 1px solid #e4e9ed;
-  border-radius: 23px;
+  gap: 10px;
+  padding: 10px 7px;
+  border: 1px solid transparent;
+  border-radius: 13px;
   background: #fff;
+  color: #142d42;
+  text-align: left;
+  cursor: pointer;
 }
 
-.growth-page .sidebar-user-avatar {
+.growth-page .account-trigger:hover {
+  border-color: #e6ebf1;
+  background: #f8fafc;
+}
+
+.growth-page .account-avatar {
   display: grid;
-  width: 63px;
-  height: 63px;
-  flex: 0 0 63px;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
   place-items: center;
   border: 1px solid #dcefeb;
-  border-radius: 50%;
+  border-radius: 12px;
   background: #e8f7f4;
-  color: #4b8984;
-  font-size: 22px;
+  color: #347c78;
+  font-size: 15px;
+  font-weight: 800;
 }
 
-.growth-page .sidebar-user-details {
+.growth-page .account-copy {
+  display: block;
   min-width: 0;
   flex: 1;
 }
 
-.growth-page .sidebar-user-name,
-.growth-page .sidebar-user-email {
+.growth-page .account-copy strong,
+.growth-page .account-copy small {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.growth-page .sidebar-user-name {
-  color: #102d46;
-  font-size: 14px;
+.growth-page .account-copy strong {
+  color: #20384b;
+  font-size: 11px;
   font-weight: 800;
 }
 
-.growth-page .sidebar-user-email {
-  margin-top: 8px;
-  color: #8593a1;
-  font-size: 12px;
+.growth-page .account-copy small {
+  margin-top: 4px;
+  color: #8491a0;
+  font-size: 10px;
 }
 
-.growth-page .sidebar-user-menu {
+.growth-page .account-more {
   flex: 0 0 auto;
   color: #82909c;
+  font-size: 20px;
+  line-height: 1;
 }
 
-/* Drawer backdrop */
-.growth-page .sidebar-overlay {
+.growth-page .account-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 1010;
+  padding: 6px;
+  border: 1px solid #e4e9ef;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgb(8 27 50 / 12%);
+}
+
+.growth-page .account-menu a,
+.growth-page .account-menu button {
+  display: flex;
+  width: 100%;
+  min-height: 39px;
+  align-items: center;
+  padding: 9px 11px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #42586a;
+  font-size: 12px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.growth-page .account-menu a:hover,
+.growth-page .account-menu button:hover {
+  background: #f3f8f7;
+  color: #267d79;
+}
+
+/* Mobile drawer backdrop */
+.growth-page .sidebar-scrim {
   display: none;
 }
 
 /* ==========================================
+   TABLET
+   ========================================== */
+@media (max-width: 1000px) and (min-width: 701px) {
+  .growth-page .workspace-sidebar {
+    width: 230px;
+  }
+
+  .growth-page .growth-main {
+    margin-left: 230px;
+  }
+
+  .growth-page .workspace-brand {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .growth-page .sidebar-guide {
+    padding: 16px 14px;
+  }
+
+  .growth-page .workspace-nav-link {
+    gap: 9px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 12px;
+  }
+}
+
+/* ==========================================
    MOBILE DRAWER
+   Requires the sidebar JS to toggle:
+   .is-open on .workspace-sidebar
+   .is-visible on .sidebar-scrim
    ========================================== */
 @media (max-width: 700px) {
-  .growth-page .sidebar {
-    position: fixed;
-    inset: 0 auto 0 0;
+  .growth-page .growth-main {
+    width: 100%;
+    min-height: 100vh;
+    margin-left: 0;
+  }
+
+  .growth-page .growth-content {
+    padding: 20px 20px 18px;
+  }
+
+  .growth-page .workspace-sidebar {
     z-index: 2001;
-    display: flex;
-    width: min(75vw, 520px);
-    min-width: 280px;
-    max-width: 85vw;
+    width: min(84vw, 320px);
+    max-width: 88vw;
     height: 100vh;
     height: 100dvh;
-    flex-direction: column;
-    overflow-x: hidden;
-    overflow-y: auto;
-    border: 0;
-    background: #fff;
-    box-shadow: 12px 0 40px rgb(8 27 50 / 8%);
+    border-right: 0;
+    box-shadow: 12px 0 40px rgb(8 27 50 / 10%);
     transform: translateX(-105%);
     visibility: hidden;
     transition:
       transform 260ms ease,
       visibility 260ms ease;
-    overscroll-behavior: contain;
   }
 
-  /* Add .is-open when the menu is open */
-  .growth-page .sidebar.is-open {
+  .growth-page .workspace-sidebar.is-open {
     transform: translateX(0);
     visibility: visible;
   }
 
-  /* Darkened background behind the drawer */
-  .growth-page .sidebar-overlay {
+  .growth-page .sidebar-scrim {
     position: fixed;
     inset: 0;
     z-index: 2000;
     display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
     background: rgb(9 27 43 / 48%);
     opacity: 0;
     visibility: hidden;
+    cursor: pointer;
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
     transition:
@@ -547,78 +706,59 @@
       visibility 260ms ease;
   }
 
-  .growth-page .sidebar-overlay.is-visible {
+  .growth-page .sidebar-scrim.is-visible {
     opacity: 1;
     visibility: visible;
   }
 
-  /* Keep the original vertical navigation on mobile */
-  .growth-page .sidebar .brand {
-    min-height: 125px;
-    flex: 0 0 auto;
-    padding: 25px 27px;
+  .growth-page .sidebar-scrim[hidden] {
+    display: none !important;
   }
 
-  .growth-page .sidebar-section-label {
-    margin: 28px 27px 17px;
-  }
-
-  .growth-page .sidebar-nav,
-  .growth-page .sidebar-secondary {
-    flex: 0 0 auto;
-    flex-direction: column;
-    gap: 8px;
-    overflow: visible;
-    padding: 0 16px;
-  }
-
-  .growth-page .sidebar .nav-link {
-    min-height: 60px;
-    flex: 0 0 auto;
-    gap: 17px;
-    padding: 0 24px;
-    border-radius: 19px;
-    font-size: 15px;
-  }
-
-  .growth-page .sidebar .nav-icon {
-    width: 24px;
-    flex-basis: 24px;
-    font-size: 21px;
-  }
-
-  .growth-page .sidebar-guidance {
-    flex: 0 0 auto;
-    margin: auto 27px 22px;
-    padding: 27px;
-  }
-
-  .growth-page .sidebar-secondary {
-    margin-bottom: 18px;
-  }
-
-  .growth-page .sidebar-user {
-    flex: 0 0 auto;
-    margin: 0 27px 28px;
-    padding: 17px 15px;
-  }
-
-  /* Main content fills the mobile screen */
-  .growth-page .growth-main {
-    width: 100%;
-    min-height: 100vh;
-    margin-left: 0;
-  }
-
-  /* Prevent background scrolling while the drawer is open */
   .growth-page.sidebar-menu-open {
     overflow: hidden;
   }
+
+  .growth-page .workspace-brand {
+    min-height: 78px;
+    padding: 17px 20px;
+  }
+
+  .growth-page .sidebar-caption {
+    margin: 18px 20px 12px;
+  }
+
+  .growth-page .workspace-nav {
+    gap: 5px;
+    padding: 0 12px;
+  }
+
+  .growth-page .workspace-nav-link {
+    min-height: 47px;
+    gap: 11px;
+    padding: 0 13px;
+    font-size: 13px;
+  }
+
+  .growth-page .sidebar-bottom {
+    margin-top: 20px;
+    padding: 0 12px 12px;
+  }
+
+  .growth-page .sidebar-guide {
+    padding: 17px 15px;
+  }
+
+  .growth-page .account-trigger {
+    padding: 9px 6px;
+  }
 }
 
+/* Reduced motion for sidebar drawer */
 @media (prefers-reduced-motion: reduce) {
-  .growth-page .sidebar,
-  .growth-page .sidebar-overlay {
+  .growth-page .workspace-sidebar,
+  .growth-page .sidebar-scrim {
     transition: none;
   }
 }
+
