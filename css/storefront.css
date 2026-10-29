@@ -434,9 +434,8 @@ body.storefront-page [hidden] {
 .identity-content {
     position: relative;
     z-index: 1;
-
+    grid-template-columns: 112px minmax(0, 1fr);
     display: grid;
-    grid-template-columns: 120px minmax(0, 1fr);
     align-items: center;
     gap: 24px;
 }
