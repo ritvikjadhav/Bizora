@@ -442,21 +442,11 @@ body.storefront-page [hidden] {
 }
 
 .business-logo {
-    position: relative;
-
-    width: 112px;
-    aspect-ratio: 1;
-
-    display: grid;
-    place-items: center;
-
+    width: 120px;
+    height: 120px;
     overflow: hidden;
-
-    border: 1px solid var(--sf-border);
-    border-radius: 25px;
-
-    background: var(--sf-gradient-soft);
-    box-shadow: var(--sf-shadow-sm);
+    border-radius: 28px;
+    flex-shrink: 0;
 }
 
 .business-logo img {
@@ -465,7 +455,9 @@ body.storefront-page [hidden] {
     height: 100%;
     object-fit: cover;
     object-position: center;
+    border-radius: inherit;
 }
+
 
 .business-logo > span {
     display: grid;
