@@ -10,9 +10,7 @@
     const supabase = () => window.bizoraSupabase;
     const BUCKET = "product-images";
     const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extension}`;
     const state = {
         user: null,
         business: null,
@@ -20,12 +18,12 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
         editingId: null,
         currentImageUrl: null,
         removeCurrentImage: false,
-        previewUrl: null,
+        previewObjectUrl: null,
         saving: false,
         loading: false
     };
 
-    const $ = id => document.getElementById(id);
+    const $ = (id) => document.getElementById(id);
     const el = {};
 
     /* =====================================================
@@ -56,8 +54,8 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             "catalogue-empty",
             "catalogue-no-results",
             "clear-product-filters",
-            "empty-add-product-button",
             "add-product-button",
+            "empty-add-product-button",
             "catalogue-grid",
             "product-editor",
             "editor-title",
@@ -89,11 +87,17 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             "settings-email"
         ];
 
-        ids.forEach(id => el[id] = $(id));
+        ids.forEach((id) => {
+            el[id] = $(id);
+        });
     }
 
+    /* =====================================================
+       GENERAL HELPERS
+    ===================================================== */
+
     function escapeHTML(value) {
-        return String(value ?? "").replace(/[&<>"']/g, char => ({
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
             "&": "&amp;",
             "<": "&lt;",
             ">": "&gt;",
@@ -108,6 +112,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
     function showMessage(message, type = "success") {
         const target = el["dashboard-message"];
+
         if (!target) return;
 
         target.textContent = message;
@@ -117,6 +122,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
     function showFormMessage(message, type = "error") {
         const target = el["form-status"];
+
         if (!target) return;
 
         target.textContent = message;
@@ -128,7 +134,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
         [
             el["dashboard-message"],
             el["form-status"]
-        ].forEach(target => {
+        ].forEach((target) => {
             if (!target) return;
 
             target.textContent = "";
@@ -172,25 +178,36 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
         }).format(number);
     }
 
+    // Supports Supabase URLs and local image preview URLs.
     function safeImageUrl(value) {
         if (!value) return "";
 
         try {
             const url = new URL(value, window.location.href);
 
-            return ["https:", "http:"].includes(url.protocol)
+            return ["https:", "http:", "blob:"].includes(url.protocol)
                 ? url.href
                 : "";
-
         } catch {
             return "";
         }
     }
 
-    function releasePreview() {
-        if (state.previewUrl) {
-            URL.revokeObjectURL(state.previewUrl);
-            state.previewUrl = null;
+    function createUniqueId() {
+        if (window.crypto?.randomUUID) {
+            return window.crypto.randomUUID();
+        }
+
+        return (
+            Date.now().toString(36) +
+            Math.random().toString(36).slice(2)
+        );
+    }
+
+    function revokePreviewUrl() {
+        if (state.previewObjectUrl) {
+            URL.revokeObjectURL(state.previewObjectUrl);
+            state.previewObjectUrl = null;
         }
     }
 
@@ -203,7 +220,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         if (!client) {
             throw new Error(
-                "Supabase client not found. Check supabase.js."
+                "Supabase client not found. Check javascript/supabase.js."
             );
         }
 
@@ -235,27 +252,35 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         const initial = name.trim().charAt(0).toUpperCase() || "B";
 
-        if (el["profile-name"])
+        if (el["profile-name"]) {
             el["profile-name"].textContent = name;
+        }
 
-        if (el["profile-email"])
+        if (el["profile-email"]) {
             el["profile-email"].textContent = email;
+        }
 
-        if (el["profile-avatar"])
+        if (el["profile-avatar"]) {
             el["profile-avatar"].textContent = initial;
+        }
 
-        if (el["settings-name"])
+        if (el["settings-name"]) {
             el["settings-name"].textContent = name;
+        }
 
-        if (el["settings-email"])
+        if (el["settings-email"]) {
             el["settings-email"].textContent = email;
+        }
 
-        if (el["settings-avatar"])
+        if (el["settings-avatar"]) {
             el["settings-avatar"].textContent = initial;
+        }
     }
 
     async function logout() {
-        if (!confirm("Are you sure you want to log out?")) return;
+        if (!window.confirm("Are you sure you want to log out?")) {
+            return;
+        }
 
         try {
             const { error } = await supabase().auth.signOut();
@@ -266,9 +291,17 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         } catch (error) {
             console.error("Logout failed:", error);
-            showMessage(error.message, "error");
+
+            showMessage(
+                error.message || "Unable to log out.",
+                "error"
+            );
         }
     }
+
+    /* =====================================================
+       BUSINESS
+    ===================================================== */
 
     async function getBusiness() {
         const { data, error } = await supabase()
@@ -298,6 +331,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
         if (state.loading) return;
 
         state.loading = true;
+
         clearMessages();
 
         setHidden(el["catalogue-loading"], false);
@@ -308,24 +342,21 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
         el["catalogue-grid"]?.setAttribute("aria-busy", "true");
 
         try {
-            if (!state.user) await getUser();
+            if (!state.user) {
+                await getUser();
+            }
+
             if (!state.user) return;
 
-            if (!state.business) await getBusiness();
+            if (!state.business) {
+                await getBusiness();
+            }
 
             const { data, error } = await supabase()
                 .from("products")
-                .select(`
-                    id,
-                    business_id,
-                    name,
-                    description,
-                    price,
-                    image_url,
-                    item_type,
-                    is_available,
-                    created_at
-                `)
+                .select(
+                    "id, business_id, name, description, price, image_url, item_type, is_available, created_at"
+                )
                 .eq("business_id", state.business.id)
                 .order("created_at", { ascending: false });
 
@@ -345,7 +376,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             setHidden(el["catalogue-no-results"], true);
 
             showMessage(
-                error.message || "Unable to load catalogue.",
+                error.message || "Unable to load your catalogue.",
                 "error"
             );
 
@@ -361,30 +392,36 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
         }
     }
 
+    /* =====================================================
+       SUMMARY
+    ===================================================== */
+
     function updateSummary() {
         const products = state.products;
 
         const available = products.filter(
-            item => item.is_available === true
+            (item) => item.is_available === true
         ).length;
 
         const categories = new Set(
-            products.map(item => item.item_type).filter(Boolean)
+            products.map((item) => item.item_type).filter(Boolean)
         );
 
-        if (el["total-products"])
+        if (el["total-products"]) {
             el["total-products"].textContent = products.length;
+        }
 
-        if (el["available-products"])
+        if (el["available-products"]) {
             el["available-products"].textContent = available;
+        }
 
-        if (el["product-categories-count"])
+        if (el["product-categories-count"]) {
             el["product-categories-count"].textContent = categories.size;
+        }
     }
 
     /* =====================================================
        FILTERS
-       Category currently uses item_type.
     ===================================================== */
 
     function populateCategoryFilter() {
@@ -394,11 +431,13 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         const previous = select.value;
 
-        const types = [...new Set(
-            state.products
-                .map(item => item.item_type)
-                .filter(Boolean)
-        )].sort();
+        const types = [
+            ...new Set(
+                state.products
+                    .map((item) => item.item_type)
+                    .filter(Boolean)
+            )
+        ].sort();
 
         select.replaceChildren();
 
@@ -408,12 +447,11 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         select.appendChild(all);
 
-        types.forEach(type => {
+        types.forEach((type) => {
             const option = document.createElement("option");
 
             option.value = type;
-            option.textContent =
-                type.charAt(0).toUpperCase() + type.slice(1);
+            option.textContent = type;
 
             select.appendChild(option);
         });
@@ -430,20 +468,20 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             el["filter-type"]?.value || "all"
         ).toLowerCase();
 
-        const category =
-            el["filter-category"]?.value || "all";
+        const category = (
+            el["filter-category"]?.value || "all"
+        );
 
-        const availability =
-            el["filter-availability"]?.value || "all";
+        const availability = (
+            el["filter-availability"]?.value || "all"
+        );
 
-        return state.products.filter(item => {
+        return state.products.filter((item) => {
             const name = String(item.name || "").toLowerCase();
 
-            const description =
-                String(item.description || "").toLowerCase();
-
-            const itemType =
-                String(item.item_type || "").toLowerCase();
+            const description = String(
+                item.description || ""
+            ).toLowerCase();
 
             const matchesSearch =
                 !search ||
@@ -451,7 +489,8 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
                 description.includes(search);
 
             const matchesType =
-                type === "all" || itemType === type;
+                type === "all" ||
+                String(item.item_type || "").toLowerCase() === type;
 
             const matchesCategory =
                 category === "all" ||
@@ -478,17 +517,21 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
     }
 
     function clearFilters() {
-        if (el["product-search"])
+        if (el["product-search"]) {
             el["product-search"].value = "";
+        }
 
-        if (el["filter-type"])
+        if (el["filter-type"]) {
             el["filter-type"].value = "all";
+        }
 
-        if (el["filter-category"])
+        if (el["filter-category"]) {
             el["filter-category"].value = "all";
+        }
 
-        if (el["filter-availability"])
+        if (el["filter-availability"]) {
             el["filter-availability"].value = "all";
+        }
 
         renderProducts();
     }
@@ -523,7 +566,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         const fragment = document.createDocumentFragment();
 
-        filtered.forEach(product => {
+        filtered.forEach((product) => {
             fragment.appendChild(createProductCard(product));
         });
 
@@ -550,15 +593,13 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         const available = product.is_available === true;
 
-        const id = escapeHTML(product.id);
-
         card.innerHTML = `
             <div class="product-card-image">
                 ${
                     imageUrl
                         ? `<img src="${escapeHTML(imageUrl)}"
-                               alt="${name}"
-                               loading="lazy">`
+                                alt="${name}"
+                                loading="lazy">`
                         : `<div class="product-image-placeholder">B</div>`
                 }
 
@@ -589,21 +630,24 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
                     <div class="product-card-actions">
 
-                        <button type="button"
+                        <button
+                            type="button"
                             data-action="edit"
-                            data-id="${id}">
+                            data-id="${escapeHTML(product.id)}">
                             Edit
                         </button>
 
-                        <button type="button"
+                        <button
+                            type="button"
                             data-action="toggle"
-                            data-id="${id}">
+                            data-id="${escapeHTML(product.id)}">
                             ${available ? "Mark unavailable" : "Mark available"}
                         </button>
 
-                        <button type="button"
+                        <button
+                            type="button"
                             data-action="delete"
-                            data-id="${id}">
+                            data-id="${escapeHTML(product.id)}">
                             Delete
                         </button>
 
@@ -630,23 +674,17 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
        IMAGE PREVIEW
     ===================================================== */
 
-    function displayImagePreview(url, isLocal = false) {
+    function displayImagePreview(url) {
         const image = el["image-preview-img"];
         const placeholder = el["image-placeholder"];
 
         if (!image || !placeholder) return;
 
-        // Local preview images use blob URLs.
-        // Saved images use normal HTTP/HTTPS URLs.
-        const previewUrl =
-            isLocal && String(url || "").startsWith("blob:")
-                ? url
-                : safeImageUrl(url);
+        const safeUrl = safeImageUrl(url);
 
-        if (!previewUrl) {
+        if (!safeUrl) {
             image.removeAttribute("src");
             image.hidden = true;
-
             placeholder.hidden = false;
 
             setHidden(el["remove-image"], true);
@@ -667,14 +705,10 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
             setHidden(el["remove-image"], true);
 
-            if (!isLocal) {
-                showFormMessage(
-                    "Unable to display the saved image."
-                );
-            }
+            showFormMessage("Unable to display this image.");
         };
 
-        image.src = previewUrl;
+        image.src = safeUrl;
     }
 
     function handleImageSelection() {
@@ -684,7 +718,13 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         if (!file) return;
 
-        if (!ALLOWED_TYPES.includes(file.type)) {
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
             el["item-image"].value = "";
 
             showFormMessage(
@@ -698,7 +738,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             el["item-image"].value = "";
 
             showFormMessage(
-                "Image must be 5 MB or smaller."
+                "Image must be smaller than 5 MB."
             );
 
             return;
@@ -708,12 +748,11 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         state.removeCurrentImage = false;
 
-        releasePreview();
+        revokePreviewUrl();
 
-        state.previewUrl = URL.createObjectURL(file);
+        state.previewObjectUrl = URL.createObjectURL(file);
 
-        // Important: allow blob URL for preview.
-        displayImagePreview(state.previewUrl, true);
+        displayImagePreview(state.previewObjectUrl);
     }
 
     function removeImage() {
@@ -721,7 +760,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             el["item-image"].value = "";
         }
 
-        releasePreview();
+        revokePreviewUrl();
 
         state.currentImageUrl = null;
         state.removeCurrentImage = true;
@@ -730,30 +769,37 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
     }
 
     /* =====================================================
-       IMAGE UPLOAD TO SUPABASE STORAGE
+       SUPABASE IMAGE UPLOAD
     ===================================================== */
 
     async function uploadImage(productId) {
         const file = el["item-image"]?.files?.[0];
 
-        if (!file) return state.currentImageUrl;
+        if (!file) {
+            return state.currentImageUrl;
+        }
 
-        const extension = file.name
-            .split(".")
-            .pop()
-            .toLowerCase();
+        if (!state.business?.id) {
+            throw new Error("Business information is missing.");
+        }
 
-        const safeExtension =
-            ["jpg", "jpeg", "png", "webp"].includes(extension)
-                ? extension
-                : "jpg";
+        const extensions = {
+            "image/jpeg": "jpg",
+            "image/png": "png",
+            "image/webp": "webp"
+        };
 
-        const uniqueId = crypto.randomUUID
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const extension = extensions[file.type];
+
+        if (!extension) {
+            throw new Error("Unsupported image format.");
+        }
+
+        // Folder structure:
+        // business_id / product_id / unique_filename
 
         const path =
-            `${state.business.id}/${productId}/${uniqueId}.${safeExtension}`;
+            `${state.business.id}/${productId}/${createUniqueId()}.${extension}`;
 
         const { error } = await supabase()
             .storage
@@ -772,7 +818,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         if (!data?.publicUrl) {
             throw new Error(
-                "Image uploaded, but its public URL could not be created."
+                "Could not get the uploaded image URL."
             );
         }
 
@@ -780,7 +826,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
     }
 
     /* =====================================================
-       PRODUCT FORM
+       FORM EDITOR
     ===================================================== */
 
     function setEditorMode(editing) {
@@ -802,7 +848,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
     function resetForm() {
         el["product-form"]?.reset();
 
-        releasePreview();
+        revokePreviewUrl();
 
         state.editingId = null;
         state.currentImageUrl = null;
@@ -817,8 +863,8 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
         }
 
         if (el["item-category"]) {
-            el["item-category"].value = "";
-            el["item-category"].disabled = true;
+            el["item-category"].disabled = false;
+            el["item-category"].placeholder = "";
         }
 
         displayImagePreview(null);
@@ -834,7 +880,9 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             el["item-type"],
             el["item-price"],
             el["item-image"]
-        ].forEach(field => setFieldError(field, ""));
+        ].forEach((field) => {
+            setFieldError(field, "");
+        });
 
         clearMessages();
     }
@@ -857,7 +905,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
     function startEditProduct(id) {
         const product = state.products.find(
-            item => String(item.id) === String(id)
+            (item) => String(item.id) === String(id)
         );
 
         if (!product) {
@@ -870,29 +918,40 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
         state.editingId = product.id;
         state.currentImageUrl = product.image_url || null;
 
-        el["item-name"].value = product.name || "";
+        if (el["item-name"]) {
+            el["item-name"].value = product.name || "";
+        }
 
-        el["item-description"].value =
-            product.description || "";
+        if (el["item-description"]) {
+            el["item-description"].value =
+                product.description || "";
+        }
 
-        el["item-price"].value =
-            product.price ?? "";
+        if (el["item-price"]) {
+            el["item-price"].value = product.price ?? "";
+        }
 
-        el["item-type"].value =
-            product.item_type || "";
+        if (el["item-type"]) {
+            el["item-type"].value = product.item_type || "";
+        }
 
-        el["item-available"].checked =
-            product.is_available === true;
+        if (el["item-available"]) {
+            el["item-available"].checked =
+                product.is_available === true;
+        }
 
-        // Your current database has no separate category column.
+        // The current products table does not contain a category column.
         if (el["item-category"]) {
             el["item-category"].value = "";
             el["item-category"].disabled = true;
+
+            el["item-category"].placeholder =
+                "Category storage needs a database column";
         }
 
         if (el["description-count"]) {
             el["description-count"].textContent =
-                el["item-description"].value.length;
+                el["item-description"]?.value.length || 0;
         }
 
         displayImagePreview(state.currentImageUrl);
@@ -902,13 +961,14 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
         openEditor();
     }
 
+    /* =====================================================
+       FORM VALIDATION
+    ===================================================== */
+
     function validateForm() {
         const name = el["item-name"]?.value.trim() || "";
-
         const type = el["item-type"]?.value || "";
-
-        const priceText =
-            el["item-price"]?.value.trim() || "";
+        const priceText = el["item-price"]?.value.trim() || "";
 
         setFieldError(el["item-name"], "");
         setFieldError(el["item-type"], "");
@@ -981,29 +1041,35 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         state.saving = true;
 
-        if (el["save-item"]) {
-            el["save-item"].disabled = true;
+        const saveButton = el["save-item"];
+
+        if (saveButton) {
+            saveButton.disabled = true;
         }
 
         if (el["save-button-text"]) {
             el["save-button-text"].textContent = "Saving...";
         }
 
-        const editing = state.editingId !== null;
-
         try {
-            if (!state.user) await getUser();
+            if (!state.user) {
+                await getUser();
+            }
 
             if (!state.user) return;
 
-            if (!state.business) await getBusiness();
+            if (!state.business) {
+                await getBusiness();
+            }
 
             const client = supabase();
 
+            const editing = Boolean(state.editingId);
+
             let productId = state.editingId;
 
-            // Update existing product.
             if (editing) {
+                // Update existing product.
                 const { error } = await client
                     .from("products")
                     .update(formData)
@@ -1029,21 +1095,19 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
                 productId = data.id;
             }
 
+            // Upload image if a new image was selected.
             let imageUrl = state.currentImageUrl;
 
-            // Upload newly selected image.
-            if (el["item-image"]?.files?.length) {
+            if (el["item-image"]?.files?.length > 0) {
                 imageUrl = await uploadImage(productId);
-            }
 
-            // Remove existing image if requested.
-            else if (state.removeCurrentImage) {
+            } else if (state.removeCurrentImage) {
                 imageUrl = null;
             }
 
-            // Save image URL in products table.
+            // Save the final image URL in the products table.
             if (
-                el["item-image"]?.files?.length ||
+                el["item-image"]?.files?.length > 0 ||
                 state.removeCurrentImage ||
                 !editing
             ) {
@@ -1060,7 +1124,9 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
             resetForm();
 
-            setHidden(el["product-editor"], true);
+            if (el["product-editor"]) {
+                el["product-editor"].hidden = true;
+            }
 
             showMessage(
                 editing
@@ -1071,7 +1137,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             await loadProducts();
 
         } catch (error) {
-            console.error("Save failed:", error);
+            console.error("Product save failed:", error);
 
             showFormMessage(
                 error.message || "Unable to save this item."
@@ -1080,13 +1146,15 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
         } finally {
             state.saving = false;
 
-            if (el["save-item"]) {
-                el["save-item"].disabled = false;
+            if (saveButton) {
+                saveButton.disabled = false;
             }
 
             if (el["save-button-text"]) {
                 el["save-button-text"].textContent =
-                    editing ? "Save changes" : "Save item";
+                    state.editingId
+                        ? "Save changes"
+                        : "Save item";
             }
         }
     }
@@ -1097,7 +1165,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
     async function toggleAvailability(id) {
         const product = state.products.find(
-            item => String(item.id) === String(id)
+            (item) => String(item.id) === String(id)
         );
 
         if (!product) return;
@@ -1142,14 +1210,16 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
     async function deleteProduct(id) {
         const product = state.products.find(
-            item => String(item.id) === String(id)
+            (item) => String(item.id) === String(id)
         );
 
         if (!product) return;
 
-        if (!confirm(
+        const confirmed = window.confirm(
             `Delete "${product.name}"? This action cannot be undone.`
-        )) return;
+        );
+
+        if (!confirmed) return;
 
         try {
             const { error } = await supabase()
@@ -1161,7 +1231,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             if (error) throw error;
 
             state.products = state.products.filter(
-                item => String(item.id) !== String(id)
+                (item) => String(item.id) !== String(id)
             );
 
             updateSummary();
@@ -1171,7 +1241,7 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             showMessage("Item deleted successfully.");
 
         } catch (error) {
-            console.error("Delete failed:", error);
+            console.error("Product deletion failed:", error);
 
             showMessage(
                 error.message || "Unable to delete item.",
@@ -1184,68 +1254,56 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
        MOBILE NAVIGATION
     ===================================================== */
 
-    function closeSidebar() {
-        el["dashboard-sidebar"]?.classList.remove("is-open");
-
-        document.body.classList.remove("sidebar-open");
-
-        if (el["sidebar-overlay"]) {
-            el["sidebar-overlay"].hidden = true;
-
-            el["sidebar-overlay"].classList.remove("is-visible");
-        }
-
-        el["mobile-menu-button"]?.setAttribute(
-            "aria-expanded",
-            "false"
-        );
-    }
-
-    function openSidebar() {
-        el["dashboard-sidebar"]?.classList.add("is-open");
-
-        document.body.classList.add("sidebar-open");
-
-        if (el["sidebar-overlay"]) {
-            el["sidebar-overlay"].hidden = false;
-
-            el["sidebar-overlay"].classList.add("is-visible");
-        }
-
-        el["mobile-menu-button"]?.setAttribute(
-            "aria-expanded",
-            "true"
-        );
-    }
-
-    function closeProfileMenu() {
-        setHidden(el["profile-menu"], true);
-
-        el["profile-menu-button"]?.setAttribute(
-            "aria-expanded",
-            "false"
-        );
-    }
-
     function setupNavigation() {
-        el["mobile-menu-button"]?.addEventListener("click", () => {
-            const sidebar = el["dashboard-sidebar"];
+        const sidebar = el["dashboard-sidebar"];
+        const menuButton = el["mobile-menu-button"];
+        const overlay = el["sidebar-overlay"];
 
+        function closeSidebar() {
+            sidebar?.classList.remove("is-open");
+
+            document.body.classList.remove("sidebar-open");
+
+            if (overlay) {
+                overlay.hidden = true;
+                overlay.classList.remove("is-visible");
+            }
+
+            menuButton?.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+        }
+
+        function openSidebar() {
+            sidebar?.classList.add("is-open");
+
+            document.body.classList.add("sidebar-open");
+
+            if (overlay) {
+                overlay.hidden = false;
+                overlay.classList.add("is-visible");
+            }
+
+            menuButton?.setAttribute(
+                "aria-expanded",
+                "true"
+            );
+        }
+
+        menuButton?.addEventListener("click", () => {
             sidebar?.classList.contains("is-open")
                 ? closeSidebar()
                 : openSidebar();
         });
 
-        el["sidebar-overlay"]?.addEventListener(
-            "click",
-            closeSidebar
-        );
+        overlay?.addEventListener("click", closeSidebar);
 
-        el["dashboard-sidebar"]?.querySelectorAll("a").forEach(link => {
+        sidebar?.querySelectorAll("a").forEach((link) => {
             link.addEventListener("click", closeSidebar);
         });
 
-        document.addEventListener("keydown", event => {
+        document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 closeSidebar();
                 closeProfileMenu();
@@ -1263,29 +1321,49 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
        PROFILE MENU
     ===================================================== */
 
+    function closeProfileMenu() {
+        setHidden(el["profile-menu"], true);
+
+        el["profile-menu-button"]?.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+
     function setupProfileMenu() {
-        el["profile-menu-button"]?.addEventListener("click", () => {
-            const menu = el["profile-menu"];
+        el["profile-menu-button"]?.addEventListener(
+            "click",
+            () => {
+                const menu = el["profile-menu"];
 
-            if (!menu) return;
+                if (!menu) return;
 
-            const opening = menu.hidden;
+                const opening = menu.hidden;
 
-            menu.hidden = !opening;
+                menu.hidden = !opening;
 
-            el["profile-menu-button"].setAttribute(
-                "aria-expanded",
-                String(opening)
-            );
-        });
+                el["profile-menu-button"].setAttribute(
+                    "aria-expanded",
+                    String(opening)
+                );
+            }
+        );
 
-        el["logout-button"]?.addEventListener("click", logout);
+        el["logout-button"]?.addEventListener(
+            "click",
+            logout
+        );
 
-        document.querySelectorAll("[data-settings-link]").forEach(link => {
-            link.addEventListener("click", closeProfileMenu);
-        });
+        document.querySelectorAll("[data-settings-link]").forEach(
+            (link) => {
+                link.addEventListener(
+                    "click",
+                    closeProfileMenu
+                );
+            }
+        );
 
-        document.addEventListener("click", event => {
+        document.addEventListener("click", (event) => {
             const menu = el["profile-menu"];
             const button = el["profile-menu-button"];
 
@@ -1327,7 +1405,10 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         el["cancel-edit"]?.addEventListener("click", () => {
             resetForm();
-            setHidden(el["product-editor"], true);
+
+            if (el["product-editor"]) {
+                el["product-editor"].hidden = true;
+            }
         });
 
         // Image selection: one listener only.
@@ -1372,37 +1453,43 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
             renderProducts
         );
 
-        el["item-description"]?.addEventListener("input", () => {
-            if (el["description-count"]) {
-                el["description-count"].textContent =
-                    el["item-description"].value.length;
+        el["item-description"]?.addEventListener(
+            "input",
+            () => {
+                if (el["description-count"]) {
+                    el["description-count"].textContent =
+                        el["item-description"].value.length;
+                }
             }
-        });
+        );
 
         // Product card actions.
-        el["catalogue-grid"]?.addEventListener("click", async event => {
-            const button = event.target.closest(
-                "button[data-action]"
-            );
+        el["catalogue-grid"]?.addEventListener(
+            "click",
+            async (event) => {
+                const button = event.target.closest(
+                    "button[data-action]"
+                );
 
-            if (!button) return;
+                if (!button) return;
 
-            const { action, id } = button.dataset;
+                const { action, id } = button.dataset;
 
-            if (!id) return;
+                if (!id) return;
 
-            if (action === "edit") {
-                startEditProduct(id);
+                if (action === "edit") {
+                    startEditProduct(id);
+                }
+
+                if (action === "toggle") {
+                    await toggleAvailability(id);
+                }
+
+                if (action === "delete") {
+                    await deleteProduct(id);
+                }
             }
-
-            else if (action === "toggle") {
-                await toggleAvailability(id);
-            }
-
-            else if (action === "delete") {
-                await deleteProduct(id);
-            }
-        });
+        );
 
         setupNavigation();
         setupProfileMenu();
@@ -1424,7 +1511,10 @@ const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extensi
 
         setupEvents();
 
-        if (!el["catalogue-grid"] || !el["product-form"]) {
+        if (
+            !el["catalogue-grid"] ||
+            !el["product-form"]
+        ) {
             console.error(
                 "Required products.html elements are missing."
             );
