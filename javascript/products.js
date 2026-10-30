@@ -1103,6 +1103,12 @@ function setupNavigation() {
             el["product-editor"].hidden = true;
         });
 
+document.getElementById("item-image")
+    ?.addEventListener("change", handleImageSelection);
+
+document.getElementById("remove-image")
+    ?.addEventListener("click", removeSelectedImage);
+
         el["retry-catalogue"]?.addEventListener("click", loadProducts);
         el["clear-product-filters"]?.addEventListener("click", clearFilters);
 
