@@ -1,180 +1,158 @@
+
 /* =========================================================
-   BIZVERO — PRODUCTS CATALOGUE
-   Corrected to match products.html dashboard IDs
+   BIZVERO — PRODUCTS & SERVICES
+   Matches the supplied products.html
    Supabase client: window.bizoraSupabase
    ========================================================= */
 
 "use strict";
 
 (() => {
-    /* -----------------------------------------------------
-       1. CONFIGURATION
-       ----------------------------------------------------- */
-
-    const SUPABASE = () => window.bizoraSupabase;
-    const STORAGE_BUCKET = "product-images";
+    const supabase = () => window.bizoraSupabase;
+    const BUCKET = "product-images";
+    const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
     const state = {
         user: null,
         business: null,
         products: [],
-        editingProductId: null,
-        loading: false,
+        editingId: null,
+        currentImageUrl: null,
+        removeCurrentImage: false,
         saving: false,
-        initialized: false
+        loading: false
     };
 
-    const elements = {};
+    const $ = (id) => document.getElementById(id);
 
-    /* -----------------------------------------------------
-       2. DOM HELPERS
-       ----------------------------------------------------- */
-
-    const byId = (id) => document.getElementById(id);
+    const el = {};
 
     function cacheElements() {
-        const ids = {
-            sidebar: "dashboard-sidebar",
-            mobileMenuButton: "mobile-menu-button",
-            sidebarOverlay: "sidebar-overlay",
-
-            totalProducts: "total-products",
-            availableProducts: "available-products",
-            categoryCount: "product-categories-count",
-
-            search: "product-search",
-            filterType: "filter-type",
-            filterCategory: "filter-category",
-            filterAvailability: "filter-availability",
-
-            loading: "catalogue-loading",
-            error: "catalogue-error",
-            retry: "retry-catalogue",
-            empty: "catalogue-empty",
-            noResults: "catalogue-no-results",
-            clearFilters: "clear-product-filters",
-            emptyAddButton: "empty-add-product-button",
-
-            grid: "catalogue-grid",
-            editor: "product-editor",
-            editorTitle: "editor-title",
-
-            message: "dashboard-message"
-        };
-
-        Object.entries(ids).forEach(([key, id]) => {
-            elements[key] = byId(id);
-        });
-
-        /*
-         * Form elements are discovered using the IDs already
-         * present in the supplied HTML. Multiple common IDs are
-         * supported to avoid relying on a single naming style.
-         */
-        elements.form =
-            byId("product-form") ||
-            byId("item-form") ||
-            (elements.editor
-                ? elements.editor.querySelector("form")
-                : null);
-
-        elements.name = findElement([
+        const ids = [
+            "dashboard-sidebar",
+            "mobile-menu-button",
+            "sidebar-overlay",
+            "profile-menu-button",
+            "profile-menu",
+            "profile-avatar",
+            "profile-name",
+            "profile-email",
+            "logout-button",
+            "total-products",
+            "available-products",
+            "product-categories-count",
+            "product-search",
+            "filter-type",
+            "filter-category",
+            "filter-availability",
+            "catalogue-loading",
+            "catalogue-error",
+            "retry-catalogue",
+            "catalogue-empty",
+            "catalogue-no-results",
+            "clear-product-filters",
+            "empty-add-product-button",
+            "catalogue-grid",
+            "product-editor",
+            "editor-title",
+            "product-form",
             "item-name",
-            "product-name",
-            "name"
-        ]);
-
-        elements.description = findElement([
             "item-description",
-            "product-description",
-            "description"
-        ]);
-
-        elements.price = findElement([
             "item-price",
-            "product-price",
-            "price"
-        ]);
-
-        elements.type = findElement([
             "item-type",
-            "product-type",
-            "type"
-        ]);
-
-        elements.category = findElement([
             "item-category",
-            "product-category",
-            "category"
-        ]);
-
-        elements.availability = findElement([
-            "item-availability",
-            "product-availability",
-            "is-available"
-        ]);
-
-        elements.imageInput = findElement([
+            "item-available",
             "item-image",
-            "product-image",
-            "image-file",
-            "product-image-input"
-        ]);
-
-        elements.imageUrl = findElement([
-            "item-image-url",
-            "product-image-url",
-            "image-url"
-        ]);
-
-        elements.imagePreview = findElement([
-            "image-preview",
-            "product-image-preview",
-            "item-image-preview"
-        ]);
-
-        elements.cancelButton = findElement([
+            "image-preview-img",
+            "image-placeholder",
+            "image-hint",
+            "image-error",
+            "remove-image",
+            "reset-form",
             "cancel-edit",
-            "cancel-product",
-            "cancel-button"
-        ]);
+            "save-item",
+            "save-button-text",
+            "description-count",
+            "name-error",
+            "type-error",
+            "price-error",
+            "form-status",
+            "dashboard-message",
+            "settings-avatar",
+            "settings-name",
+            "settings-email"
+        ];
 
-        elements.submitButton = elements.form
-            ? elements.form.querySelector(
-                'button[type="submit"], input[type="submit"]'
-            )
-            : null;
-    }
-
-    function findElement(ids) {
-        for (const id of ids) {
-            const element = byId(id);
-            if (element) return element;
-        }
-
-        return null;
+        ids.forEach((id) => {
+            el[id] = $(id);
+        });
     }
 
     function escapeHTML(value) {
-        return String(value ?? "").replace(/[&<>"']/g, (character) => {
-            const replacements = {
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#39;"
-            };
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
+    }
 
-            return replacements[character];
+    function setHidden(element, hidden) {
+        if (element) element.hidden = hidden;
+    }
+
+    function showMessage(message, type = "success") {
+        const target = el["dashboard-message"];
+
+        if (!target) return;
+
+        target.textContent = message;
+        target.classList.toggle("error", type === "error");
+        target.hidden = false;
+    }
+
+    function showFormMessage(message, type = "error") {
+        const target = el["form-status"];
+
+        if (!target) return;
+
+        target.textContent = message;
+        target.classList.toggle("error", type === "error");
+        target.hidden = false;
+    }
+
+    function clearMessages() {
+        [el["dashboard-message"], el["form-status"]].forEach((target) => {
+            if (!target) return;
+            target.textContent = "";
+            target.hidden = true;
+            target.classList.remove("error");
         });
     }
 
+    function setFieldError(element, message) {
+        if (!element) return;
+
+        const errorId = element.getAttribute("aria-describedby");
+        const errorElement = errorId ? $(errorId) : null;
+
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.hidden = !message;
+        }
+
+        element.setAttribute("aria-invalid", message ? "true" : "false");
+    }
+
     function formatPrice(value) {
+        if (value === null || value === undefined || value === "") {
+            return "Price on request";
+        }
+
         const number = Number(value);
 
-        if (!Number.isFinite(number)) {
-            return "Price unavailable";
-        }
+        if (!Number.isFinite(number)) return "Price unavailable";
 
         return new Intl.NumberFormat("en-IN", {
             style: "currency",
@@ -183,108 +161,113 @@
         }).format(number);
     }
 
-    function setHidden(element, hidden) {
-        if (element) {
-            element.hidden = hidden;
+    function safeImageUrl(value) {
+        if (!value) return "";
+
+        try {
+            const url = new URL(value, window.location.href);
+
+            return ["https:", "http:"].includes(url.protocol)
+                ? url.href
+                : "";
+        } catch {
+            return "";
         }
     }
 
-    function showMessage(message, type = "success") {
-        if (elements.message) {
-            elements.message.textContent = message;
-            elements.message.classList.toggle(
-                "error",
-                type === "error"
-            );
-            elements.message.hidden = false;
-            elements.message.setAttribute("role", "status");
-            return;
-        }
+    /* =====================================================
+       AUTHENTICATION AND ACCOUNT
+    ===================================================== */
 
-        console[type === "error" ? "error" : "log"](message);
-    }
+    async function getUser() {
+        const client = supabase();
 
-    function clearMessage() {
-        if (!elements.message) return;
-
-        elements.message.textContent = "";
-        elements.message.hidden = true;
-        elements.message.classList.remove("error");
-    }
-
-    function setLoading(isLoading) {
-        state.loading = isLoading;
-
-        setHidden(elements.loading, !isLoading);
-
-        if (elements.retry) {
-            elements.retry.disabled = isLoading;
-        }
-    }
-
-    function setSaving(isSaving) {
-        state.saving = isSaving;
-
-        if (elements.submitButton) {
-            elements.submitButton.disabled = isSaving;
-            elements.submitButton.textContent = isSaving
-                ? "Saving..."
-                : (
-                    state.editingProductId
-                        ? "Save Changes"
-                        : "Add Product"
-                );
-        }
-    }
-
-    /* -----------------------------------------------------
-       3. SUPABASE AUTHENTICATION
-       ----------------------------------------------------- */
-
-    async function getAuthenticatedUser() {
-        const supabase = SUPABASE();
-
-        if (!supabase) {
+        if (!client) {
             throw new Error(
-                "Supabase was not initialized. Check javascript/supabase.js."
+                "Supabase client not found. Check javascript/supabase.js."
             );
         }
 
-        const { data, error } = await supabase.auth.getUser();
+        const { data, error } = await client.auth.getUser();
 
         if (error) throw error;
 
-        if (!data || !data.user) {
-            window.location.href = "./login.html";
+        if (!data.user) {
+            window.location.replace("./auth.html");
             return null;
         }
 
         state.user = data.user;
+        updateAccount(data.user);
+
         return data.user;
     }
 
-    async function getAuthenticatedBusiness() {
-        const supabase = SUPABASE();
-        const user = state.user || await getAuthenticatedUser();
+    function updateAccount(user) {
+        const email = user.email || "No email available";
+        const metadata = user.user_metadata || {};
 
-        if (!user) return null;
+        const name =
+            metadata.full_name ||
+            metadata.name ||
+            metadata.first_name ||
+            email.split("@")[0] ||
+            "Your account";
 
-        const { data, error } = await supabase
-            .from("businesses")
-            .select("id, name, owner_id, is_published")
-            .eq("owner_id", user.id)
-            .maybeSingle();
+        const initial = name.trim().charAt(0).toUpperCase() || "B";
 
-        if (error) {
-            throw new Error(
-                `Unable to load your business: ${error.message}`
-            );
+        if (el["profile-name"]) {
+            el["profile-name"].textContent = name;
         }
 
+        if (el["profile-email"]) {
+            el["profile-email"].textContent = email;
+        }
+
+        if (el["profile-avatar"]) {
+            el["profile-avatar"].textContent = initial;
+        }
+
+        if (el["settings-name"]) {
+            el["settings-name"].textContent = name;
+        }
+
+        if (el["settings-email"]) {
+            el["settings-email"].textContent = email;
+        }
+
+        if (el["settings-avatar"]) {
+            el["settings-avatar"].textContent = initial;
+        }
+    }
+
+    async function logout() {
+        if (!window.confirm("Are you sure you want to log out?")) return;
+
+        try {
+            const { error } = await supabase().auth.signOut();
+
+            if (error) throw error;
+
+            window.location.replace("./auth.html");
+        } catch (error) {
+            console.error("Logout failed:", error);
+            showMessage(error.message || "Unable to log out.", "error");
+        }
+    }
+
+    async function getBusiness() {
+        const { data, error } = await supabase()
+            .from("businesses")
+            .select("id, name, owner_id, is_published")
+            .eq("owner_id", state.user.id)
+            .maybeSingle();
+
+        if (error) throw error;
+
         if (!data) {
-            state.business = null;
             throw new Error(
-                "No business profile was found for this account."
+                "No business profile found. Please create your business first."
             );
         }
 
@@ -292,49 +275,32 @@
         return data;
     }
 
-    /* -----------------------------------------------------
-       4. LOAD PRODUCTS
-       ----------------------------------------------------- */
+    /* =====================================================
+       PRODUCT LOADING
+    ===================================================== */
 
     async function loadProducts() {
         if (state.loading) return;
 
-        clearMessage();
-        setLoading(true);
+        state.loading = true;
+        clearMessages();
 
-        setHidden(elements.error, true);
-        setHidden(elements.empty, true);
-        setHidden(elements.noResults, true);
+        setHidden(el["catalogue-loading"], false);
+        setHidden(el["catalogue-error"], true);
+        setHidden(el["catalogue-empty"], true);
+        setHidden(el["catalogue-no-results"], true);
+
+        if (el["catalogue-grid"]) {
+            el["catalogue-grid"].setAttribute("aria-busy", "true");
+        }
 
         try {
-            const supabase = SUPABASE();
-
-            if (!supabase) {
-                throw new Error(
-                    "Supabase client is missing. Check javascript/supabase.js."
-                );
-            }
-
-            if (!state.user) {
-                await getAuthenticatedUser();
-            }
-
+            if (!state.user) await getUser();
             if (!state.user) return;
 
-            if (!state.business) {
-                await getAuthenticatedBusiness();
-            }
+            if (!state.business) await getBusiness();
 
-            if (!state.business) return;
-
-            /*
-             * This query intentionally uses only the columns
-             * already present in the previously supplied code.
-             *
-             * Do not add "category" here unless that column
-             * exists in the Supabase products table.
-             */
-            const { data, error } = await supabase
+            const { data, error } = await supabase()
                 .from("products")
                 .select(
                     "id, business_id, name, description, price, image_url, item_type, is_available, created_at"
@@ -344,151 +310,124 @@
 
             if (error) throw error;
 
-            state.products = Array.isArray(data) ? data : [];
+            state.products = data || [];
 
             updateSummary();
             populateCategoryFilter();
             renderProducts();
-        } catch (error) {
-            console.error("Catalogue loading failed:", error);
 
-            setHidden(elements.error, false);
-            setHidden(elements.empty, true);
-            setHidden(elements.noResults, true);
+        } catch (error) {
+            console.error("Product loading failed:", error);
+
+            setHidden(el["catalogue-error"], false);
+            setHidden(el["catalogue-empty"], true);
+            setHidden(el["catalogue-no-results"], true);
 
             showMessage(
                 error.message || "Unable to load your catalogue.",
                 "error"
             );
+
         } finally {
-            setLoading(false);
+            state.loading = false;
+
+            setHidden(el["catalogue-loading"], true);
+
+            if (el["catalogue-grid"]) {
+                el["catalogue-grid"].setAttribute("aria-busy", "false");
+            }
         }
     }
-
-    /* -----------------------------------------------------
-       5. SUMMARY CARDS
-       ----------------------------------------------------- */
 
     function updateSummary() {
         const products = state.products;
 
-        const availableCount = products.filter(
-            (product) => product.is_available === true
+        const available = products.filter(
+            (item) => item.is_available === true
         ).length;
 
-        /*
-         * The supplied query does not include a category column.
-         * Count distinct item_type values for this summary until
-         * a real category column is confirmed in your database.
-         */
         const categories = new Set(
-            products
-                .map((product) => product.item_type)
-                .filter(Boolean)
+            products.map((item) => item.item_type).filter(Boolean)
         );
 
-        if (elements.totalProducts) {
-            elements.totalProducts.textContent = products.length;
+        if (el["total-products"]) {
+            el["total-products"].textContent = products.length;
         }
 
-        if (elements.availableProducts) {
-            elements.availableProducts.textContent = availableCount;
+        if (el["available-products"]) {
+            el["available-products"].textContent = available;
         }
 
-        if (elements.categoryCount) {
-            elements.categoryCount.textContent = categories.size;
+        if (el["product-categories-count"]) {
+            el["product-categories-count"].textContent = categories.size;
         }
     }
 
-    /* -----------------------------------------------------
-       6. FILTER OPTIONS
-       ----------------------------------------------------- */
+    /* =====================================================
+       FILTERS
+    ===================================================== */
 
     function populateCategoryFilter() {
-        const select = elements.filterCategory;
-
+        const select = el["filter-category"];
         if (!select) return;
 
-        const previousValue = select.value;
+        const previous = select.value;
 
-        const values = [
-            ...new Set(
-                state.products
-                    .map((product) => product.item_type)
-                    .filter(Boolean)
-            )
-        ].sort((a, b) => String(a).localeCompare(String(b)));
+        const types = [...new Set(
+            state.products
+                .map((item) => item.item_type)
+                .filter(Boolean)
+        )].sort();
 
         select.replaceChildren();
 
-        const defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.textContent = "All categories";
-        select.appendChild(defaultOption);
+        const all = document.createElement("option");
+        all.value = "all";
+        all.textContent = "All categories";
+        select.appendChild(all);
 
-        values.forEach((value) => {
+        types.forEach((type) => {
             const option = document.createElement("option");
-            option.value = value;
-            option.textContent = value;
+            option.value = type;
+            option.textContent = type;
             select.appendChild(option);
         });
 
-        if (values.includes(previousValue)) {
-            select.value = previousValue;
-        }
+        select.value = types.includes(previous) ? previous : "all";
     }
 
-    /* -----------------------------------------------------
-       7. FILTERING
-       ----------------------------------------------------- */
-
     function getFilteredProducts() {
-        const searchTerm = (elements.search?.value || "")
+        const search = (el["product-search"]?.value || "")
             .trim()
             .toLowerCase();
 
-        const selectedType = elements.filterType?.value || "";
-        const selectedCategory = elements.filterCategory?.value || "";
-        const selectedAvailability =
-            elements.filterAvailability?.value || "";
+        const type = el["filter-type"]?.value || "all";
+        const category = el["filter-category"]?.value || "all";
+        const availability = el["filter-availability"]?.value || "all";
 
-        return state.products.filter((product) => {
-            const name = String(product.name || "").toLowerCase();
-            const description = String(
-                product.description || ""
-            ).toLowerCase();
+        return state.products.filter((item) => {
+            const name = String(item.name || "").toLowerCase();
+            const description = String(item.description || "").toLowerCase();
 
             const matchesSearch =
-                !searchTerm ||
-                name.includes(searchTerm) ||
-                description.includes(searchTerm);
+                !search ||
+                name.includes(search) ||
+                description.includes(search);
 
             const matchesType =
-                !selectedType ||
-                String(product.item_type || "") === selectedType;
+                type === "all" ||
+                String(item.item_type || "").toLowerCase() === type;
 
-            /*
-             * Until a category column exists, the category filter
-             * uses item_type. This avoids querying a nonexistent
-             * database field.
-             */
+            // Category currently uses item_type because the known
+            // products table does not yet have a category column.
             const matchesCategory =
-                !selectedCategory ||
-                String(product.item_type || "") === selectedCategory;
+                category === "all" ||
+                item.item_type === category;
 
-            let matchesAvailability = true;
-
-            if (
-                selectedAvailability === "available" ||
-                selectedAvailability === "true"
-            ) {
-                matchesAvailability = product.is_available === true;
-            } else if (
-                selectedAvailability === "unavailable" ||
-                selectedAvailability === "false"
-            ) {
-                matchesAvailability = product.is_available === false;
-            }
+            const matchesAvailability =
+                availability === "all" ||
+                (availability === "available" && item.is_available === true) ||
+                (availability === "unavailable" && item.is_available === false);
 
             return (
                 matchesSearch &&
@@ -499,67 +438,51 @@
         });
     }
 
-    function hasActiveFilters() {
-        return Boolean(
-            elements.search?.value.trim() ||
-            elements.filterType?.value ||
-            elements.filterCategory?.value ||
-            elements.filterAvailability?.value
-        );
-    }
-
     function clearFilters() {
-        if (elements.search) elements.search.value = "";
-        if (elements.filterType) elements.filterType.value = "";
-        if (elements.filterCategory) elements.filterCategory.value = "";
-        if (elements.filterAvailability) {
-            elements.filterAvailability.value = "";
+        if (el["product-search"]) el["product-search"].value = "";
+        if (el["filter-type"]) el["filter-type"].value = "all";
+        if (el["filter-category"]) el["filter-category"].value = "all";
+        if (el["filter-availability"]) {
+            el["filter-availability"].value = "all";
         }
 
         renderProducts();
     }
 
-    /* -----------------------------------------------------
-       8. RENDER PRODUCT CARDS
-       ----------------------------------------------------- */
+    /* =====================================================
+       PRODUCT CARDS
+    ===================================================== */
 
     function renderProducts() {
-        if (!elements.grid) {
-            console.error(
-                'Missing catalogue grid element: expected id="catalogue-grid".'
-            );
-            return;
-        }
+        const grid = el["catalogue-grid"];
+        if (!grid) return;
 
-        const filteredProducts = getFilteredProducts();
+        grid.replaceChildren();
 
-        elements.grid.replaceChildren();
-
-        setHidden(elements.loading, state.loading);
-        setHidden(elements.error, true);
+        const filtered = getFilteredProducts();
 
         if (state.products.length === 0) {
-            setHidden(elements.empty, false);
-            setHidden(elements.noResults, true);
+            setHidden(el["catalogue-empty"], false);
+            setHidden(el["catalogue-no-results"], true);
             return;
         }
 
-        setHidden(elements.empty, true);
+        setHidden(el["catalogue-empty"], true);
 
-        if (filteredProducts.length === 0) {
-            setHidden(elements.noResults, false);
+        if (filtered.length === 0) {
+            setHidden(el["catalogue-no-results"], false);
             return;
         }
 
-        setHidden(elements.noResults, true);
+        setHidden(el["catalogue-no-results"], true);
 
         const fragment = document.createDocumentFragment();
 
-        filteredProducts.forEach((product) => {
+        filtered.forEach((product) => {
             fragment.appendChild(createProductCard(product));
         });
 
-        elements.grid.appendChild(fragment);
+        grid.appendChild(fragment);
     }
 
     function createProductCard(product) {
@@ -567,20 +490,14 @@
         card.className = "product-card catalogue-product-card";
         card.dataset.productId = product.id;
 
-        const name = escapeHTML(product.name || "Untitled product");
+        const name = escapeHTML(product.name || "Untitled item");
         const description = escapeHTML(
             product.description || "No description provided."
         );
-        const type = escapeHTML(product.item_type || "Product");
+        const type = escapeHTML(product.item_type || "Item");
         const price = escapeHTML(formatPrice(product.price));
-
-        const available = product.is_available === true;
-        const availabilityText = available ? "Available" : "Unavailable";
-        const availabilityClass = available
-            ? "available"
-            : "unavailable";
-
         const imageUrl = safeImageUrl(product.image_url);
+        const available = product.is_available === true;
 
         card.innerHTML = `
             <div class="product-card-image">
@@ -589,8 +506,7 @@
                         ? `<img src="${escapeHTML(imageUrl)}"
                                 alt="${name}"
                                 loading="lazy">`
-                        : `<div class="product-image-placeholder"
-                                aria-label="No product image">B</div>`
+                        : `<div class="product-image-placeholder">B</div>`
                 }
                 <span class="product-type-badge">${type}</span>
             </div>
@@ -598,8 +514,8 @@
             <div class="product-card-content">
                 <div class="product-card-heading">
                     <h3>${name}</h3>
-                    <span class="product-availability ${availabilityClass}">
-                        ${availabilityText}
+                    <span class="product-availability ${available ? "available" : "unavailable"}">
+                        ${available ? "Available" : "Unavailable"}
                     </span>
                 </div>
 
@@ -610,23 +526,20 @@
 
                     <div class="product-card-actions">
                         <button type="button"
-                                class="edit-product-button"
-                                data-action="edit"
-                                data-id="${escapeHTML(product.id)}">
+                            data-action="edit"
+                            data-id="${escapeHTML(product.id)}">
                             Edit
                         </button>
 
                         <button type="button"
-                                class="toggle-product-button"
-                                data-action="toggle"
-                                data-id="${escapeHTML(product.id)}">
+                            data-action="toggle"
+                            data-id="${escapeHTML(product.id)}">
                             ${available ? "Mark unavailable" : "Mark available"}
                         </button>
 
                         <button type="button"
-                                class="delete-product-button"
-                                data-action="delete"
-                                data-id="${escapeHTML(product.id)}">
+                            data-action="delete"
+                            data-id="${escapeHTML(product.id)}">
                             Delete
                         </button>
                     </div>
@@ -636,83 +549,183 @@
 
         const image = card.querySelector("img");
 
-        if (image) {
-            image.addEventListener("error", () => {
-                const placeholder = document.createElement("div");
-                placeholder.className = "product-image-placeholder";
-                placeholder.textContent = "B";
-                placeholder.setAttribute("aria-label", "Image unavailable");
-                image.replaceWith(placeholder);
-            }, { once: true });
-        }
+        image?.addEventListener("error", () => {
+            const placeholder = document.createElement("div");
+            placeholder.className = "product-image-placeholder";
+            placeholder.textContent = "B";
+            image.replaceWith(placeholder);
+        }, { once: true });
 
         return card;
     }
 
-    function safeImageUrl(value) {
-        if (!value) return "";
+    /* =====================================================
+       IMAGE PREVIEW
+    ===================================================== */
 
-        try {
-            const url = new URL(value, window.location.href);
+    function displayImagePreview(url) {
+        const image = el["image-preview-img"];
+        const placeholder = el["image-placeholder"];
 
-            if (url.protocol !== "http:" && url.protocol !== "https:") {
-                return "";
-            }
+        if (!image || !placeholder) return;
 
-            return url.href;
-        } catch {
-            return "";
+        const safeUrl = safeImageUrl(url);
+
+        if (!safeUrl) {
+            image.removeAttribute("src");
+            image.hidden = true;
+            placeholder.hidden = false;
+            setHidden(el["remove-image"], true);
+            return;
         }
+
+        image.onload = () => {
+            image.hidden = false;
+            placeholder.hidden = true;
+            setHidden(el["remove-image"], false);
+        };
+
+        image.onerror = () => {
+            image.hidden = true;
+            placeholder.hidden = false;
+            setHidden(el["remove-image"], true);
+            showFormMessage("Unable to display this image.");
+        };
+
+        image.src = safeUrl;
     }
 
-    /* -----------------------------------------------------
-       9. OPEN AND RESET FORM
-       -------------------------------*/
+    function handleImageSelection() {
+        const file = el["item-image"]?.files?.[0];
 
-    function openEditor() {
-        if (!elements.editor) return;
+        setFieldError(el["item-image"], "");
 
-        elements.editor.hidden = false;
-        elements.editor.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
+        if (!file) return;
+
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            el["item-image"].value = "";
+            showFormMessage("Choose a JPG, PNG or WebP image.");
+            return;
+        }
+
+        if (file.size > MAX_IMAGE_SIZE) {
+            el["item-image"].value = "";
+            showFormMessage("Image must be smaller than 5 MB.");
+            return;
+        }
+
+        state.removeCurrentImage = false;
+
+        const localUrl = URL.createObjectURL(file);
+        displayImagePreview(localUrl);
     }
 
-    function closeEditor() {
-        resetForm();
+    function removeImage() {
+        if (el["item-image"]) el["item-image"].value = "";
 
-        if (elements.editor) {
-            elements.editor.hidden = true;
+        state.currentImageUrl = null;
+        state.removeCurrentImage = true;
+
+        displayImagePreview(null);
+    }
+
+    async function uploadImage(productId) {
+        const file = el["item-image"]?.files?.[0];
+
+        if (!file) return state.currentImageUrl;
+
+        const extension = file.name.split(".").pop().toLowerCase();
+        const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extension}`;
+
+        const { error } = await supabase()
+            .storage
+            .from(BUCKET)
+            .upload(path, file, {
+                contentType: file.type,
+                upsert: false
+            });
+
+        if (error) throw error;
+
+        const { data } = supabase()
+            .storage
+            .from(BUCKET)
+            .getPublicUrl(path);
+
+        if (!data?.publicUrl) {
+            throw new Error("Could not get the uploaded image URL.");
         }
+
+        return data.publicUrl;
+    }
+
+    /* =====================================================
+       FORM
+    ===================================================== */
+
+    function setEditorMode(editing) {
+        if (el["editor-title"]) {
+            el["editor-title"].textContent = editing
+                ? "Edit product or service"
+                : "Add a product or service";
+        }
+
+        if (el["save-button-text"]) {
+            el["save-button-text"].textContent = editing
+                ? "Save changes"
+                : "Save item";
+        }
+
+        setHidden(el["cancel-edit"], !editing);
     }
 
     function resetForm() {
-        if (elements.form) {
-            elements.form.reset();
+        el["product-form"]?.reset();
+
+        state.editingId = null;
+        state.currentImageUrl = null;
+        state.removeCurrentImage = false;
+
+        if (el["item-available"]) {
+            el["item-available"].checked = true;
         }
 
-        state.editingProductId = null;
-
-        if (elements.editorTitle) {
-            elements.editorTitle.textContent = "Add Product";
+        if (el["item-image"]) {
+            el["item-image"].value = "";
         }
 
-        if (elements.submitButton) {
-            elements.submitButton.textContent = "Add Product";
-            elements.submitButton.disabled = false;
+        displayImagePreview(null);
+        setEditorMode(false);
+
+        if (el["description-count"]) {
+            el["description-count"].textContent = "0";
         }
 
-        if (elements.imagePreview) {
-            elements.imagePreview.replaceChildren();
-            elements.imagePreview.hidden = true;
-        }
+        [
+            el["item-name"],
+            el["item-type"],
+            el["item-price"],
+            el["item-image"]
+        ].forEach((field) => setFieldError(field, ""));
 
-        if (elements.imageUrl) {
-            elements.imageUrl.value = "";
-        }
+        clearMessages();
+    }
 
-        setSaving(false);
+    function openEditor() {
+        if (!el["product-editor"]) return;
+
+        el["product-editor"].hidden = false;
+
+        el["product-editor"].scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
     }
 
     function startAddProduct() {
@@ -720,230 +733,129 @@
         openEditor();
     }
 
-    function startEditProduct(productId) {
+    function startEditProduct(id) {
         const product = state.products.find(
-            (item) => String(item.id) === String(productId)
+            (item) => String(item.id) === String(id)
         );
 
         if (!product) {
-            showMessage("That product could not be found.", "error");
+            showMessage("Product not found.", "error");
             return;
         }
 
         resetForm();
 
-        state.editingProductId = product.id;
+        state.editingId = product.id;
+        state.currentImageUrl = product.image_url || null;
 
-        if (elements.name) {
-            elements.name.value = product.name || "";
+        el["item-name"].value = product.name || "";
+        el["item-description"].value = product.description || "";
+        el["item-price"].value = product.price ?? "";
+        el["item-type"].value = product.item_type || "";
+        el["item-available"].checked = product.is_available === true;
+
+        // Category is not saved because the known database schema
+        // does not include a category column.
+        if (el["item-category"]) {
+            el["item-category"].value = "";
+            el["item-category"].disabled = true;
+            el["item-category"].placeholder =
+                "Category storage needs a database column";
         }
 
-        if (elements.description) {
-            elements.description.value = product.description || "";
+        if (el["description-count"]) {
+            el["description-count"].textContent =
+                el["item-description"].value.length;
         }
 
-        if (elements.price) {
-            elements.price.value = product.price ?? "";
-        }
-
-        if (elements.type) {
-            elements.type.value = product.item_type || "";
-        }
-
-        if (elements.category) {
-            /*
-             * The current known database query has no category
-             * column. Do not populate category from an assumed
-             * database value.
-             */
-            elements.category.value = "";
-        }
-
-        if (elements.availability) {
-            if (elements.availability.type === "checkbox") {
-                elements.availability.checked =
-                    product.is_available === true;
-            } else {
-                elements.availability.value =
-                    String(product.is_available === true);
-            }
-        }
-
-        if (elements.imageUrl) {
-            elements.imageUrl.value = product.image_url || "";
-        }
-
-        if (elements.editorTitle) {
-            elements.editorTitle.textContent = "Edit Product";
-        }
-
-        if (elements.imagePreview && product.image_url) {
-            elements.imagePreview.innerHTML = `
-                <img src="${escapeHTML(safeImageUrl(product.image_url))}"
-                     alt="Current product image">
-            `;
-            elements.imagePreview.hidden = false;
-        }
-
+        displayImagePreview(state.currentImageUrl);
+        setEditorMode(true);
         openEditor();
     }
 
-    /* -----------------------------------------------------
-       10. FORM VALUES AND VALIDATION
-       ----------------------------------------------------- */
-
-    function getFormValue(element) {
-        return element ? String(element.value ?? "").trim() : "";
-    }
-
-    function getAvailabilityValue() {
-        const element = elements.availability;
-
-        if (!element) return true;
-
-        if (element.type === "checkbox") {
-            return element.checked;
-        }
-
-        return element.value !== "false";
-    }
-
     function validateForm() {
-        if (!elements.form) {
-            throw new Error(
-                "Product form not found. Check the form ID in products.html."
-            );
-        }
+        const name = el["item-name"].value.trim();
+        const type = el["item-type"].value;
+        const priceText = el["item-price"].value.trim();
 
-        if (!elements.name) {
-            throw new Error(
-                "Product name field not found. Expected item-name or product-name."
-            );
-        }
-
-        const name = getFormValue(elements.name);
-        const priceText = getFormValue(elements.price);
+        setFieldError(el["item-name"], "");
+        setFieldError(el["item-type"], "");
+        setFieldError(el["item-price"], "");
 
         if (!name) {
-            elements.name.focus();
-            throw new Error("Please enter a product name.");
+            setFieldError(el["item-name"], "Enter an item name.");
+            el["item-name"].focus();
+            return null;
         }
 
-        if (!priceText) {
-            elements.price?.focus();
-            throw new Error("Please enter a product price.");
+        if (!type) {
+            setFieldError(el["item-type"], "Choose Product or Service.");
+            el["item-type"].focus();
+            return null;
         }
 
-        const price = Number(priceText);
+        let price = null;
 
-        if (!Number.isFinite(price) || price < 0) {
-            elements.price?.focus();
-            throw new Error("Enter a valid non-negative price.");
+        if (priceText !== "") {
+            price = Number(priceText);
+
+            if (!Number.isFinite(price) || price < 0) {
+                setFieldError(el["item-price"], "Enter a valid price.");
+                el["item-price"].focus();
+                return null;
+            }
         }
 
         return {
             name,
-            description: getFormValue(elements.description),
+            item_type: type,
+            description: el["item-description"].value.trim(),
             price,
-            item_type: getFormValue(elements.type) || "Product",
-            is_available: getAvailabilityValue()
+            is_available: el["item-available"].checked
         };
     }
-
-    /* -----------------------------------------------------
-       11. IMAGE UPLOAD
-       ----------------------------------------------------- */
-
-    async function uploadProductImage(productId) {
-        const file = elements.imageInput?.files?.[0];
-
-        if (!file) {
-            return getFormValue(elements.imageUrl) || null;
-        }
-
-        if (!file.type.startsWith("image/")) {
-            throw new Error("Please select a valid image file.");
-        }
-
-        const maxSize = 5 * 1024 * 1024;
-
-        if (file.size > maxSize) {
-            throw new Error("The image must be smaller than 5 MB.");
-        }
-
-        const supabase = SUPABASE();
-
-        const extension = (
-            file.name.split(".").pop() || "jpg"
-        ).toLowerCase().replace(/[^a-z0-9]/g, "");
-
-        const filePath =
-            `${state.business.id}/${productId}/${Date.now()}.${extension}`;
-
-        const { error: uploadError } = await supabase
-            .storage
-            .from(STORAGE_BUCKET)
-            .upload(filePath, file, {
-                upsert: true,
-                contentType: file.type
-            });
-
-        if (uploadError) {
-            throw new Error(
-                `Image upload failed: ${uploadError.message}`
-            );
-        }
-
-        const { data } = supabase
-            .storage
-            .from(STORAGE_BUCKET)
-            .getPublicUrl(filePath);
-
-        return data?.publicUrl || null;
-    }
-
-    /* -----------------------------------------------------
-       12. SAVE PRODUCT
-       ----------------------------------------------------- */
 
     async function saveProduct(event) {
         event.preventDefault();
 
         if (state.saving) return;
 
-        clearMessage();
-        setSaving(true);
+        clearMessages();
 
-        let uploadedProductId = null;
+        const formData = validateForm();
+        if (!formData) return;
+
+        state.saving = true;
+
+        el["save-item"].disabled = true;
+        el["save-button-text"].textContent = "Saving...";
 
         try {
-            const supabase = SUPABASE();
+            if (!state.user) await getUser();
+            if (!state.user) return;
 
-            if (!state.user) {
-                await getAuthenticatedUser();
-            }
+            if (!state.business) await getBusiness();
 
-            if (!state.business) {
-                await getAuthenticatedBusiness();
-            }
+            const client = supabase();
+            const editing = Boolean(state.editingId);
+            let productId = state.editingId;
 
-            const formData = validateForm();
-            const isEditing = Boolean(state.editingProductId);
+            if (editing) {
+                const { error } = await client
+                    .from("products")
+                    .update(formData)
+                    .eq("id", productId)
+                    .eq("business_id", state.business.id);
 
-            let productId = state.editingProductId;
+                if (error) throw error;
 
-            if (!isEditing) {
-                /*
-                 * Insert first to obtain the new product ID.
-                 * Image upload follows, then the image URL is
-                 * written back to the same product record.
-                 */
-                const { data, error } = await supabase
+            } else {
+                const { data, error } = await client
                     .from("products")
                     .insert({
                         business_id: state.business.id,
                         ...formData,
-                        image_url: getFormValue(elements.imageUrl) || null
+                        image_url: null
                     })
                     .select("id")
                     .single();
@@ -951,34 +863,22 @@
                 if (error) throw error;
 
                 productId = data.id;
-                uploadedProductId = productId;
-            } else {
-                const { error } = await supabase
-                    .from("products")
-                    .update(formData)
-                    .eq("id", productId)
-                    .eq("business_id", state.business.id);
-
-                if (error) throw error;
             }
 
-            const selectedImageFile =
-                elements.imageInput?.files?.[0];
+            let imageUrl = state.currentImageUrl;
 
-            if (selectedImageFile) {
-                const imageUrl = await uploadProductImage(productId);
+            if (el["item-image"].files.length > 0) {
+                imageUrl = await uploadImage(productId);
+            } else if (state.removeCurrentImage) {
+                imageUrl = null;
+            }
 
-                const { error } = await supabase
-                    .from("products")
-                    .update({ image_url: imageUrl })
-                    .eq("id", productId)
-                    .eq("business_id", state.business.id);
-
-                if (error) throw error;
-            } else if (isEditing && elements.imageUrl) {
-                const imageUrl = getFormValue(elements.imageUrl) || null;
-
-                const { error } = await supabase
+            if (
+                el["item-image"].files.length > 0 ||
+                state.removeCurrentImage ||
+                !editing
+            ) {
+                const { error } = await client
                     .from("products")
                     .update({ image_url: imageUrl })
                     .eq("id", productId)
@@ -987,92 +887,87 @@
                 if (error) throw error;
             }
 
-            closeEditor();
+            resetForm();
+            el["product-editor"].hidden = true;
 
             showMessage(
-                isEditing
-                    ? "Product updated successfully."
-                    : "Product added successfully."
+                editing
+                    ? "Item updated successfully."
+                    : "Item added successfully."
             );
 
             await loadProducts();
-        } catch (error) {
-            console.error("Saving product failed:", error);
 
-            /*
-             * If image upload fails after insertion, leave the
-             * inserted product in place. This avoids silently
-             * deleting a user's product because of an image error.
-             */
-            showMessage(
-                error.message || "Unable to save this product.",
-                "error"
+        } catch (error) {
+            console.error("Save failed:", error);
+
+            showFormMessage(
+                error.message || "Unable to save this item."
             );
+
         } finally {
-            setSaving(false);
+            state.saving = false;
+            el["save-item"].disabled = false;
+
+            if (el["save-button-text"]) {
+                el["save-button-text"].textContent =
+                    state.editingId ? "Save changes" : "Save item";
+            }
         }
     }
-/* -----------------------------------------------------
-       13. AVAILABILITY TOGGLE
-       ----------------------------------------------------- */
 
-    async function toggleProductAvailability(productId) {
+    /* =====================================================
+       AVAILABILITY AND DELETE
+    ===================================================== */
+
+    async function toggleAvailability(id) {
         const product = state.products.find(
-            (item) => String(item.id) === String(productId)
+            (item) => String(item.id) === String(id)
         );
 
-        if (!product || !state.business) return;
+        if (!product) return;
 
-        const newAvailability = product.is_available !== true;
+        const newValue = product.is_available !== true;
 
         try {
-            const { error } = await SUPABASE()
+            const { error } = await supabase()
                 .from("products")
-                .update({ is_available: newAvailability })
+                .update({ is_available: newValue })
                 .eq("id", product.id)
                 .eq("business_id", state.business.id);
 
             if (error) throw error;
 
-            product.is_available = newAvailability;
+            product.is_available = newValue;
 
             updateSummary();
             renderProducts();
 
             showMessage(
-                newAvailability
-                    ? "Product marked as available."
-                    : "Product marked as unavailable."
+                newValue
+                    ? "Item marked as available."
+                    : "Item marked as unavailable."
             );
-        } catch (error) {
-            console.error("Availability update failed:", error);
 
-            showMessage(
-                error.message || "Could not update availability.",
-                "error"
-            );
+        } catch (error) {
+            console.error(error);
+            showMessage(error.message || "Unable to update availability.", "error");
         }
     }
 
-    /* -----------------------------------------------------
-       14. DELETE PRODUCT
-       ----------------------------------------------------- */
-
-    async function deleteProduct(productId) {
+    async function deleteProduct(id) {
         const product = state.products.find(
-            (item) => String(item.id) === String(productId)
+            (item) => String(item.id) === String(id)
         );
 
-        if (!product || !state.business) return;
+        if (!product) return;
 
-        const confirmed = window.confirm(
-            `Delete "${product.name || "this product"}"? This cannot be undone.`
-        );
-
-        if (!confirmed) return;
+        if (!window.confirm(
+            `Delete "${product.name}"? This action cannot be undone.`
+        )) return;
 
         try {
-            const { error } = await SUPABASE()
+            const { error } = await supabase()
                 .from("products")
                 .delete()
                 .eq("id", product.id)
@@ -1081,49 +976,43 @@
             if (error) throw error;
 
             state.products = state.products.filter(
-                (item) => String(item.id) !== String(productId)
+                (item) => String(item.id) !== String(id)
             );
 
             updateSummary();
             populateCategoryFilter();
             renderProducts();
 
-            showMessage("Product deleted successfully.");
-        } catch (error) {
-            console.error("Product deletion failed:", error);
+            showMessage("Item deleted successfully.");
 
-            showMessage(
-                error.message || "Unable to delete this product.",
-                "error"
-            );
+        } catch (error) {
+            console.error(error);
+            showMessage(error.message || "Unable to delete item.", "error");
         }
     }
 
-    /* -----------------------------------------------------
-       15. MOBILE SIDEBAR
-       ----------------------------------------------------- */
-
-    function setupMobileNavigation() {
-        const sidebar = elements.sidebar;
-        const menuButton = elements.mobileMenuButton;
-        const overlay = elements.sidebarOverlay;
-
-        if (!sidebar || !menuButton) return;
+    /* =====================================================
+       MOBILE NAVIGATION AND PROFILE MENU
+    ===================================================== */
+function setupNavigation() {
+        const sidebar = el["dashboard-sidebar"];
+        const menuButton = el["mobile-menu-button"];
+        const overlay = el["sidebar-overlay"];
 
         function closeSidebar() {
-            sidebar.classList.remove("is-open");
+            sidebar?.classList.remove("is-open");
             document.body.classList.remove("sidebar-open");
 
             if (overlay) {
-                overlay.classList.remove("is-visible");
                 overlay.hidden = true;
+                overlay.classList.remove("is-visible");
             }
 
-            menuButton.setAttribute("aria-expanded", "false");
+            menuButton?.setAttribute("aria-expanded", "false");
         }
 
         function openSidebar() {
-            sidebar.classList.add("is-open");
+            sidebar?.classList.add("is-open");
             document.body.classList.add("sidebar-open");
 
             if (overlay) {
@@ -1131,173 +1020,151 @@
                 overlay.classList.add("is-visible");
             }
 
-            menuButton.setAttribute("aria-expanded", "true");
+            menuButton?.setAttribute("aria-expanded", "true");
         }
 
-        menuButton.addEventListener("click", () => {
-            const isOpen = sidebar.classList.contains("is-open");
-
-            if (isOpen) {
-                closeSidebar();
-            } else {
-                openSidebar();
-            }
+        menuButton?.addEventListener("click", () => {
+            sidebar?.classList.contains("is-open")
+                ? closeSidebar()
+                : openSidebar();
         });
 
         overlay?.addEventListener("click", closeSidebar);
 
-        sidebar.querySelectorAll("a").forEach((link) => {
+        sidebar?.querySelectorAll("a").forEach((link) => {
             link.addEventListener("click", closeSidebar);
         });
 
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 closeSidebar();
+                closeProfileMenu();
             }
         });
 
         window.addEventListener("resize", () => {
-            if (window.innerWidth > 900) {
-                closeSidebar();
+            if (window.innerWidth > 900) closeSidebar();
+        });
+    }
+
+    function closeProfileMenu() {
+        setHidden(el["profile-menu"], true);
+        el["profile-menu-button"]?.setAttribute("aria-expanded", "false");
+    }
+
+    function setupProfileMenu() {
+        el["profile-menu-button"]?.addEventListener("click", () => {
+            const menu = el["profile-menu"];
+            if (!menu) return;
+
+            const opening = menu.hidden;
+            menu.hidden = !opening;
+
+            el["profile-menu-button"].setAttribute(
+                "aria-expanded",
+                String(opening)
+            );
+        });
+
+        el["logout-button"]?.addEventListener("click", logout);
+
+        document.querySelectorAll("[data-settings-link]").forEach((link) => {
+            link.addEventListener("click", closeProfileMenu);
+        });
+
+        document.addEventListener("click", (event) => {
+            const menu = el["profile-menu"];
+            const button = el["profile-menu-button"];
+
+            if (
+                menu &&
+                button &&
+                !menu.contains(event.target) &&
+                !button.contains(event.target)
+            ) {
+                closeProfileMenu();
             }
         });
     }
 
-    /* -----------------------------------------------------
-       16. EVENT LISTENERS
-       ----------------------------------------------------- */
+    /* =====================================================
+       EVENT LISTENERS
+    ===================================================== */
 
-    function setupEventListeners() {
-        elements.form?.addEventListener("submit", saveProduct);
+    function setupEvents() {
+        el["product-form"]?.addEventListener("submit", saveProduct);
 
-        elements.retry?.addEventListener("click", loadProducts);
+        el["add-product-button"]?.addEventListener("click", startAddProduct);
+        el["empty-add-product-button"]?.addEventListener("click", startAddProduct);
 
-        elements.search?.addEventListener("input", renderProducts);
-
-        elements.filterType?.addEventListener("change", renderProducts);
-
-        elements.filterCategory?.addEventListener(
-            "change",
-            renderProducts
-        );
-
-        elements.filterAvailability?.addEventListener(
-            "change",
-            renderProducts
-        );
-
-        elements.clearFilters?.addEventListener("click", clearFilters);
-
-        elements.emptyAddButton?.addEventListener(
-            "click",
-            startAddProduct
-        );
-
-        elements.cancelButton?.addEventListener(
-            "click",
-            closeEditor
-        );
-
-        /*
-         * Support any existing "Add Product" button without
-         * requiring a specific new ID in the HTML.
-         */
-        document.querySelectorAll(
-            '[data-action="add-product"], #add-product-button, #add-item-button'
-        ).forEach((button) => {
-            button.addEventListener("click", startAddProduct);
+        el["reset-form"]?.addEventListener("click", resetForm);
+        el["cancel-edit"]?.addEventListener("click", () => {
+            resetForm();
+            el["product-editor"].hidden = true;
         });
 
-        elements.grid?.addEventListener("click", async (event) => {
-            const button = event.target.closest("button[data-action]");
+        el["retry-catalogue"]?.addEventListener("click", loadProducts);
+        el["clear-product-filters"]?.addEventListener("click", clearFilters);
 
+        el["product-search"]?.addEventListener("input", renderProducts);
+        el["filter-type"]?.addEventListener("change", renderProducts);
+        el["filter-category"]?.addEventListener("change", renderProducts);
+        el["filter-availability"]?.addEventListener("change", renderProducts);
+
+        el["item-image"]?.addEventListener("change", handleImageSelection);
+        el["remove-image"]?.addEventListener("click", removeImage);
+
+        el["item-description"]?.addEventListener("input", () => {
+            if (el["description-count"]) {
+                el["description-count"].textContent =
+                    el["item-description"].value.length;
+            }
+        });
+
+        el["catalogue-grid"]?.addEventListener("click", async (event) => {
+            const button = event.target.closest("button[data-action]");
             if (!button) return;
 
-            const action = button.dataset.action;
-            const productId = button.dataset.id;
+            const { action, id } = button.dataset;
+            if (!id) return;
 
-            if (!productId) return;
-
-            if (action === "edit") {
-                startEditProduct(productId);
-            } else if (action === "toggle") {
-                await toggleProductAvailability(productId);
-            } else if (action === "delete") {
-                await deleteProduct(productId);
-            }
+            if (action === "edit") startEditProduct(id);
+            if (action === "toggle") await toggleAvailability(id);
+            if (action === "delete") await deleteProduct(id);
         });
 
-        elements.imageInput?.addEventListener("change", () => {
-            const file = elements.imageInput.files?.[0];
-
-            if (!elements.imagePreview) return;
-
-            elements.imagePreview.replaceChildren();
-
-            if (!file) {
-                elements.imagePreview.hidden = true;
-                return;
-            }
-
-            if (!file.type.startsWith("image/")) {
-                showMessage("Please select an image file.", "error");
-                elements.imageInput.value = "";
-                elements.imagePreview.hidden = true;
-                return;
-            }
-
-            const image = document.createElement("img");
-            image.alt = "Selected product image";
-            image.src = URL.createObjectURL(file);
-
-            image.addEventListener("load", () => {
-                URL.revokeObjectURL(image.src);
-            }, { once: true });
-
-            elements.imagePreview.appendChild(image);
-            elements.imagePreview.hidden = false;
-        });
-
-        setupMobileNavigation();
+        setupNavigation();
+        setupProfileMenu();
     }
 
-    /* -----------------------------------------------------
- 17. INITIALIZATION
-       ----------------------------------------------------- */
+    /* =====================================================
+       INITIALIZATION
+    ===================================================== */
 
     async function initialize() {
-        if (state.initialized) return;
-
-        state.initialized = true;
-
         cacheElements();
-        setupEventListeners();
 
-        if (!elements.grid) {
-            console.error(
-                'Cannot initialize catalogue: #catalogue-grid is missing.'
-            );
-
-            showMessage(
-                "The catalogue grid is missing from products.html.",
-                "error"
-            );
-
-            setHidden(elements.loading, true);
-            setHidden(elements.error, false);
-            return;
+        // The editor opens only when the user chooses Add or Edit.
+        if (el["product-editor"]) {
+            el["product-editor"].hidden = true;
         }
 
-        setHidden(elements.loading, false);
-        setHidden(elements.error, true);
+        setHidden(el["catalogue-loading"], false);
+        setHidden(el["catalogue-error"], true);
+
+        setupEvents();
+
+        if (!el["catalogue-grid"] || !el["product-form"]) {
+            console.error("Required products.html elements are missing.");
+            showMessage("The products page HTML is missing required elements.", "error");
+            return;
+        }
 
         await loadProducts();
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initialize, {
-            once: true
-        });
+        document.addEventListener("DOMContentLoaded", initialize, { once: true });
     } else {
         initialize();
     }
