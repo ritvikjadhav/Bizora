@@ -1,8 +1,7 @@
-
 /* =========================================================
    BIZVERO — PRODUCTS & SERVICES
-   Matches the supplied products.html
    Supabase client: window.bizoraSupabase
+   Storage bucket: product-images
    ========================================================= */
 
 "use strict";
@@ -11,6 +10,7 @@
     const supabase = () => window.bizoraSupabase;
     const BUCKET = "product-images";
     const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
     const state = {
         user: null,
@@ -19,13 +19,17 @@
         editingId: null,
         currentImageUrl: null,
         removeCurrentImage: false,
+        previewUrl: null,
         saving: false,
         loading: false
     };
 
-    const $ = (id) => document.getElementById(id);
-
+    const $ = id => document.getElementById(id);
     const el = {};
+
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
 
     function cacheElements() {
         const ids = [
@@ -52,6 +56,7 @@
             "catalogue-no-results",
             "clear-product-filters",
             "empty-add-product-button",
+            "add-product-button",
             "catalogue-grid",
             "product-editor",
             "editor-title",
@@ -83,13 +88,11 @@
             "settings-email"
         ];
 
-        ids.forEach((id) => {
-            el[id] = $(id);
-        });
+        ids.forEach(id => el[id] = $(id));
     }
 
     function escapeHTML(value) {
-        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
             "&": "&amp;",
             "<": "&lt;",
             ">": "&gt;",
@@ -104,7 +107,6 @@
 
     function showMessage(message, type = "success") {
         const target = el["dashboard-message"];
-
         if (!target) return;
 
         target.textContent = message;
@@ -114,7 +116,6 @@
 
     function showFormMessage(message, type = "error") {
         const target = el["form-status"];
-
         if (!target) return;
 
         target.textContent = message;
@@ -123,8 +124,12 @@
     }
 
     function clearMessages() {
-        [el["dashboard-message"], el["form-status"]].forEach((target) => {
+        [
+            el["dashboard-message"],
+            el["form-status"]
+        ].forEach(target => {
             if (!target) return;
+
             target.textContent = "";
             target.hidden = true;
             target.classList.remove("error");
@@ -142,7 +147,10 @@
             errorElement.hidden = !message;
         }
 
-        element.setAttribute("aria-invalid", message ? "true" : "false");
+        element.setAttribute(
+            "aria-invalid",
+            message ? "true" : "false"
+        );
     }
 
     function formatPrice(value) {
@@ -152,7 +160,9 @@
 
         const number = Number(value);
 
-        if (!Number.isFinite(number)) return "Price unavailable";
+        if (!Number.isFinite(number)) {
+            return "Price unavailable";
+        }
 
         return new Intl.NumberFormat("en-IN", {
             style: "currency",
@@ -170,13 +180,21 @@
             return ["https:", "http:"].includes(url.protocol)
                 ? url.href
                 : "";
+
         } catch {
             return "";
         }
     }
 
+    function releasePreview() {
+        if (state.previewUrl) {
+            URL.revokeObjectURL(state.previewUrl);
+            state.previewUrl = null;
+        }
+    }
+
     /* =====================================================
-       AUTHENTICATION AND ACCOUNT
+       AUTHENTICATION
     ===================================================== */
 
     async function getUser() {
@@ -184,7 +202,7 @@
 
         if (!client) {
             throw new Error(
-                "Supabase client not found. Check javascript/supabase.js."
+                "Supabase client not found. Check supabase.js."
             );
         }
 
@@ -216,33 +234,27 @@
 
         const initial = name.trim().charAt(0).toUpperCase() || "B";
 
-        if (el["profile-name"]) {
+        if (el["profile-name"])
             el["profile-name"].textContent = name;
-        }
 
-        if (el["profile-email"]) {
+        if (el["profile-email"])
             el["profile-email"].textContent = email;
-        }
 
-        if (el["profile-avatar"]) {
+        if (el["profile-avatar"])
             el["profile-avatar"].textContent = initial;
-        }
 
-        if (el["settings-name"]) {
+        if (el["settings-name"])
             el["settings-name"].textContent = name;
-        }
 
-        if (el["settings-email"]) {
+        if (el["settings-email"])
             el["settings-email"].textContent = email;
-        }
 
-        if (el["settings-avatar"]) {
+        if (el["settings-avatar"])
             el["settings-avatar"].textContent = initial;
-        }
     }
 
     async function logout() {
-        if (!window.confirm("Are you sure you want to log out?")) return;
+        if (!confirm("Are you sure you want to log out?")) return;
 
         try {
             const { error } = await supabase().auth.signOut();
@@ -250,9 +262,10 @@
             if (error) throw error;
 
             window.location.replace("./auth.html");
+
         } catch (error) {
             console.error("Logout failed:", error);
-            showMessage(error.message || "Unable to log out.", "error");
+            showMessage(error.message, "error");
         }
     }
 
@@ -272,11 +285,12 @@
         }
 
         state.business = data;
+
         return data;
     }
 
     /* =====================================================
-       PRODUCT LOADING
+       LOAD PRODUCTS
     ===================================================== */
 
     async function loadProducts() {
@@ -290,9 +304,7 @@
         setHidden(el["catalogue-empty"], true);
         setHidden(el["catalogue-no-results"], true);
 
-        if (el["catalogue-grid"]) {
-            el["catalogue-grid"].setAttribute("aria-busy", "true");
-        }
+        el["catalogue-grid"]?.setAttribute("aria-busy", "true");
 
         try {
             if (!state.user) await getUser();
@@ -302,9 +314,17 @@
 
             const { data, error } = await supabase()
                 .from("products")
-                .select(
-                    "id, business_id, name, description, price, image_url, item_type, is_available, created_at"
-                )
+                .select(`
+                    id,
+                    business_id,
+                    name,
+                    description,
+                    price,
+                    image_url,
+                    item_type,
+                    is_available,
+                    created_at
+                `)
                 .eq("business_id", state.business.id)
                 .order("created_at", { ascending: false });
 
@@ -324,7 +344,7 @@
             setHidden(el["catalogue-no-results"], true);
 
             showMessage(
-                error.message || "Unable to load your catalogue.",
+                error.message || "Unable to load catalogue.",
                 "error"
             );
 
@@ -333,9 +353,10 @@
 
             setHidden(el["catalogue-loading"], true);
 
-            if (el["catalogue-grid"]) {
-                el["catalogue-grid"].setAttribute("aria-busy", "false");
-            }
+            el["catalogue-grid"]?.setAttribute(
+                "aria-busy",
+                "false"
+            );
         }
     }
 
@@ -343,39 +364,38 @@
         const products = state.products;
 
         const available = products.filter(
-            (item) => item.is_available === true
+            item => item.is_available === true
         ).length;
 
         const categories = new Set(
-            products.map((item) => item.item_type).filter(Boolean)
+            products.map(item => item.item_type).filter(Boolean)
         );
 
-        if (el["total-products"]) {
+        if (el["total-products"])
             el["total-products"].textContent = products.length;
-        }
 
-        if (el["available-products"]) {
+        if (el["available-products"])
             el["available-products"].textContent = available;
-        }
 
-        if (el["product-categories-count"]) {
+        if (el["product-categories-count"])
             el["product-categories-count"].textContent = categories.size;
-        }
     }
 
     /* =====================================================
        FILTERS
+       Category currently uses item_type.
     ===================================================== */
 
     function populateCategoryFilter() {
         const select = el["filter-category"];
+
         if (!select) return;
 
         const previous = select.value;
 
         const types = [...new Set(
             state.products
-                .map((item) => item.item_type)
+                .map(item => item.item_type)
                 .filter(Boolean)
         )].sort();
 
@@ -384,12 +404,16 @@
         const all = document.createElement("option");
         all.value = "all";
         all.textContent = "All categories";
+
         select.appendChild(all);
 
-        types.forEach((type) => {
+        types.forEach(type => {
             const option = document.createElement("option");
+
             option.value = type;
-            option.textContent = type;
+            option.textContent =
+                type.charAt(0).toUpperCase() + type.slice(1);
+
             select.appendChild(option);
         });
 
@@ -397,17 +421,28 @@
     }
 
     function getFilteredProducts() {
-        const search = (el["product-search"]?.value || "")
-            .trim()
-            .toLowerCase();
+        const search = (
+            el["product-search"]?.value || ""
+        ).trim().toLowerCase();
 
-        const type = el["filter-type"]?.value || "all";
-        const category = el["filter-category"]?.value || "all";
-        const availability = el["filter-availability"]?.value || "all";
+        const type = (
+            el["filter-type"]?.value || "all"
+        ).toLowerCase();
 
-        return state.products.filter((item) => {
+        const category =
+            el["filter-category"]?.value || "all";
+
+        const availability =
+            el["filter-availability"]?.value || "all";
+
+        return state.products.filter(item => {
             const name = String(item.name || "").toLowerCase();
-            const description = String(item.description || "").toLowerCase();
+
+            const description =
+                String(item.description || "").toLowerCase();
+
+            const itemType =
+                String(item.item_type || "").toLowerCase();
 
             const matchesSearch =
                 !search ||
@@ -415,19 +450,22 @@
                 description.includes(search);
 
             const matchesType =
-                type === "all" ||
-                String(item.item_type || "").toLowerCase() === type;
+                type === "all" || itemType === type;
 
-            // Category currently uses item_type because the known
-            // products table does not yet have a category column.
             const matchesCategory =
                 category === "all" ||
                 item.item_type === category;
 
             const matchesAvailability =
                 availability === "all" ||
-                (availability === "available" && item.is_available === true) ||
-                (availability === "unavailable" && item.is_available === false);
+                (
+                    availability === "available" &&
+                    item.is_available === true
+                ) ||
+                (
+                    availability === "unavailable" &&
+                    item.is_available === false
+                );
 
             return (
                 matchesSearch &&
@@ -439,12 +477,17 @@
     }
 
     function clearFilters() {
-        if (el["product-search"]) el["product-search"].value = "";
-        if (el["filter-type"]) el["filter-type"].value = "all";
-        if (el["filter-category"]) el["filter-category"].value = "all";
-        if (el["filter-availability"]) {
+        if (el["product-search"])
+            el["product-search"].value = "";
+
+        if (el["filter-type"])
+            el["filter-type"].value = "all";
+
+        if (el["filter-category"])
+            el["filter-category"].value = "all";
+
+        if (el["filter-availability"])
             el["filter-availability"].value = "all";
-        }
 
         renderProducts();
     }
@@ -455,6 +498,7 @@
 
     function renderProducts() {
         const grid = el["catalogue-grid"];
+
         if (!grid) return;
 
         grid.replaceChildren();
@@ -478,7 +522,7 @@
 
         const fragment = document.createDocumentFragment();
 
-        filtered.forEach((product) => {
+        filtered.forEach(product => {
             fragment.appendChild(createProductCard(product));
         });
 
@@ -487,61 +531,81 @@
 
     function createProductCard(product) {
         const card = document.createElement("article");
+
         card.className = "product-card catalogue-product-card";
         card.dataset.productId = product.id;
 
         const name = escapeHTML(product.name || "Untitled item");
+
         const description = escapeHTML(
             product.description || "No description provided."
         );
+
         const type = escapeHTML(product.item_type || "Item");
+
         const price = escapeHTML(formatPrice(product.price));
+
         const imageUrl = safeImageUrl(product.image_url);
+
         const available = product.is_available === true;
+
+        const id = escapeHTML(product.id);
 
         card.innerHTML = `
             <div class="product-card-image">
                 ${
                     imageUrl
                         ? `<img src="${escapeHTML(imageUrl)}"
-                                alt="${name}"
-                                loading="lazy">`
+                               alt="${name}"
+                               loading="lazy">`
                         : `<div class="product-image-placeholder">B</div>`
                 }
+
                 <span class="product-type-badge">${type}</span>
             </div>
 
             <div class="product-card-content">
+
                 <div class="product-card-heading">
                     <h3>${name}</h3>
-                    <span class="product-availability ${available ? "available" : "unavailable"}">
+
+                    <span class="product-availability ${
+                        available ? "available" : "unavailable"
+                    }">
                         ${available ? "Available" : "Unavailable"}
                     </span>
                 </div>
 
-                <p class="product-card-description">${description}</p>
+                <p class="product-card-description">
+                    ${description}
+                </p>
 
                 <div class="product-card-footer">
-                    <strong class="product-card-price">${price}</strong>
+
+                    <strong class="product-card-price">
+                        ${price}
+                    </strong>
 
                     <div class="product-card-actions">
+
                         <button type="button"
                             data-action="edit"
-                            data-id="${escapeHTML(product.id)}">
+                            data-id="${id}">
                             Edit
                         </button>
 
                         <button type="button"
                             data-action="toggle"
-                            data-id="${escapeHTML(product.id)}">
+                            data-id="${id}">
                             ${available ? "Mark unavailable" : "Mark available"}
                         </button>
 
                         <button type="button"
                             data-action="delete"
-                            data-id="${escapeHTML(product.id)}">
+                            data-id="${id}">
                             Delete
                         </button>
+
                     </div>
                 </div>
             </div>
@@ -551,8 +615,10 @@
 
         image?.addEventListener("error", () => {
             const placeholder = document.createElement("div");
+
             placeholder.className = "product-image-placeholder";
             placeholder.textContent = "B";
+
             image.replaceWith(placeholder);
         }, { once: true });
 
@@ -563,36 +629,51 @@
        IMAGE PREVIEW
     ===================================================== */
 
-    function displayImagePreview(url) {
+    function displayImagePreview(url, isLocal = false) {
         const image = el["image-preview-img"];
         const placeholder = el["image-placeholder"];
 
         if (!image || !placeholder) return;
 
-        const safeUrl = safeImageUrl(url);
+        // Local preview images use blob URLs.
+        // Saved images use normal HTTP/HTTPS URLs.
+        const previewUrl =
+            isLocal && String(url || "").startsWith("blob:")
+                ? url
+                : safeImageUrl(url);
 
-        if (!safeUrl) {
+        if (!previewUrl) {
             image.removeAttribute("src");
             image.hidden = true;
+
             placeholder.hidden = false;
+
             setHidden(el["remove-image"], true);
+
             return;
         }
 
         image.onload = () => {
             image.hidden = false;
             placeholder.hidden = true;
+
             setHidden(el["remove-image"], false);
         };
 
         image.onerror = () => {
             image.hidden = true;
             placeholder.hidden = false;
+
             setHidden(el["remove-image"], true);
-            showFormMessage("Unable to display this image.");
+
+            if (!isLocal) {
+                showFormMessage(
+                    "Unable to display the saved image."
+                );
+            }
         };
 
-        image.src = safeUrl;
+        image.src = previewUrl;
     }
 
     function handleImageSelection() {
@@ -602,32 +683,44 @@
 
         if (!file) return;
 
-        const allowedTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/webp"
-        ];
-
-        if (!allowedTypes.includes(file.type)) {
+        if (!ALLOWED_TYPES.includes(file.type)) {
             el["item-image"].value = "";
-            showFormMessage("Choose a JPG, PNG or WebP image.");
+
+            showFormMessage(
+                "Choose a JPG, PNG or WebP image."
+            );
+
             return;
         }
 
         if (file.size > MAX_IMAGE_SIZE) {
             el["item-image"].value = "";
-            showFormMessage("Image must be smaller than 5 MB.");
+
+            showFormMessage(
+                "Image must be 5 MB or smaller."
+            );
+
             return;
         }
 
+        clearMessages();
+
         state.removeCurrentImage = false;
 
-        const localUrl = URL.createObjectURL(file);
-        displayImagePreview(localUrl);
+        releasePreview();
+
+        state.previewUrl = URL.createObjectURL(file);
+
+        // Important: allow blob URL for preview.
+        displayImagePreview(state.previewUrl, true);
     }
 
     function removeImage() {
-        if (el["item-image"]) el["item-image"].value = "";
+        if (el["item-image"]) {
+            el["item-image"].value = "";
+        }
+
+        releasePreview();
 
         state.currentImageUrl = null;
         state.removeCurrentImage = true;
@@ -635,13 +728,31 @@
         displayImagePreview(null);
     }
 
+    /* =====================================================
+       IMAGE UPLOAD TO SUPABASE STORAGE
+    ===================================================== */
+
     async function uploadImage(productId) {
         const file = el["item-image"]?.files?.[0];
 
         if (!file) return state.currentImageUrl;
 
-        const extension = file.name.split(".").pop().toLowerCase();
-        const path = `${state.business.id}/${productId}/${crypto.randomUUID()}.${extension}`;
+        const extension = file.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+        const safeExtension =
+            ["jpg", "jpeg", "png", "webp"].includes(extension)
+                ? extension
+                : "jpg";
+
+        const uniqueId = crypto.randomUUID
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+        const path =
+            `${state.business.id}/${productId}/${uniqueId}.${safeExtension}`;
 
         const { error } = await supabase()
             .storage
@@ -659,14 +770,16 @@
             .getPublicUrl(path);
 
         if (!data?.publicUrl) {
-            throw new Error("Could not get the uploaded image URL.");
+            throw new Error(
+                "Image uploaded, but its public URL could not be created."
+            );
         }
 
         return data.publicUrl;
     }
 
     /* =====================================================
-       FORM
+       PRODUCT FORM
     ===================================================== */
 
     function setEditorMode(editing) {
@@ -688,6 +801,8 @@
     function resetForm() {
         el["product-form"]?.reset();
 
+        releasePreview();
+
         state.editingId = null;
         state.currentImageUrl = null;
         state.removeCurrentImage = false;
@@ -700,7 +815,13 @@
             el["item-image"].value = "";
         }
 
+        if (el["item-category"]) {
+            el["item-category"].value = "";
+            el["item-category"].disabled = true;
+        }
+
         displayImagePreview(null);
+
         setEditorMode(false);
 
         if (el["description-count"]) {
@@ -712,7 +833,7 @@
             el["item-type"],
             el["item-price"],
             el["item-image"]
-        ].forEach((field) => setFieldError(field, ""));
+        ].forEach(field => setFieldError(field, ""));
 
         clearMessages();
     }
@@ -735,7 +856,7 @@
 
     function startEditProduct(id) {
         const product = state.products.find(
-            (item) => String(item.id) === String(id)
+            item => String(item.id) === String(id)
         );
 
         if (!product) {
@@ -749,18 +870,23 @@
         state.currentImageUrl = product.image_url || null;
 
         el["item-name"].value = product.name || "";
-        el["item-description"].value = product.description || "";
-        el["item-price"].value = product.price ?? "";
-        el["item-type"].value = product.item_type || "";
-        el["item-available"].checked = product.is_available === true;
 
-        // Category is not saved because the known database schema
-        // does not include a category column.
+        el["item-description"].value =
+            product.description || "";
+
+        el["item-price"].value =
+            product.price ?? "";
+
+        el["item-type"].value =
+            product.item_type || "";
+
+        el["item-available"].checked =
+            product.is_available === true;
+
+        // Your current database has no separate category column.
         if (el["item-category"]) {
             el["item-category"].value = "";
             el["item-category"].disabled = true;
-            el["item-category"].placeholder =
-                "Category storage needs a database column";
         }
 
         if (el["description-count"]) {
@@ -769,28 +895,43 @@
         }
 
         displayImagePreview(state.currentImageUrl);
+
         setEditorMode(true);
+
         openEditor();
     }
 
     function validateForm() {
-        const name = el["item-name"].value.trim();
-        const type = el["item-type"].value;
-        const priceText = el["item-price"].value.trim();
+        const name = el["item-name"]?.value.trim() || "";
+
+        const type = el["item-type"]?.value || "";
+
+        const priceText =
+            el["item-price"]?.value.trim() || "";
 
         setFieldError(el["item-name"], "");
         setFieldError(el["item-type"], "");
         setFieldError(el["item-price"], "");
 
         if (!name) {
-            setFieldError(el["item-name"], "Enter an item name.");
-            el["item-name"].focus();
+            setFieldError(
+                el["item-name"],
+                "Enter an item name."
+            );
+
+            el["item-name"]?.focus();
+
             return null;
         }
 
         if (!type) {
-            setFieldError(el["item-type"], "Choose Product or Service.");
-            el["item-type"].focus();
+            setFieldError(
+                el["item-type"],
+                "Choose Product or Service."
+            );
+
+            el["item-type"]?.focus();
+
             return null;
         }
 
@@ -800,8 +941,13 @@
             price = Number(priceText);
 
             if (!Number.isFinite(price) || price < 0) {
-                setFieldError(el["item-price"], "Enter a valid price.");
-                el["item-price"].focus();
+                setFieldError(
+                    el["item-price"],
+                    "Enter a valid price."
+                );
+
+                el["item-price"]?.focus();
+
                 return null;
             }
         }
@@ -809,11 +955,17 @@
         return {
             name,
             item_type: type,
-            description: el["item-description"].value.trim(),
+            description:
+                el["item-description"]?.value.trim() || "",
             price,
-            is_available: el["item-available"].checked
+            is_available:
+                el["item-available"]?.checked ?? true
         };
     }
+
+    /* =====================================================
+       SAVE PRODUCT
+    ===================================================== */
 
     async function saveProduct(event) {
         event.preventDefault();
@@ -823,23 +975,33 @@
         clearMessages();
 
         const formData = validateForm();
+
         if (!formData) return;
 
         state.saving = true;
 
-        el["save-item"].disabled = true;
-        el["save-button-text"].textContent = "Saving...";
+        if (el["save-item"]) {
+            el["save-item"].disabled = true;
+        }
+
+        if (el["save-button-text"]) {
+            el["save-button-text"].textContent = "Saving...";
+        }
+
+        const editing = state.editingId !== null;
 
         try {
             if (!state.user) await getUser();
+
             if (!state.user) return;
 
             if (!state.business) await getBusiness();
 
             const client = supabase();
-            const editing = Boolean(state.editingId);
+
             let productId = state.editingId;
 
+            // Update existing product.
             if (editing) {
                 const { error } = await client
                     .from("products")
@@ -850,6 +1012,7 @@
                 if (error) throw error;
 
             } else {
+                // Insert new product.
                 const { data, error } = await client
                     .from("products")
                     .insert({
@@ -867,20 +1030,27 @@
 
             let imageUrl = state.currentImageUrl;
 
-            if (el["item-image"].files.length > 0) {
+            // Upload newly selected image.
+            if (el["item-image"]?.files?.length) {
                 imageUrl = await uploadImage(productId);
-            } else if (state.removeCurrentImage) {
+            }
+
+            // Remove existing image if requested.
+            else if (state.removeCurrentImage) {
                 imageUrl = null;
             }
 
+            // Save image URL in products table.
             if (
-                el["item-image"].files.length > 0 ||
+                el["item-image"]?.files?.length ||
                 state.removeCurrentImage ||
                 !editing
             ) {
                 const { error } = await client
                     .from("products")
-                    .update({ image_url: imageUrl })
+                    .update({
+                        image_url: imageUrl
+                    })
                     .eq("id", productId)
                     .eq("business_id", state.business.id);
 
@@ -888,7 +1058,8 @@
             }
 
             resetForm();
-            el["product-editor"].hidden = true;
+
+            setHidden(el["product-editor"], true);
 
             showMessage(
                 editing
@@ -907,22 +1078,25 @@
 
         } finally {
             state.saving = false;
-            el["save-item"].disabled = false;
+
+            if (el["save-item"]) {
+                el["save-item"].disabled = false;
+            }
 
             if (el["save-button-text"]) {
                 el["save-button-text"].textContent =
-                    state.editingId ? "Save changes" : "Save item";
+                    editing ? "Save changes" : "Save item";
             }
         }
     }
 
     /* =====================================================
-       AVAILABILITY AND DELETE
+       AVAILABILITY
     ===================================================== */
 
     async function toggleAvailability(id) {
         const product = state.products.find(
-            (item) => String(item.id) === String(id)
+            item => String(item.id) === String(id)
         );
 
         if (!product) return;
@@ -932,7 +1106,9 @@
         try {
             const { error } = await supabase()
                 .from("products")
-                .update({ is_available: newValue })
+                .update({
+                    is_available: newValue
+                })
                 .eq("id", product.id)
                 .eq("business_id", state.business.id);
 
@@ -950,19 +1126,27 @@
             );
 
         } catch (error) {
-            console.error(error);
-            showMessage(error.message || "Unable to update availability.", "error");
+            console.error("Availability update failed:", error);
+
+            showMessage(
+                error.message || "Unable to update availability.",
+                "error"
+            );
         }
     }
 
+    /* =====================================================
+       DELETE PRODUCT
+    ===================================================== */
+
     async function deleteProduct(id) {
         const product = state.products.find(
-            (item) => String(item.id) === String(id)
+            item => String(item.id) === String(id)
         );
 
         if (!product) return;
 
-        if (!window.confirm(
+        if (!confirm(
             `Delete "${product.name}"? This action cannot be undone.`
         )) return;
 
@@ -976,7 +1160,7 @@
             if (error) throw error;
 
             state.products = state.products.filter(
-                (item) => String(item.id) !== String(id)
+                item => String(item.id) !== String(id)
             );
 
             updateSummary();
@@ -986,56 +1170,81 @@
             showMessage("Item deleted successfully.");
 
         } catch (error) {
-            console.error(error);
-            showMessage(error.message || "Unable to delete item.", "error");
+            console.error("Delete failed:", error);
+
+            showMessage(
+                error.message || "Unable to delete item.",
+                "error"
+            );
         }
     }
 
     /* =====================================================
-       MOBILE NAVIGATION AND PROFILE MENU
+       MOBILE NAVIGATION
     ===================================================== */
-function setupNavigation() {
-        const sidebar = el["dashboard-sidebar"];
-        const menuButton = el["mobile-menu-button"];
-        const overlay = el["sidebar-overlay"];
 
-        function closeSidebar() {
-            sidebar?.classList.remove("is-open");
-            document.body.classList.remove("sidebar-open");
+    function closeSidebar() {
+        el["dashboard-sidebar"]?.classList.remove("is-open");
 
-            if (overlay) {
-                overlay.hidden = true;
-                overlay.classList.remove("is-visible");
-            }
+        document.body.classList.remove("sidebar-open");
 
-            menuButton?.setAttribute("aria-expanded", "false");
+        if (el["sidebar-overlay"]) {
+            el["sidebar-overlay"].hidden = true;
+
+            el["sidebar-overlay"].classList.remove("is-visible");
         }
 
-        function openSidebar() {
-            sidebar?.classList.add("is-open");
-            document.body.classList.add("sidebar-open");
+        el["mobile-menu-button"]?.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
 
-            if (overlay) {
-                overlay.hidden = false;
-                overlay.classList.add("is-visible");
-            }
+    function openSidebar() {
+        el["dashboard-sidebar"]?.classList.add("is-open");
 
-            menuButton?.setAttribute("aria-expanded", "true");
+        document.body.classList.add("sidebar-open");
+
+        if (el["sidebar-overlay"]) {
+            el["sidebar-overlay"].hidden = false;
+
+            el["sidebar-overlay"].classList.add("is-visible");
         }
 
-        menuButton?.addEventListener("click", () => {
+        el["mobile-menu-button"]?.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+    }
+
+    function closeProfileMenu() {
+        setHidden(el["profile-menu"], true);
+
+        el["profile-menu-button"]?.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+
+    function setupNavigation() {
+        el["mobile-menu-button"]?.addEventListener("click", () => {
+            const sidebar = el["dashboard-sidebar"];
+
             sidebar?.classList.contains("is-open")
                 ? closeSidebar()
                 : openSidebar();
         });
 
-        overlay?.addEventListener("click", closeSidebar);
+        el["sidebar-overlay"]?.addEventListener(
+            "click",
+            closeSidebar
+        );
 
-        sidebar?.querySelectorAll("a").forEach((link) => {
+        el["dashboard-sidebar"]?.querySelectorAll("a").forEach(link => {
             link.addEventListener("click", closeSidebar);
         });
 
-        document.addEventListener("keydown", (event) => {
+        document.addEventListener("keydown", event => {
             if (event.key === "Escape") {
                 closeSidebar();
                 closeProfileMenu();
@@ -1043,21 +1252,24 @@ function setupNavigation() {
         });
 
         window.addEventListener("resize", () => {
-            if (window.innerWidth > 900) closeSidebar();
+            if (window.innerWidth > 900) {
+                closeSidebar();
+            }
         });
     }
 
-    function closeProfileMenu() {
-        setHidden(el["profile-menu"], true);
-        el["profile-menu-button"]?.setAttribute("aria-expanded", "false");
-    }
+    /* =====================================================
+       PROFILE MENU
+    ===================================================== */
 
     function setupProfileMenu() {
         el["profile-menu-button"]?.addEventListener("click", () => {
             const menu = el["profile-menu"];
+
             if (!menu) return;
 
             const opening = menu.hidden;
+
             menu.hidden = !opening;
 
             el["profile-menu-button"].setAttribute(
@@ -1068,11 +1280,11 @@ function setupNavigation() {
 
         el["logout-button"]?.addEventListener("click", logout);
 
-        document.querySelectorAll("[data-settings-link]").forEach((link) => {
+        document.querySelectorAll("[data-settings-link]").forEach(link => {
             link.addEventListener("click", closeProfileMenu);
         });
 
-        document.addEventListener("click", (event) => {
+        document.addEventListener("click", event => {
             const menu = el["profile-menu"];
             const button = el["profile-menu-button"];
 
@@ -1092,33 +1304,72 @@ function setupNavigation() {
     ===================================================== */
 
     function setupEvents() {
-        el["product-form"]?.addEventListener("submit", saveProduct);
+        el["product-form"]?.addEventListener(
+            "submit",
+            saveProduct
+        );
 
-        el["add-product-button"]?.addEventListener("click", startAddProduct);
-        el["empty-add-product-button"]?.addEventListener("click", startAddProduct);
+        el["add-product-button"]?.addEventListener(
+            "click",
+            startAddProduct
+        );
 
-        el["reset-form"]?.addEventListener("click", resetForm);
+        el["empty-add-product-button"]?.addEventListener(
+            "click",
+            startAddProduct
+        );
+
+        el["reset-form"]?.addEventListener(
+            "click",
+            resetForm
+        );
+
         el["cancel-edit"]?.addEventListener("click", () => {
             resetForm();
-            el["product-editor"].hidden = true;
+            setHidden(el["product-editor"], true);
         });
 
-document.getElementById("item-image")
-    ?.addEventListener("change", handleImageSelection);
+        // Image selection: one listener only.
+        el["item-image"]?.addEventListener(
+            "change",
+            handleImageSelection
+        );
 
-document.getElementById("remove-image")
-    ?.addEventListener("click", removeSelectedImage);
+        // Remove selected or existing image.
+        el["remove-image"]?.addEventListener(
+            "click",
+            removeImage
+        );
 
-        el["retry-catalogue"]?.addEventListener("click", loadProducts);
-        el["clear-product-filters"]?.addEventListener("click", clearFilters);
+        el["retry-catalogue"]?.addEventListener(
+            "click",
+            loadProducts
+        );
 
-        el["product-search"]?.addEventListener("input", renderProducts);
-        el["filter-type"]?.addEventListener("change", renderProducts);
-        el["filter-category"]?.addEventListener("change", renderProducts);
-        el["filter-availability"]?.addEventListener("change", renderProducts);
+        el["clear-product-filters"]?.addEventListener(
+            "click",
+            clearFilters
+        );
 
-        el["item-image"]?.addEventListener("change", handleImageSelection);
-        el["remove-image"]?.addEventListener("click", removeImage);
+        el["product-search"]?.addEventListener(
+            "input",
+            renderProducts
+        );
+
+        el["filter-type"]?.addEventListener(
+            "change",
+            renderProducts
+        );
+
+        el["filter-category"]?.addEventListener(
+            "change",
+            renderProducts
+        );
+
+        el["filter-availability"]?.addEventListener(
+            "change",
+            renderProducts
+        );
 
         el["item-description"]?.addEventListener("input", () => {
             if (el["description-count"]) {
@@ -1127,16 +1378,29 @@ document.getElementById("remove-image")
             }
         });
 
-        el["catalogue-grid"]?.addEventListener("click", async (event) => {
-            const button = event.target.closest("button[data-action]");
+        // Product card actions.
+        el["catalogue-grid"]?.addEventListener("click", async event => {
+            const button = event.target.closest(
+                "button[data-action]"
+            );
+
             if (!button) return;
 
             const { action, id } = button.dataset;
+
             if (!id) return;
 
-            if (action === "edit") startEditProduct(id);
-            if (action === "toggle") await toggleAvailability(id);
-            if (action === "delete") await deleteProduct(id);
+            if (action === "edit") {
+                startEditProduct(id);
+            }
+
+            else if (action === "toggle") {
+                await toggleAvailability(id);
+            }
+
+            else if (action === "delete") {
+                await deleteProduct(id);
+            }
         });
 
         setupNavigation();
@@ -1150,7 +1414,6 @@ document.getElementById("remove-image")
     async function initialize() {
         cacheElements();
 
-        // The editor opens only when the user chooses Add or Edit.
         if (el["product-editor"]) {
             el["product-editor"].hidden = true;
         }
@@ -1161,8 +1424,15 @@ document.getElementById("remove-image")
         setupEvents();
 
         if (!el["catalogue-grid"] || !el["product-form"]) {
-            console.error("Required products.html elements are missing.");
-            showMessage("The products page HTML is missing required elements.", "error");
+            console.error(
+                "Required products.html elements are missing."
+            );
+
+            showMessage(
+                "The products page HTML is missing required elements.",
+                "error"
+            );
+
             return;
         }
 
@@ -1170,8 +1440,13 @@ document.getElementById("remove-image")
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initialize, { once: true });
+        document.addEventListener(
+            "DOMContentLoaded",
+            initialize,
+            { once: true }
+        );
     } else {
         initialize();
     }
+
 })();
