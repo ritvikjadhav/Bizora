@@ -328,23 +328,21 @@
    MOBILE SIDEBAR — BIZVERO
 ========================================================= */
 
-console.log("setupMobileSidebar is running");
-console.log("Hamburger clicked");
 function setupMobileSidebar() {
   const menuButton = document.getElementById("mobile-menu-button");
   const sidebar = document.getElementById("dashboard-sidebar");
   const overlay = document.getElementById("sidebar-overlay");
 
   if (!menuButton || !sidebar || !overlay) {
-    console.error("[Bizvero] Sidebar elements missing.");
+    console.error("[Bizvero] Sidebar elements missing.", {
+      menuButton,
+      sidebar,
+      overlay
+    });
     return;
   }
 
-  // Avoid attaching listeners more than once.
-  if (menuButton.dataset.sidebarInitialized === "true") {
-    return;
-  }
-
+  if (menuButton.dataset.sidebarInitialized === "true") return;
   menuButton.dataset.sidebarInitialized = "true";
 
   const mobileQuery = window.matchMedia("(max-width: 760px)");
@@ -358,54 +356,35 @@ function setupMobileSidebar() {
     overlay.hidden = !shouldOpen;
     overlay.classList.toggle("is-visible", shouldOpen);
 
-    menuButton.setAttribute(
-      "aria-expanded",
-      String(shouldOpen)
-    );
-
+    menuButton.setAttribute("aria-expanded", String(shouldOpen));
     menuButton.setAttribute(
       "aria-label",
       shouldOpen ? "Close navigation" : "Open navigation"
     );
   }
 
-  // Hamburger button
   menuButton.addEventListener("click", (event) => {
     event.preventDefault();
+    console.log("[Bizvero] Hamburger clicked");
 
-    const currentlyOpen = sidebar.classList.contains("is-open");
-
-    setSidebarOpen(!currentlyOpen);
+    setSidebarOpen(!sidebar.classList.contains("is-open"));
   });
 
-  // Click outside to close
-  overlay.addEventListener("click", () => {
-    setSidebarOpen(false);
-  });
+  overlay.addEventListener("click", () => setSidebarOpen(false));
 
-  // Close when a sidebar link is selected
   sidebar.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      setSidebarOpen(false);
-    });
+    link.addEventListener("click", () => setSidebarOpen(false));
   });
 
-  // Escape key
   document.addEventListener("keydown", (event) => {
-    if (
-      event.key === "Escape" &&
-      sidebar.classList.contains("is-open")
-    ) {
+    if (event.key === "Escape" && sidebar.classList.contains("is-open")) {
       setSidebarOpen(false);
       menuButton.focus();
     }
   });
 
-  // Reset when returning to desktop
   const handleViewportChange = () => {
-    if (!mobileQuery.matches) {
-      setSidebarOpen(false);
-    }
+    if (!mobileQuery.matches) setSidebarOpen(false);
   };
 
   if (mobileQuery.addEventListener) {
@@ -414,7 +393,6 @@ function setupMobileSidebar() {
     mobileQuery.addListener(handleViewportChange);
   }
 
-  // Initial state
   setSidebarOpen(false);
 }
 
