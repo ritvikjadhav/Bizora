@@ -328,6 +328,7 @@
    MOBILE SIDEBAR — BIZVERO
 ========================================================= */
 
+console.log("setupMobileSidebar is running");
 function setupMobileSidebar() {
   const menuButton = document.getElementById("mobile-menu-button");
   const sidebar = document.getElementById("dashboard-sidebar");
