@@ -345,7 +345,7 @@ function setupMobileSidebar() {
 
   menuButton.dataset.sidebarInitialized = "true";
 
-  const mobileQuery = window.matchMedia("(max-width: 900px)");
+  const mobileQuery = window.matchMedia("(max-width: 760px)");
 
   function setSidebarOpen(open) {
     const shouldOpen = Boolean(open) && mobileQuery.matches;
