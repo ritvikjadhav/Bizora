@@ -509,31 +509,3 @@ function setupMobileSidebar() {
     init();
   }
 })();
-/* Mobile sidebar interaction fix */
-@media (max-width: 760px) {
-    .growth-page .sidebar-scrim {
-        display: block;
-        position: fixed;
-        inset: 0;
-        z-index: 299;
-        width: 100%;
-        height: 100%;
-        border: 0;
-        background: rgba(10, 25, 40, 0.45);
-    }
-
-    .growth-page .sidebar-scrim[hidden] {
-        display: none !important;
-    }
-
-    .growth-page .workspace-sidebar {
-        z-index: 300;
-    }
-
-    .growth-page .mobile-menu-button {
-        position: relative;
-        z-index: 301;
-        pointer-events: auto;
-        touch-action: manipulation;
-    }
-       }
