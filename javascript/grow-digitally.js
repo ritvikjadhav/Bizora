@@ -329,6 +329,7 @@
 ========================================================= */
 
 console.log("setupMobileSidebar is running");
+console.log("Hamburger clicked");
 function setupMobileSidebar() {
   const menuButton = document.getElementById("mobile-menu-button");
   const sidebar = document.getElementById("dashboard-sidebar");
